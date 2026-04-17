@@ -1,0 +1,1887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JECRC University — Student Information System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS — JECRC Light Mode
+   ============================================================ */
+:root {
+  --bg-base:      #f0f2f5;
+  --bg-raised:    rgba(255,255,255,0.92);
+  --bg-overlay:   rgba(245,246,250,0.92);
+  --bg-elevated:  rgba(235,237,242,0.95);
+  --bg-hover:     rgba(220,224,232,0.85);
+  --bg-active:    rgba(210,215,228,0.9);
+
+  --border-subtle:  rgba(0,0,0,0.05);
+  --border-default: rgba(0,0,0,0.10);
+  --border-strong:  rgba(0,0,0,0.18);
+  --border-accent:  rgba(192,57,43,0.35);
+
+  /* Brand — JECRC Crimson */
+  --brand:        #c0392b;
+  --brand-light:  #e74c3c;
+  --brand-muted:  #a93226;
+  --brand-dim:    rgba(192,57,43,0.10);
+  --brand-glow:   rgba(192,57,43,0.18);
+
+  /* Gold accent */
+  --gold:         #d68910;
+  --gold-dim:     rgba(214,137,16,0.12);
+  --gold-border:  rgba(214,137,16,0.32);
+
+  --success:      #1e8449;
+  --success-dim:  rgba(30,132,73,0.10);
+  --warning:      #ca6f1e;
+  --warning-dim:  rgba(202,111,30,0.10);
+  --danger:       #c0392b;
+  --danger-dim:   rgba(192,57,43,0.10);
+  --info:         #1a6fa8;
+  --info-dim:     rgba(26,111,168,0.10);
+  --purple:       #7d3c98;
+  --purple-dim:   rgba(125,60,152,0.10);
+  --purple-light: #6c3483;
+
+  --text-primary:   #1a1e2e;
+  --text-secondary: #4a5568;
+  --text-tertiary:  #9aa5b4;
+  --text-inverse:   #ffffff;
+
+  --shadow-sm:  0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md:  0 4px 18px rgba(0,0,0,0.10);
+  --shadow-lg:  0 14px 45px rgba(0,0,0,0.14);
+
+  --sidebar-w: 258px;
+  --topbar-h:  62px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 22px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { font-size:14px; scroll-behavior:smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  display: flex;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+/* JECRC Campus background — vivid, clear on page open */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background:
+    url("https://jecrcuniversity.edu.in/wp-content/uploads/2023/02/12-2.jpg")
+    center/cover no-repeat;
+  opacity: 0.18;
+  pointer-events:none; z-index:0;
+  image-rendering: high-quality;
+}
+
+/* Soft light wash over campus image for readability */
+body::after {
+  content:'';
+  position:fixed; inset:0;
+  background: linear-gradient(
+    135deg,
+    rgba(240,242,245,0.55) 0%,
+    rgba(255,255,255,0.35) 50%,
+    rgba(240,242,245,0.55) 100%
+  );
+  pointer-events:none; z-index:0;
+}
+
+a { text-decoration:none; color:inherit; }
+button { font-family:inherit; }
+input, select, textarea { font-family:inherit; }
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(192,57,43,0.25); border-radius:99px; }
+::-webkit-scrollbar-thumb:hover { background:rgba(192,57,43,0.45); }
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar {
+  width: var(--sidebar-w);
+  height: 100vh;
+  position: fixed; top:0; left:0;
+  background: rgba(255,255,255,0.96);
+  border-right: 1px solid rgba(0,0,0,0.10);
+  display: flex; flex-direction: column;
+  z-index: 200;
+  backdrop-filter: blur(16px);
+  box-shadow: 2px 0 20px rgba(0,0,0,0.06);
+}
+
+/* Red glow line on left */
+.sidebar::after {
+  content:'';
+  position:absolute; top:0; left:0;
+  width:1px; height:100%;
+  background: linear-gradient(to bottom, transparent 10%, var(--brand) 50%, transparent 90%);
+  opacity:0.5;
+}
+
+.sb-head {
+  padding: 0 16px;
+  height: var(--topbar-h);
+  display: flex; align-items: center; gap: 11px;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink:0;
+}
+
+.sb-logo {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--brand) 0%, #8b1a0f 100%);
+  border-radius: var(--r-sm);
+  display: flex; align-items:center; justify-content:center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 12px; letter-spacing:0.5px;
+  flex-shrink:0;
+  box-shadow: 0 4px 14px rgba(192,57,43,0.45);
+  position:relative; overflow:hidden;
+}
+.sb-logo::before {
+  content:'';
+  position:absolute; inset:0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+}
+
+.sb-brand { line-height:1.25; }
+.sb-brand-name { font-family:'Syne',sans-serif; font-weight:700; font-size:13.5px; letter-spacing:0.3px; }
+.sb-brand-sub  { font-size:10px; color:var(--text-tertiary); letter-spacing:0.4px; }
+
+.sb-search { margin:12px 12px 4px; position:relative; }
+.sb-search input {
+  width:100%;
+  background: rgba(240,242,248,0.9);
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: var(--r-sm);
+  color: var(--text-primary);
+  padding: 7px 10px 7px 32px;
+  font-size:12px; outline:none;
+  transition: border-color 0.2s;
+}
+.sb-search input::placeholder { color:var(--text-tertiary); }
+.sb-search input:focus { border-color: var(--brand); box-shadow: 0 0 0 2px rgba(192,57,43,0.10); }
+.sb-search svg { position:absolute; left:9px; top:50%; transform:translateY(-50%); width:13px; height:13px; color:var(--text-tertiary); }
+
+.sb-nav { flex:1; overflow-y:auto; padding:4px 10px 12px; }
+
+.sb-section-label {
+  font-size:10px; font-weight:600;
+  text-transform:uppercase; letter-spacing:1.4px;
+  color:var(--text-tertiary);
+  padding:14px 8px 5px;
+  font-family:'Syne',sans-serif;
+}
+
+.sb-item {
+  display:flex; align-items:center; gap:9px;
+  padding:8px 10px;
+  border-radius: var(--r-sm);
+  color: var(--text-secondary);
+  font-size:13px; font-weight:500;
+  cursor:pointer;
+  transition: all 0.15s;
+  position:relative; margin-bottom:1px;
+  border:1px solid transparent;
+}
+.sb-item svg { width:15px; height:15px; flex-shrink:0; opacity:0.65; transition:opacity 0.15s; }
+.sb-item:hover { background:var(--bg-hover); color:var(--text-primary); }
+.sb-item:hover svg { opacity:1; }
+.sb-item.active {
+  background: var(--brand-dim);
+  color: var(--brand-muted);
+  border-color: var(--border-accent);
+  font-weight:600;
+}
+.sb-item.active svg { opacity:1; color:var(--brand-light); }
+.sb-item.active::before {
+  content:'';
+  position:absolute; left:-10px; top:50%;
+  transform:translateY(-50%);
+  width:2px; height:18px;
+  background: var(--brand);
+  border-radius:99px;
+}
+
+.sb-badge {
+  margin-left:auto;
+  font-size:10px; font-weight:700;
+  padding:2px 7px; border-radius:99px; line-height:1.6;
+  background:var(--brand); color:white;
+}
+.sb-badge.gold { background: var(--gold); color:#000; }
+.sb-badge.danger { background: var(--danger); }
+
+.sb-divider { height:1px; background:var(--border-subtle); margin:6px 8px; }
+
+.sb-foot {
+  border-top:1px solid var(--border-subtle);
+  padding:10px 10px 12px;
+}
+.sb-user {
+  display:flex; align-items:center; gap:10px;
+  padding:8px 10px; border-radius:var(--r-sm);
+  cursor:pointer; transition:background 0.15s;
+}
+.sb-user:hover { background:var(--bg-hover); }
+.sb-user-av {
+  width:32px; height:32px;
+  background: linear-gradient(135deg, var(--brand), #e67e22);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; flex-shrink:0;
+  font-family:'Syne',sans-serif;
+}
+.sb-user-info { flex:1; min-width:0; }
+.sb-user-name { font-size:12.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sb-user-role { font-size:10.5px; color:var(--text-tertiary); }
+.sb-user-more { color:var(--text-tertiary); width:14px; height:14px; flex-shrink:0; }
+
+/* ============================================================
+   MAIN LAYOUT
+   ============================================================ */
+.main {
+  margin-left: var(--sidebar-w);
+  flex:1; display:flex; flex-direction:column;
+  min-height:100vh; overflow:hidden;
+  position:relative; z-index:1;
+}
+
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+.topbar {
+  height: var(--topbar-h);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0,0,0,0.09);
+  display:flex; align-items:center;
+  padding: 0 28px; gap:14px;
+  position:sticky; top:0; z-index:100;
+  flex-shrink:0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.topbar::after {
+  content:'';
+  position:absolute; bottom:0; left:0; right:0;
+  height:1px;
+  background: linear-gradient(to right, transparent, rgba(192,57,43,0.4), transparent);
+}
+
+.topbar-breadcrumb {
+  display:flex; align-items:center; gap:6px;
+  font-size:12px; color:var(--text-tertiary);
+}
+.topbar-breadcrumb .crumb-active { color:var(--text-primary); font-weight:600; font-size:13px; font-family:'Syne',sans-serif; }
+.topbar-breadcrumb svg { width:12px; height:12px; }
+.topbar-spacer { flex:1; }
+
+.topbar-chip {
+  display:flex; align-items:center; gap:6px;
+  background: rgba(240,242,248,0.9);
+  border:1px solid rgba(0,0,0,0.10);
+  padding:5px 12px 5px 9px;
+  border-radius:var(--r-sm);
+  font-size:12px; color:var(--text-secondary);
+  cursor:pointer; transition:all 0.15s;
+}
+.topbar-chip:hover { border-color:rgba(0,0,0,0.18); color:var(--text-primary); }
+.topbar-chip svg { width:13px; height:13px; }
+
+.topbar-icon-btn {
+  width:34px; height:34px;
+  background: rgba(240,242,248,0.9);
+  border:1px solid rgba(0,0,0,0.10);
+  border-radius:var(--r-sm);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all 0.15s; position:relative;
+}
+.topbar-icon-btn:hover { border-color:rgba(192,57,43,0.3); background:rgba(255,255,255,0.95); }
+.topbar-icon-btn svg { width:16px; height:16px; color:var(--text-secondary); }
+.notif-pip {
+  position:absolute; top:7px; right:7px;
+  width:6px; height:6px;
+  background:var(--danger); border-radius:50%;
+  border:1.5px solid #fff;
+}
+
+.topbar-avatar {
+  width:30px; height:30px;
+  background: linear-gradient(135deg, var(--brand), #e67e22);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:700; cursor:pointer;
+  border:2px solid rgba(0,0,0,0.12);
+  transition:border-color 0.15s;
+  font-family:'Syne',sans-serif;
+}
+.topbar-avatar:hover { border-color:var(--brand); }
+
+.sem-badge {
+  display:flex; align-items:center; gap:5px;
+  background: var(--success-dim);
+  border:1px solid rgba(39,174,96,0.22);
+  color:var(--success);
+  padding:4px 11px;
+  border-radius:var(--r-sm);
+  font-size:11px; font-weight:600; font-family:'Syne',sans-serif;
+}
+
+/* ============================================================
+   CONTENT
+   ============================================================ */
+.content {
+  flex:1; padding:28px 28px 44px;
+  overflow-y:auto;
+}
+
+.page { display:none; animation:pageFade 0.3s ease; }
+.page.active { display:block; }
+@keyframes pageFade {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.page-header { margin-bottom:24px; }
+.page-title { font-family:'Syne',sans-serif; font-size:22px; font-weight:700; letter-spacing:-0.3px; }
+.page-desc  { font-size:13px; color:var(--text-secondary); margin-top:4px; }
+
+/* ============================================================
+   GRID UTILITIES
+   ============================================================ */
+.g2  { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.g3  { display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; }
+.g4  { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+.g75 { display:grid; grid-template-columns:1.45fr 1fr; gap:18px; }
+
+/* ============================================================
+   CARD
+   ============================================================ */
+.card {
+  background: rgba(255,255,255,0.92);
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:var(--r-lg);
+  padding:20px;
+  position:relative; overflow:hidden;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.card::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0;
+  height:1px;
+  background: linear-gradient(to right, transparent, rgba(192,57,43,0.2), transparent);
+}
+.card-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:18px;
+}
+.card-title {
+  font-family:'Syne',sans-serif;
+  font-size:13.5px; font-weight:700;
+  display:flex; align-items:center; gap:8px;
+}
+.card-title svg { width:15px; height:15px; color:var(--brand-light); }
+.card-action {
+  font-size:12px; color:var(--brand-muted);
+  cursor:pointer; font-weight:500;
+  display:flex; align-items:center; gap:4px;
+}
+.card-action:hover { color:var(--brand-light); }
+.card-action svg { width:12px; height:12px; }
+
+/* ============================================================
+   KPI CARDS
+   ============================================================ */
+.kpi-card {
+  background: rgba(255,255,255,0.92);
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:var(--r-lg);
+  padding:18px 20px;
+  position:relative; overflow:hidden;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  cursor:default;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.kpi-card::after {
+  content:'';
+  position:absolute; bottom:0; right:0;
+  width:60px; height:60px;
+  border-radius:50%; filter:blur(30px);
+  opacity:0; transition:opacity 0.3s;
+}
+.kpi-brand::after { background:var(--brand); }
+.kpi-success::after { background:var(--success); }
+.kpi-gold::after { background:var(--gold); }
+.kpi-purple::after { background:var(--purple); }
+.kpi-card:hover { border-color:rgba(192,57,43,0.3); transform:translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.10); }
+.kpi-card:hover::after { opacity:0.5; }
+
+.kpi-icon {
+  width:36px; height:36px;
+  border-radius:var(--r-sm);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:14px;
+}
+.kpi-icon svg { width:17px; height:17px; }
+.kpi-icon.brand   { background:var(--brand-dim);   color:var(--brand-light); }
+.kpi-icon.success { background:var(--success-dim); color:var(--success); }
+.kpi-icon.warning { background:var(--warning-dim); color:var(--warning); }
+.kpi-icon.gold    { background:var(--gold-dim);    color:var(--gold); }
+.kpi-icon.danger  { background:var(--danger-dim);  color:var(--danger); }
+.kpi-icon.info    { background:var(--info-dim);    color:#5dade2; }
+.kpi-icon.purple  { background:var(--purple-dim);  color:var(--purple-light); }
+
+.kpi-label { font-size:11px; color:var(--text-secondary); font-weight:600; margin-bottom:5px; letter-spacing:0.6px; text-transform:uppercase; font-family:'Syne',sans-serif; }
+.kpi-value { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; letter-spacing:-0.5px; line-height:1; }
+.kpi-sub   { font-size:11.5px; color:var(--text-tertiary); margin-top:6px; }
+.kpi-trend {
+  display:inline-flex; align-items:center; gap:3px;
+  font-size:11px; font-weight:600; padding:2px 8px;
+  border-radius:99px; margin-top:8px;
+}
+.kpi-trend.up      { background:var(--success-dim); color:var(--success); }
+.kpi-trend.down    { background:var(--danger-dim);  color:var(--danger); }
+.kpi-trend.neutral { background:var(--warning-dim); color:var(--warning); }
+.kpi-trend svg { width:10px; height:10px; }
+
+/* ============================================================
+   TABLE
+   ============================================================ */
+.data-table-wrap { overflow-x:auto; }
+.data-table { width:100%; border-collapse:collapse; font-size:13px; }
+.data-table thead tr { border-bottom:1px solid var(--border-default); }
+.data-table th {
+  padding:10px 14px; text-align:left;
+  font-size:10.5px; font-weight:700;
+  text-transform:uppercase; letter-spacing:1px;
+  color:var(--text-tertiary); white-space:nowrap;
+  font-family:'Syne',sans-serif;
+}
+.data-table td {
+  padding:13px 14px;
+  border-bottom:1px solid var(--border-subtle);
+  color:var(--text-secondary); vertical-align:middle;
+}
+.data-table td:first-child { color:var(--text-primary); font-weight:500; }
+.data-table tbody tr { transition:background 0.1s; }
+.data-table tbody tr:hover { background:rgba(192,57,43,0.04); }
+.data-table tbody tr:last-child td { border-bottom:none; }
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+.badge {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:11px; font-weight:700;
+  padding:3px 9px; border-radius:99px; white-space:nowrap;
+  font-family:'Syne',sans-serif;
+}
+.badge svg { width:10px; height:10px; }
+.badge-success { background:var(--success-dim); color:var(--success); }
+.badge-danger  { background:var(--danger-dim);  color:var(--danger); }
+.badge-warning { background:var(--warning-dim); color:var(--warning); }
+.badge-info    { background:var(--info-dim);    color:var(--info); }
+.badge-brand   { background:var(--brand-dim);   color:var(--brand-muted); }
+.badge-gold    { background:var(--gold-dim);    color:var(--gold); }
+.badge-purple  { background:var(--purple-dim);  color:var(--purple-light); }
+.badge-neutral { background:rgba(0,0,0,0.07); color:var(--text-secondary); }
+
+/* ============================================================
+   PROGRESS BARS
+   ============================================================ */
+.prog-wrap { margin-bottom:14px; }
+.prog-wrap:last-child { margin-bottom:0; }
+.prog-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:12.5px; }
+.prog-head .prog-label { color:var(--text-secondary); }
+.prog-head .prog-val   { font-weight:600; font-size:12px; font-family:'JetBrains Mono',monospace; }
+.prog-track { height:4px; background:rgba(0,0,0,0.08); border-radius:99px; overflow:hidden; }
+.prog-fill  { height:100%; border-radius:99px; transition:width 1.2s cubic-bezier(0.16,1,0.3,1); }
+
+/* ============================================================
+   ANNOUNCEMENTS
+   ============================================================ */
+.announce-list { display:flex; flex-direction:column; gap:2px; }
+.announce-item {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:11px 10px; border-radius:var(--r-sm);
+  transition:background 0.15s; cursor:pointer;
+}
+.announce-item:hover { background:rgba(192,57,43,0.05); }
+.announce-date {
+  flex-shrink:0; width:42px; text-align:center;
+  background:rgba(240,242,248,0.95);
+  border-radius:var(--r-sm); padding:5px 6px;
+  border:1px solid rgba(0,0,0,0.08);
+}
+.announce-date .ad-day { font-family:'Syne',sans-serif; font-size:17px; font-weight:800; line-height:1; }
+.announce-date .ad-mon { font-size:9px; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-tertiary); margin-top:2px; }
+.announce-body h4 { font-size:13px; font-weight:600; margin-bottom:3px; }
+.announce-body p  { font-size:12px; color:var(--text-secondary); line-height:1.4; }
+.announce-tag { margin-top:5px; }
+
+/* ============================================================
+   FORM ELEMENTS
+   ============================================================ */
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.form-grid.full { grid-template-columns:1fr; }
+.form-field { display:flex; flex-direction:column; gap:6px; }
+.form-field label {
+  font-size:10.5px; font-weight:700;
+  color:var(--text-secondary); letter-spacing:0.8px;
+  text-transform:uppercase; font-family:'Syne',sans-serif;
+}
+.form-field input, .form-field select, .form-field textarea {
+  background: rgba(248,249,252,0.95);
+  border:1px solid rgba(0,0,0,0.12);
+  border-radius:var(--r-sm);
+  color:var(--text-primary);
+  padding:9px 12px; font-size:13px; outline:none;
+  transition:border-color 0.2s, box-shadow 0.2s;
+}
+.form-field input:focus, .form-field select:focus {
+  border-color:var(--brand);
+  box-shadow:0 0 0 3px rgba(192,57,43,0.12);
+}
+.form-field input:disabled { opacity:0.5; cursor:not-allowed; background:rgba(230,232,238,0.8); }
+.form-field input::placeholder { color:var(--text-tertiary); }
+.field-hint  { font-size:11px; color:var(--text-tertiary); }
+.field-error { font-size:11px; color:var(--danger); }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display:inline-flex; align-items:center; gap:7px;
+  font-family:'Syne',sans-serif; font-size:12.5px; font-weight:700;
+  padding:8px 16px; border-radius:var(--r-sm);
+  border:1px solid transparent; cursor:pointer;
+  transition:all 0.15s; white-space:nowrap; line-height:1;
+}
+.btn svg { width:14px; height:14px; }
+.btn-primary {
+  background:var(--brand); color:white;
+  border-color:var(--brand);
+  box-shadow:0 3px 10px rgba(192,57,43,0.35);
+}
+.btn-primary:hover { background:var(--brand-light); box-shadow:0 5px 18px rgba(192,57,43,0.45); }
+.btn-secondary { background:rgba(240,242,248,0.95); color:var(--text-primary); border-color:rgba(0,0,0,0.12); }
+.btn-secondary:hover { background:rgba(225,228,238,0.95); border-color:rgba(0,0,0,0.18); }
+.btn-ghost { background:transparent; color:var(--text-secondary); border-color:rgba(0,0,0,0.10); }
+.btn-ghost:hover { background:rgba(192,57,43,0.06); color:var(--brand); border-color:rgba(192,57,43,0.20); }
+.btn-danger { background:var(--danger-dim); color:var(--danger); border-color:rgba(192,57,43,0.22); }
+.btn-danger:hover { background:rgba(192,57,43,0.18); }
+.btn-gold { background:var(--gold); color:#fff; border-color:var(--gold); box-shadow:0 3px 10px rgba(214,137,16,0.3); }
+.btn-gold:hover { background:#b7770d; }
+.btn-sm  { padding:6px 12px; font-size:12px; }
+.btn-xs  { padding:4px 10px; font-size:11px; border-radius:6px; }
+.btn-icon {
+  width:32px; height:32px; padding:0;
+  display:inline-flex; align-items:center; justify-content:center;
+  background:rgba(240,242,248,0.9); border:1px solid rgba(0,0,0,0.10);
+  border-radius:var(--r-sm); cursor:pointer; transition:all 0.15s;
+}
+.btn-icon svg { width:14px; height:14px; color:var(--text-secondary); }
+.btn-icon:hover { background:rgba(255,255,255,0.95); border-color:rgba(192,57,43,0.30); }
+.btn:active { transform:scale(0.97); }
+
+/* ============================================================
+   TABS
+   ============================================================ */
+.tabs { display:flex; gap:3px; padding:3px; background:rgba(220,224,232,0.7); border-radius:var(--r-sm); width:fit-content; }
+.tab-btn {
+  padding:6px 14px; border-radius:6px;
+  font-size:12px; font-weight:600; font-family:'Syne',sans-serif;
+  color:var(--text-secondary); cursor:pointer;
+  transition:all 0.15s; border:none; background:transparent;
+}
+.tab-btn:hover { color:var(--text-primary); }
+.tab-btn.active {
+  background: rgba(255,255,255,0.95);
+  color:var(--brand);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+}
+
+/* ============================================================
+   ALERTS
+   ============================================================ */
+.alert {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:13px 16px; border-radius:var(--r-md);
+  border:1px solid transparent; margin-bottom:16px;
+  font-size:13px;
+}
+.alert svg { width:16px; height:16px; flex-shrink:0; margin-top:1px; }
+.alert-warning { background:var(--warning-dim); border-color:rgba(230,126,34,0.25); color:var(--warning); }
+.alert-danger  { background:var(--danger-dim);  border-color:rgba(231,76,60,0.25); color:var(--danger); }
+.alert-success { background:var(--success-dim); border-color:rgba(39,174,96,0.25); color:var(--success); }
+.alert-info    { background:var(--info-dim);    border-color:rgba(41,128,185,0.25); color:#5dade2; }
+.alert-body { flex:1; }
+.alert-title { font-weight:700; margin-bottom:2px; font-family:'Syne',sans-serif; }
+.alert-msg   { font-size:12px; opacity:0.85; }
+.alert-close { cursor:pointer; opacity:0.55; transition:opacity 0.15s; }
+.alert-close:hover { opacity:1; }
+
+/* ============================================================
+   TICKER
+   ============================================================ */
+.ticker-wrap {
+  background:rgba(214,137,16,0.08);
+  border:1px solid var(--gold-border);
+  border-radius:var(--r-sm);
+  display:flex; align-items:center;
+  overflow:hidden; margin-bottom:20px;
+}
+.ticker-label {
+  background: var(--gold); color:#fff;
+  font-family:'Syne',sans-serif;
+  font-size:10.5px; font-weight:800;
+  padding:7px 13px; white-space:nowrap; flex-shrink:0;
+  text-transform:uppercase; letter-spacing:1px;
+}
+.ticker-text { padding:7px 16px; font-size:12px; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* ============================================================
+   NOTE ROWS
+   ============================================================ */
+.note-row {
+  display:flex; align-items:center; gap:14px;
+  padding:12px 14px; border-radius:var(--r-sm);
+  transition:background 0.15s; cursor:pointer;
+  border-bottom:1px solid var(--border-subtle);
+}
+.note-row:last-child { border-bottom:none; }
+.note-row:hover { background:rgba(192,57,43,0.04); }
+.note-file-icon {
+  width:38px; height:46px;
+  background:var(--brand-dim);
+  border:1px solid var(--border-accent);
+  border-radius:var(--r-sm);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.note-file-icon svg { width:15px; height:15px; color:var(--brand-light); }
+.note-file-type { font-size:9px; color:var(--brand-muted); font-weight:700; text-transform:uppercase; font-family:'JetBrains Mono',monospace; }
+.note-info { flex:1; min-width:0; }
+.note-title { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.note-meta { font-size:11.5px; color:var(--text-tertiary); margin-top:2px; display:flex; gap:10px; }
+.note-actions { display:flex; gap:6px; flex-shrink:0; }
+
+/* ============================================================
+   FEE TIMELINE
+   ============================================================ */
+.fee-timeline { position:relative; padding-left:20px; }
+.fee-timeline::before {
+  content:''; position:absolute; left:6px; top:8px; bottom:8px;
+  width:1px; background:var(--border-default);
+}
+.ft-item { position:relative; margin-bottom:20px; }
+.ft-item:last-child { margin-bottom:0; }
+.ft-dot {
+  position:absolute; left:-20px; top:3px;
+  width:13px; height:13px; border-radius:50%;
+  border:2px solid rgba(255,255,255,0.9);
+}
+.ft-dot.paid     { background:var(--success); }
+.ft-dot.due      { background:var(--danger); }
+.ft-dot.upcoming { background:var(--text-tertiary); }
+.ft-label  { font-size:13px; font-weight:600; }
+.ft-meta   { font-size:12px; color:var(--text-secondary); margin-top:2px; }
+.ft-amount { font-size:14px; font-weight:700; font-family:'JetBrains Mono',monospace; }
+
+/* ============================================================
+   PROFILE
+   ============================================================ */
+.profile-cover {
+  background: rgba(255,255,255,0.92);
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:var(--r-xl); overflow:hidden; margin-bottom:20px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+}
+.profile-cover-bg {
+  height:110px;
+  background: linear-gradient(135deg, #c0392b 0%, #922b21 40%, #d35400 100%);
+  position:relative; overflow:hidden;
+}
+.profile-cover-bg::before {
+  content:'';
+  position:absolute; inset:0;
+  background: repeating-linear-gradient(
+    60deg,
+    transparent, transparent 22px,
+    rgba(192,57,43,0.04) 22px,
+    rgba(192,57,43,0.04) 44px
+  );
+}
+.profile-cover-bg::after {
+  content:'';
+  position:absolute; top:-50px; right:-30px;
+  width:200px; height:200px;
+  background: radial-gradient(circle, rgba(192,57,43,0.18), transparent 65%);
+  border-radius:50%;
+}
+.profile-cover-body { padding:0 26px 26px; position:relative; }
+.profile-cover-av {
+  width:74px; height:74px;
+  background: linear-gradient(135deg, var(--brand), #e67e22);
+  border-radius:50%;
+  border:3px solid var(--bg-raised);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Syne',sans-serif; font-size:22px; font-weight:800;
+  margin-top:-37px; margin-bottom:12px;
+  box-shadow: 0 8px 24px rgba(192,57,43,0.35);
+}
+.profile-name { font-family:'Syne',sans-serif; font-size:19px; font-weight:800; letter-spacing:-0.2px; }
+.profile-meta { font-size:12.5px; color:var(--text-secondary); margin-top:4px; }
+.profile-tags { display:flex; flex-wrap:wrap; gap:7px; margin-top:12px; }
+
+/* ============================================================
+   SETTINGS
+   ============================================================ */
+.settings-layout { display:grid; grid-template-columns:205px 1fr; gap:18px; }
+.settings-nav {
+  background: rgba(255,255,255,0.92);
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:var(--r-lg); padding:8px;
+  height:fit-content;
+  position:sticky; top:calc(var(--topbar-h) + 16px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.sn-label { font-family:'Syne',sans-serif; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:var(--text-tertiary); padding:10px 10px 5px; }
+.sn-item {
+  display:flex; align-items:center; gap:8px;
+  padding:8px 10px; border-radius:var(--r-sm);
+  color:var(--text-secondary); font-size:12.5px; font-weight:500;
+  cursor:pointer; transition:all 0.15s; margin-bottom:1px;
+}
+.sn-item svg { width:14px; height:14px; opacity:0.65; }
+.sn-item:hover { background:var(--bg-hover); color:var(--text-primary); }
+.sn-item.active { background:var(--brand-dim); color:var(--brand-muted); font-weight:600; }
+.sn-item.active svg { opacity:1; }
+.s-tab { display:none; }
+.s-tab.active { display:block; }
+
+/* ============================================================
+   GRADE CHIPS
+   ============================================================ */
+.grade {
+  display:inline-block; padding:3px 10px;
+  border-radius:6px; font-size:11.5px; font-weight:700;
+  font-family:'JetBrains Mono',monospace;
+}
+.grade-ap { background:rgba(39,174,96,0.15); color:#58d68d; }
+.grade-a  { background:var(--success-dim); color:var(--success); }
+.grade-bp { background:var(--brand-dim); color:var(--brand-muted); }
+.grade-b  { background:var(--purple-dim); color:var(--purple-light); }
+.grade-c  { background:var(--warning-dim); color:var(--warning); }
+
+/* ============================================================
+   FEATURE CARDS
+   ============================================================ */
+.feature-card {
+  background: rgba(255,255,255,0.92);
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:var(--r-lg); padding:22px; text-align:center;
+  transition:border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.feature-card:hover { border-color:rgba(192,57,43,0.3); transform:translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.10); }
+.fc-icon { width:50px; height:50px; border-radius:var(--r-md); display:flex; align-items:center; justify-content:center; margin:0 auto 14px; }
+.fc-icon svg { width:22px; height:22px; }
+
+/* ============================================================
+   STAGGER ANIMATION
+   ============================================================ */
+.stagger > * { opacity:0; animation:staggerIn 0.4s ease forwards; }
+.stagger > *:nth-child(1) { animation-delay:0.03s; }
+.stagger > *:nth-child(2) { animation-delay:0.08s; }
+.stagger > *:nth-child(3) { animation-delay:0.13s; }
+.stagger > *:nth-child(4) { animation-delay:0.18s; }
+.stagger > *:nth-child(5) { animation-delay:0.23s; }
+.stagger > *:nth-child(6) { animation-delay:0.28s; }
+@keyframes staggerIn {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+.mono { font-family:'JetBrains Mono',monospace; }
+.text-success { color:var(--success); }
+.text-danger  { color:var(--danger); }
+.text-warning { color:var(--warning); }
+.text-brand   { color:var(--brand-muted); }
+.text-muted   { color:var(--text-secondary); }
+.text-dim     { color:var(--text-tertiary); }
+.fw-700 { font-weight:700; }
+.mt-4  { margin-top:4px; }
+.mt-8  { margin-top:8px; }
+.mt-12 { margin-top:12px; }
+.mt-16 { margin-top:16px; }
+.mb-12 { margin-bottom:12px; }
+.mb-16 { margin-bottom:16px; }
+.mb-20 { margin-bottom:20px; }
+.flex  { display:flex; }
+.flex-col { display:flex; flex-direction:column; }
+.items-center { align-items:center; }
+.justify-between { justify-content:space-between; }
+.gap-8  { gap:8px; }
+.gap-12 { gap:12px; }
+.gap-16 { gap:16px; }
+.divider { height:1px; background:var(--border-subtle); margin:14px 0; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:1280px) {
+  :root { --sidebar-w:224px; }
+  .g4 { grid-template-columns:repeat(2,1fr); }
+  .g3 { grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:900px) {
+  :root { --sidebar-w:54px; }
+  .sb-brand,.sb-section-label,.sb-item span,.sb-badge,.sb-user-info,.sb-search,.sb-user-more { display:none; }
+  .sb-item { justify-content:center; padding:10px; }
+  .sb-item.active::before { display:none; }
+  .sb-user { justify-content:center; padding:10px; }
+  .g2,.g75 { grid-template-columns:1fr; }
+  .settings-layout { grid-template-columns:1fr; }
+  .content { padding:20px 16px; }
+}
+@media (max-width:640px) {
+  .g3 { grid-template-columns:1fr; }
+  .g4 { grid-template-columns:1fr 1fr; }
+  .form-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ====================================================
+     SIDEBAR
+     ==================================================== -->
+<aside class="sidebar">
+  <div class="sb-head">
+    <div class="sb-logo">JU</div>
+    <div class="sb-brand">
+      <div class="sb-brand-name">JU Portal</div>
+      <div class="sb-brand-sub">Student System v2.0</div>
+    </div>
+  </div>
+
+  <div class="sb-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" placeholder="Search portal…">
+  </div>
+
+  <nav class="sb-nav">
+    <div class="sb-section-label">Overview</div>
+    <a class="sb-item active" onclick="nav('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      <span>Dashboard</span>
+    </a>
+    <a class="sb-item" onclick="nav('profile')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>My Profile</span>
+    </a>
+
+    <div class="sb-section-label">Academic</div>
+    <a class="sb-item" onclick="nav('notes')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      <span>Study Materials</span>
+      <span class="sb-badge">4</span>
+    </a>
+    <a class="sb-item" onclick="nav('results')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Examination</span>
+    </a>
+    <a class="sb-item" onclick="nav('attendance')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Attendance</span>
+      <span class="sb-badge gold">76%</span>
+    </a>
+
+    <div class="sb-section-label">Finance</div>
+    <a class="sb-item" onclick="nav('fees')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      <span>Fee Management</span>
+      <span class="sb-badge danger">Due</span>
+    </a>
+    <a class="sb-item" onclick="nav('scholarship')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      <span>Scholarship</span>
+    </a>
+
+    <div class="sb-section-label">Campus</div>
+    <a class="sb-item" onclick="nav('hostel')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Hostel</span>
+    </a>
+    <a class="sb-item" onclick="nav('transport')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      <span>Transport</span>
+    </a>
+    <a class="sb-item" onclick="nav('library')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      <span>Library</span>
+    </a>
+
+    <div class="sb-divider"></div>
+    <a class="sb-item" onclick="nav('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span>Settings</span>
+    </a>
+    <a class="sb-item" onclick="nav('help')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span>Help & Support</span>
+    </a>
+  </nav>
+
+  <div class="sb-foot">
+    <div class="sb-user" onclick="nav('profile')">
+      <div class="sb-user-av">DM</div>
+      <div class="sb-user-info">
+        <div class="sb-user-name">Dibyandu Mandal</div>
+        <div class="sb-user-role">B.Tech AI/DS · Sem 1</div>
+      </div>
+      <svg class="sb-user-more" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+    </div>
+  </div>
+</aside>
+
+<!-- ====================================================
+     MAIN
+     ==================================================== -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-breadcrumb">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      <span id="breadcrumb-current" class="crumb-active">Dashboard</span>
+    </div>
+
+    <div class="topbar-spacer"></div>
+
+    <div class="sem-badge">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Sem I · 2025–26
+    </div>
+
+    <div class="topbar-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Mar 20, 2026
+    </div>
+
+    <div class="topbar-icon-btn" title="Notifications">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <div class="notif-pip"></div>
+    </div>
+
+    <div class="topbar-icon-btn" title="Messages">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    </div>
+
+    <div class="topbar-avatar" onclick="nav('profile')" title="My Profile">DM</div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="content" id="content-root">
+
+    <!-- ==================================================
+         DASHBOARD
+         ================================================== -->
+    <div class="page active" id="page-dashboard">
+
+      <div class="alert alert-danger">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div class="alert-body">
+          <div class="alert-title">Fee Payment Overdue</div>
+          <div class="alert-msg">₹28,000 is pending for Semester I. Due date: 31 March 2026. Admit card will be withheld after deadline.</div>
+        </div>
+        <div class="alert-close" onclick="this.closest('.alert').remove()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+      </div>
+
+      <div class="ticker-wrap">
+        <div class="ticker-label">📢 Notice</div>
+        <div class="ticker-text">JECRC Tech Fest "Tatva '26" registrations open till 28 Mar &nbsp;·&nbsp; Mid-Semester Exams scheduled 5–12 Apr 2026 &nbsp;·&nbsp; TCS Campus Drive for CSE/AI/DS on 2 Apr — register via TnP portal &nbsp;·&nbsp; Holiday: 14 Apr (Ambedkar Jayanti)</div>
+      </div>
+
+      <!-- KPI Row -->
+      <div class="g4 stagger mb-20">
+        <div class="kpi-card kpi-brand" onclick="nav('results')">
+          <div class="kpi-icon brand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="kpi-label">Current CGPA</div>
+          <div class="kpi-value">8.65</div>
+          <div class="kpi-trend up">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            Strong Start
+          </div>
+        </div>
+        <div class="kpi-card kpi-gold" onclick="nav('attendance')">
+          <div class="kpi-icon warning">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+          </div>
+          <div class="kpi-label">Attendance</div>
+          <div class="kpi-value text-warning">76%</div>
+          <div class="kpi-trend neutral">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Min. 75% required
+          </div>
+        </div>
+        <div class="kpi-card" onclick="nav('fees')">
+          <div class="kpi-icon danger">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+          <div class="kpi-label">Fee Due</div>
+          <div class="kpi-value text-danger">₹28,000</div>
+          <div class="kpi-trend down">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            Due 31 Mar 2026
+          </div>
+        </div>
+        <div class="kpi-card kpi-purple">
+          <div class="kpi-icon purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+          </div>
+          <div class="kpi-label">Section Rank</div>
+          <div class="kpi-value">#08</div>
+          <div class="kpi-trend up">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            Top 15% batch
+          </div>
+        </div>
+      </div>
+
+      <!-- Main grid -->
+      <div class="g75 stagger">
+
+        <!-- Left -->
+        <div class="flex-col gap-16">
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                Quick Actions
+              </div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+              <button class="btn btn-primary btn-sm" onclick="nav('fees')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                Pay Fees
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="nav('results')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                View Results
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="nav('notes')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>
+                Download Notes
+              </button>
+              <button class="btn btn-ghost btn-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Exam Form
+              </button>
+              <button class="btn btn-ghost btn-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>
+                Admit Card
+              </button>
+              <button class="btn btn-ghost btn-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                ID Card
+              </button>
+            </div>
+          </div>
+
+          <!-- Subject Performance -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                Subject-wise Performance
+              </div>
+              <span class="badge badge-brand">Sem I · Mid-Term</span>
+            </div>
+            <div class="prog-wrap">
+              <div class="prog-head"><span class="prog-label">Communication Skills (CS-GE)</span><span class="prog-val text-success">A · 85/100</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:85%;background:var(--success);"></div></div>
+            </div>
+            <div class="prog-wrap">
+              <div class="prog-head"><span class="prog-label">CPLT — Computer Programming (SAS)</span><span class="prog-val text-brand">A+ · 91/100</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:91%;background:var(--brand-light);"></div></div>
+            </div>
+            <div class="prog-wrap">
+              <div class="prog-head"><span class="prog-label">Engg. Mathematics I (EM-I)</span><span class="prog-val" style="color:var(--gold);">B+ · 72/100</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:72%;background:var(--gold);"></div></div>
+            </div>
+            <div class="prog-wrap">
+              <div class="prog-head"><span class="prog-label">Applied Physics (AK)</span><span class="prog-val text-success">A · 88/100</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:88%;background:var(--success);"></div></div>
+            </div>
+            <div class="prog-wrap">
+              <div class="prog-head"><span class="prog-label">Fundamentals of AI (RA)</span><span class="prog-val text-brand">A+ · 93/100</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:93%;background:var(--brand-light);"></div></div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Recent Activity
+              </div>
+              <span class="card-action">View all <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+            </div>
+            <table class="data-table">
+              <thead><tr><th>Activity</th><th>Date</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Fee Payment — 2nd Installment</td><td class="mono text-dim">08 Feb 2026</td><td><span class="badge badge-success">Completed</span></td></tr>
+                <tr><td>Mid-Term Marks Uploaded</td><td class="mono text-dim">24 Feb 2026</td><td><span class="badge badge-brand">Available</span></td></tr>
+                <tr><td>Timetable Updated (DH-AI/DS)</td><td class="mono text-dim">11 Aug 2025</td><td><span class="badge badge-success">Viewed</span></td></tr>
+                <tr><td>Exam Form — Semester I</td><td class="mono text-dim">05 Mar 2026</td><td><span class="badge badge-warning">Pending</span></td></tr>
+                <tr><td>Library Book Issued</td><td class="mono text-dim">15 Mar 2026</td><td><span class="badge badge-success">Active</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <!-- Right -->
+        <div class="flex-col gap-16">
+
+          <!-- Announcements -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 17H2a3 3 0 000 6h20a3 3 0 000-6zm0 0v-5a10 10 0 00-20 0v5"/></svg>
+                Announcements
+              </div>
+              <span class="badge badge-danger">4 New</span>
+            </div>
+            <div class="announce-list">
+              <div class="announce-item">
+                <div class="announce-date">
+                  <div class="ad-day" style="color:var(--danger);">28</div>
+                  <div class="ad-mon">Mar</div>
+                </div>
+                <div class="announce-body">
+                  <h4>Tatva '26 — Tech Fest Registration</h4>
+                  <p>Register for technical events and project expo. Team size 2–4. Last date: 28 Mar.</p>
+                  <div class="announce-tag"><span class="badge badge-brand">Event</span></div>
+                </div>
+              </div>
+              <div class="announce-item">
+                <div class="announce-date">
+                  <div class="ad-day" style="color:var(--success);">02</div>
+                  <div class="ad-mon" style="color:var(--success);">Apr</div>
+                </div>
+                <div class="announce-body">
+                  <h4>TCS Campus Drive</h4>
+                  <p>On-campus recruitment for B.Tech CSE / AI-DS. Register via TnP portal by 30 Mar.</p>
+                  <div class="announce-tag"><span class="badge badge-success">Placement</span></div>
+                </div>
+              </div>
+              <div class="announce-item">
+                <div class="announce-date">
+                  <div class="ad-day" style="color:var(--gold);">05</div>
+                  <div class="ad-mon" style="color:var(--gold);">Apr</div>
+                </div>
+                <div class="announce-body">
+                  <h4>Mid-Semester Examinations Begin</h4>
+                  <p>Datesheet published on EduNotes portal. Check room allotments before exam day.</p>
+                  <div class="announce-tag"><span class="badge badge-gold">Exam</span></div>
+                </div>
+              </div>
+              <div class="announce-item">
+                <div class="announce-date">
+                  <div class="ad-day" style="color:var(--danger);">31</div>
+                  <div class="ad-mon" style="color:var(--danger);">Mar</div>
+                </div>
+                <div class="announce-body">
+                  <h4>Fee Deadline — Sem I</h4>
+                  <p>Last date for 3rd installment. Late fee ₹500/day applicable post deadline.</p>
+                  <div class="announce-tag"><span class="badge badge-danger">Urgent</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Today's Schedule from timetable -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Today's Schedule
+              </div>
+              <span class="badge badge-neutral">Friday</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;gap:12px;align-items:center;padding:10px 12px;background:rgba(192,57,43,0.07);border-radius:var(--r-sm);border:1px solid rgba(192,57,43,0.25);">
+                <div style="min-width:75px;font-size:11px;color:var(--brand);font-family:'JetBrains Mono',monospace;font-weight:600;">08:00–08:50</div>
+                <div><div style="font-size:13px;font-weight:600;">Applied Physics</div><div style="font-size:11.5px;color:var(--text-secondary);">NYB-301 · Dr. Ashok Kumawat</div></div>
+                <span class="badge badge-brand" style="margin-left:auto;">Live</span>
+              </div>
+              <div style="display:flex;gap:12px;align-items:center;padding:10px 12px;background:rgba(0,0,0,0.03);border-radius:var(--r-sm);border:1px solid rgba(0,0,0,0.06);">
+                <div style="min-width:75px;font-size:11px;color:var(--text-tertiary);font-family:'JetBrains Mono',monospace;">08:50–09:40</div>
+                <div><div style="font-size:13px;font-weight:600;color:var(--text-secondary);">CPLT Lab</div><div style="font-size:11.5px;color:var(--text-tertiary);">NYB-301 · Mr. Sanjay Sharma</div></div>
+              </div>
+              <div style="display:flex;gap:12px;align-items:center;padding:10px 12px;background:rgba(0,0,0,0.03);border-radius:var(--r-sm);border:1px solid rgba(0,0,0,0.06);">
+                <div style="min-width:75px;font-size:11px;color:var(--text-tertiary);font-family:'JetBrains Mono',monospace;">09:40–10:30</div>
+                <div><div style="font-size:13px;font-weight:600;color:var(--text-secondary);">Fundamentals of AI</div><div style="font-size:11.5px;color:var(--text-tertiary);">NYB-207 · Ms. Richa Agari</div></div>
+              </div>
+              <div style="display:flex;gap:12px;align-items:center;padding:10px 12px;background:rgba(0,0,0,0.03);border-radius:var(--r-sm);border:1px solid rgba(0,0,0,0.06);">
+                <div style="min-width:75px;font-size:11px;color:var(--text-tertiary);font-family:'JetBrains Mono',monospace;">10:30–11:20</div>
+                <div><div style="font-size:13px;font-weight:600;color:var(--text-secondary);">Club / Library</div><div style="font-size:11.5px;color:var(--text-tertiary);">Free Period</div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div><!-- /dashboard -->
+
+    <!-- ==================================================
+         PROFILE
+         ================================================== -->
+    <div class="page" id="page-profile">
+      <div class="page-header">
+        <div class="page-title">My Profile</div>
+        <div class="page-desc">Your academic identity, enrollment information and campus records.</div>
+      </div>
+      <div class="profile-cover">
+        <div class="profile-cover-bg"></div>
+        <div class="profile-cover-body">
+          <div class="profile-cover-av">DM</div>
+          <div class="profile-name">Dibyandu Mandal</div>
+          <div class="profile-meta">B.Tech Artificial Intelligence & Data Science &nbsp;·&nbsp; JECRC University, Jaipur</div>
+          <div class="profile-tags">
+            <span class="badge badge-brand">Semester I</span>
+            <span class="badge badge-neutral">2025-2029 Batch</span>
+            <span class="badge badge-success">SGPA: 8.65</span>
+            <span class="badge badge-neutral">Roll: JU-2025-AI-047</span>
+            <span class="badge badge-gold">Section DH-AI/DS</span>
+          </div>
+        </div>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Personal Details</div><button class="btn btn-ghost btn-xs">Edit</button></div>
+          <table class="data-table"><tbody>
+            <tr><td>Full Name</td><td class="text-muted">Dibyandu Mandal</td></tr>
+            <tr><td>Date of Birth</td><td class="text-muted">22 September 2007</td></tr>
+            <tr><td>Gender</td><td class="text-muted">Male</td></tr>
+            <tr><td>Blood Group</td><td class="text-muted">B+</td></tr>
+            <tr><td>Category</td><td class="text-muted">General</td></tr>
+            <tr><td>Nationality</td><td class="text-muted">Indian</td></tr>
+            <tr><td>Aadhaar</td><td class="text-muted mono">XXXX-XXXX-3311</td></tr>
+          </tbody></table>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.27 9.7"/></svg>Contact Information</div></div>
+          <table class="data-table"><tbody>
+            <tr><td>University Email</td><td class="text-muted mono" style="font-size:12px;">rahul.verma@jecrcuniversity.edu.in</td></tr>
+            <tr><td>Personal Email</td><td class="text-muted">rahulverma07@gmail.com</td></tr>
+            <tr><td>Mobile</td><td class="text-muted mono">+91 94140 55678</td></tr>
+            <tr><td>Alternate</td><td class="text-muted mono">+91 98291 44321</td></tr>
+            <tr><td>Address</td><td class="text-muted">47, Vidhyadhar Nagar, Jaipur, Rajasthan – 302023</td></tr>
+            <tr><td>Guardian</td><td class="text-muted">Suresh Verma</td></tr>
+            <tr><td>Guardian Mobile</td><td class="text-muted mono">+91 98110 77654</td></tr>
+          </tbody></table>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>Enrollment & Academic</div></div>
+          <table class="data-table"><tbody>
+            <tr><td>Registration No.</td><td class="text-muted mono">JU-2025-AI-047</td></tr>
+            <tr><td>Enrollment No.</td><td class="text-muted mono">25BTAI0047</td></tr>
+            <tr><td>Programme</td><td class="text-muted">B.Tech (AI & Data Science)</td></tr>
+            <tr><td>Branch</td><td class="text-muted">Artificial Intelligence & DS</td></tr>
+            <tr><td>Current Semester</td><td><span class="badge badge-brand">Semester I</span></td></tr>
+            <tr><td>Section</td><td><span class="badge badge-gold">DH-AI/DS</span></td></tr>
+            <tr><td>Expected Graduation</td><td class="text-muted">May 2029</td></tr>
+          </tbody></table>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Academic Summary</div></div>
+          <div class="prog-wrap mt-4">
+            <div class="prog-head"><span class="prog-label">Current SGPA</span><span class="prog-val">8.65 / 10</span></div>
+            <div class="prog-track"><div class="prog-fill" style="width:86.5%;background:var(--brand-light);"></div></div>
+          </div>
+          <div class="prog-wrap">
+            <div class="prog-head"><span class="prog-label">Attendance (Overall)</span><span class="prog-val text-warning">76%</span></div>
+            <div class="prog-track"><div class="prog-fill" style="width:76%;background:var(--gold);"></div></div>
+          </div>
+          <div class="prog-wrap">
+            <div class="prog-head"><span class="prog-label">Assignments Submitted</span><span class="prog-val">10 / 12</span></div>
+            <div class="prog-track"><div class="prog-fill" style="width:83%;background:var(--success);"></div></div>
+          </div>
+          <div class="divider"></div>
+          <table class="data-table"><tbody>
+            <tr><td>Active Backlogs</td><td><span class="badge badge-success">None</span></td></tr>
+            <tr><td>HOD</td><td class="text-muted">Dr. Bhavna Sharma</td></tr>
+            <tr><td>Dean SOE</td><td class="text-muted">Prof.(Dr.) Naveen Hemrajani</td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div><!-- /profile -->
+
+    <!-- ==================================================
+         NOTES
+         ================================================== -->
+    <div class="page" id="page-notes">
+      <div class="page-header flex justify-between items-center">
+        <div>
+          <div class="page-title">Study Materials</div>
+          <div class="page-desc">Download lecture notes, reference books and previous year question papers — Section DH-AI/DS.</div>
+        </div>
+        <button class="btn btn-primary btn-sm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Upload Material
+        </button>
+      </div>
+      <div class="flex gap-12 mb-20 items-center">
+        <div class="tabs">
+          <button class="tab-btn active">All Files</button>
+          <button class="tab-btn">Sem I</button>
+          <button class="tab-btn">PYQs</button>
+          <button class="tab-btn">Lab Manuals</button>
+        </div>
+        <div style="flex:1;"></div>
+        <button class="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/></svg></button>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Semester I — DH-AI/DS</div>
+          <span class="badge badge-neutral">6 files</span>
+        </div>
+        <div>
+          <!-- Note 1 -->
+          <div class="note-row">
+            <div class="note-file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="note-file-type">pdf</span></div>
+            <div class="note-info">
+              <div class="note-title">Communication Skills — Complete Notes (Ms. Geetika)</div>
+              <div class="note-meta"><span>3.1 MB</span><span>·</span><span>2 days ago</span><span>·</span><span class="badge badge-brand" style="font-size:10px;">CS</span></div>
+            </div>
+            <div class="note-actions">
+              <button class="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="btn btn-primary btn-xs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>Download</button>
+            </div>
+          </div>
+          <!-- Note 2 -->
+          <div class="note-row">
+            <div class="note-file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="note-file-type">pdf</span></div>
+            <div class="note-info">
+              <div class="note-title">CPLT — C Programming & Logical Thinking Notes (Mr. Sanjay Sharma)</div>
+              <div class="note-meta"><span>9.8 MB</span><span>·</span><span>4 days ago</span><span>·</span><span class="badge badge-brand" style="font-size:10px;">CPLT</span></div>
+            </div>
+            <div class="note-actions">
+              <button class="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="btn btn-primary btn-xs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>Download</button>
+            </div>
+          </div>
+          <!-- Note 3 -->
+          <div class="note-row">
+            <div class="note-file-icon" style="background:var(--gold-dim);border-color:var(--gold-border);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="note-file-type" style="color:var(--gold);">pdf</span></div>
+            <div class="note-info">
+              <div class="note-title">Engineering Mathematics I — Unit 1–4 (Dr. OM Prakash)</div>
+              <div class="note-meta"><span>6.4 MB</span><span>·</span><span>1 week ago</span><span>·</span><span class="badge badge-gold" style="font-size:10px;">EM-I</span></div>
+            </div>
+            <div class="note-actions">
+              <button class="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="btn btn-primary btn-xs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>Download</button>
+            </div>
+          </div>
+          <!-- Note 4 -->
+          <div class="note-row">
+            <div class="note-file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="note-file-type">pdf</span></div>
+            <div class="note-info">
+              <div class="note-title">Applied Physics — Complete Lecture Notes (Dr. Ashok Kumawat)</div>
+              <div class="note-meta"><span>11.2 MB</span><span>·</span><span>1 week ago</span><span>·</span><span class="badge badge-brand" style="font-size:10px;">PHY</span></div>
+            </div>
+            <div class="note-actions">
+              <button class="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="btn btn-primary btn-xs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>Download</button>
+            </div>
+          </div>
+          <!-- Note 5 -->
+          <div class="note-row">
+            <div class="note-file-icon" style="background:rgba(142,68,173,0.12);border-color:rgba(142,68,173,0.3);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple-light)" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="note-file-type" style="color:var(--purple-light);">ppt</span></div>
+            <div class="note-info">
+              <div class="note-title">Fundamentals of AI — Slides & Notes (Ms. Richa Agari)</div>
+              <div class="note-meta"><span>18.5 MB</span><span>·</span><span>10 days ago</span><span>·</span><span class="badge badge-purple" style="font-size:10px;">AI</span></div>
+            </div>
+            <div class="note-actions">
+              <button class="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="btn btn-primary btn-xs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>Download</button>
+            </div>
+          </div>
+          <!-- Note 6 PYQ -->
+          <div class="note-row">
+            <div class="note-file-icon" style="background:var(--warning-dim);border-color:rgba(230,126,34,0.3);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="note-file-type" style="color:var(--warning);">pyq</span></div>
+            <div class="note-info">
+              <div class="note-title">Digital Literacy Lab — Previous Year Questions (2022–25)</div>
+              <div class="note-meta"><span>2.2 MB</span><span>·</span><span>2 weeks ago</span><span>·</span><span class="badge badge-warning" style="font-size:10px;">PYQ</span></div>
+            </div>
+            <div class="note-actions">
+              <button class="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="btn btn-primary btn-xs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /notes -->
+
+    <!-- ==================================================
+         FEES
+         ================================================== -->
+    <div class="page" id="page-fees">
+      <div class="page-header flex justify-between items-center">
+        <div>
+          <div class="page-title">Fee Management</div>
+          <div class="page-desc">Track all payments, pending dues and download fee receipts.</div>
+        </div>
+        <button class="btn btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          Pay Now
+        </button>
+      </div>
+      <div class="alert alert-warning mb-16">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div class="alert-body">
+          <div class="alert-title">Payment Reminder</div>
+          <div class="alert-msg">₹28,000 is due by 31 March 2026. Late fee of ₹500/day applicable after due date. Admit card withheld until clearance.</div>
+        </div>
+      </div>
+      <div class="g4 mb-20">
+        <div class="kpi-card"><div class="kpi-icon brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><div class="kpi-label">Total Fee (Sem I)</div><div class="kpi-value">₹92,000</div></div>
+        <div class="kpi-card kpi-success"><div class="kpi-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-label">Amount Paid</div><div class="kpi-value text-success">₹64,000</div></div>
+        <div class="kpi-card"><div class="kpi-icon danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg></div><div class="kpi-label">Amount Pending</div><div class="kpi-value text-danger">₹28,000</div></div>
+        <div class="kpi-card"><div class="kpi-icon warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="kpi-label">Due Date</div><div class="kpi-value text-warning" style="font-size:18px;margin-top:4px;">31 Mar 26</div></div>
+      </div>
+      <div class="g75">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>Payment History</div><button class="btn btn-ghost btn-xs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>Export</button></div>
+          <table class="data-table">
+            <thead><tr><th>Txn ID</th><th>Date</th><th>Description</th><th>Amount</th><th>Mode</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td class="mono text-dim" style="font-size:11px;">JU2501001</td><td class="mono text-dim">15 Sep 2025</td><td>Sem I — 1st Installment</td><td class="mono fw-700 text-success">₹36,000</td><td><span class="badge badge-neutral">UPI</span></td><td><span class="badge badge-success">Paid</span></td></tr>
+              <tr><td class="mono text-dim" style="font-size:11px;">JU2502044</td><td class="mono text-dim">08 Feb 2026</td><td>Sem I — 2nd Installment</td><td class="mono fw-700 text-success">₹28,000</td><td><span class="badge badge-neutral">NEFT</span></td><td><span class="badge badge-success">Paid</span></td></tr>
+              <tr><td class="mono text-dim" style="font-size:11px;">—</td><td class="mono text-dim">—</td><td>Sem I — 3rd Installment</td><td class="mono fw-700 text-danger">₹28,000</td><td><span class="badge badge-neutral">—</span></td><td><span class="badge badge-danger">Pending</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="flex-col gap-16">
+          <div class="card">
+            <div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Payment Timeline</div></div>
+            <div class="fee-timeline">
+              <div class="ft-item"><div class="ft-dot paid"></div><div class="flex justify-between items-center"><div><div class="ft-label">1st Installment</div><div class="ft-meta">Paid via UPI · 15 Sep 2025</div></div><div class="ft-amount text-success">₹36,000</div></div></div>
+              <div class="ft-item"><div class="ft-dot paid"></div><div class="flex justify-between items-center"><div><div class="ft-label">2nd Installment</div><div class="ft-meta">Paid via NEFT · 08 Feb 2026</div></div><div class="ft-amount text-success">₹28,000</div></div></div>
+              <div class="ft-item"><div class="ft-dot due"></div><div class="flex justify-between items-center"><div><div class="ft-label text-danger">3rd Installment</div><div class="ft-meta text-danger">Due by 31 Mar 2026</div></div><div class="ft-amount text-danger">₹28,000</div></div></div>
+            </div>
+            <div class="divider"></div>
+            <div class="prog-wrap">
+              <div class="prog-head"><span class="prog-label">Payment Progress</span><span class="prog-val">₹64K / ₹92K</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:69.5%;background:var(--brand-light);"></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>Receipts</div></div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(0,0,0,0.03);border:1px solid rgba(0,0,0,0.06);border-radius:var(--r-sm);"><div><div style="font-size:13px;font-weight:600;">Receipt #JU2502044</div><div style="font-size:11.5px;color:var(--text-tertiary);">Sem I · 2nd Installment</div></div><button class="btn btn-ghost btn-xs">PDF</button></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(0,0,0,0.03);border:1px solid rgba(0,0,0,0.06);border-radius:var(--r-sm);"><div><div style="font-size:13px;font-weight:600;">Receipt #JU2501001</div><div style="font-size:11.5px;color:var(--text-tertiary);">Sem I · 1st Installment</div></div><button class="btn btn-ghost btn-xs">PDF</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /fees -->
+
+    <!-- ==================================================
+         RESULTS
+         ================================================== -->
+    <div class="page" id="page-results">
+      <div class="page-header flex justify-between items-center">
+        <div>
+          <div class="page-title">Examination Results</div>
+          <div class="page-desc">Semester-wise detailed report card and grade sheet — B.Tech AI/DS.</div>
+        </div>
+        <button class="btn btn-secondary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>Download Marksheet</button>
+      </div>
+      <div class="g4 mb-20">
+        <div class="kpi-card kpi-brand"><div class="kpi-icon brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-label">Sem I SGPA</div><div class="kpi-value" id="res-sgpa">8.65</div></div>
+        <div class="kpi-card kpi-success"><div class="kpi-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div><div class="kpi-label">Overall CGPA</div><div class="kpi-value text-success">8.65</div></div>
+        <div class="kpi-card"><div class="kpi-icon info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/></svg></div><div class="kpi-label">Active Backlogs</div><div class="kpi-value text-success">0</div></div>
+        <div class="kpi-card kpi-purple"><div class="kpi-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg></div><div class="kpi-label">Credits Earned</div><div class="kpi-value">22 / 24</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" id="res-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Semester I — Mid-Term Examination 2025-26</div>
+          <span class="badge badge-success">Pass</span>
+        </div>
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Subject Code</th><th>Subject Name</th><th>Faculty</th><th>Credits</th><th>Internal (40)</th><th>External (60)</th><th>Total</th><th>Grade</th><th>Points</th></tr></thead>
+            <tbody id="res-tbody"></tbody>
+            <tfoot id="res-tfoot"></tfoot>
+          </table>
+        </div>
+      </div>
+    </div><!-- /results -->
+
+    <!-- ==================================================
+         ATTENDANCE
+         ================================================== -->
+    <div class="page" id="page-attendance">
+      <div class="page-header">
+        <div class="page-title">Attendance Record</div>
+        <div class="page-desc">Subject-wise attendance — Section DH-AI/DS, Semester I. Minimum required: 75%.</div>
+      </div>
+      <div class="alert alert-warning">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+        <div class="alert-body">
+          <div class="alert-title">Attendance Warning — Engineering Mathematics I</div>
+          <div class="alert-msg">Your attendance in EM-I is 72%, which is below the 75% minimum. You must attend the next 4 consecutive classes to become eligible.</div>
+        </div>
+      </div>
+      <div class="card mt-16">
+        <div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Sem I Attendance — DH-AI/DS</div><span class="badge badge-neutral">Aug–Mar 2025-26</span></div>
+        <table class="data-table">
+          <thead><tr><th>Subject</th><th>Faculty Code</th><th>Total Classes</th><th>Attended</th><th>Attendance %</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Communication Skills</td><td class="badge badge-neutral">GE</td><td class="mono">38</td><td class="mono">34</td><td><div class="prog-track" style="width:110px;display:inline-block;vertical-align:middle;margin-right:8px;"><div class="prog-fill" style="width:89.4%;background:var(--success);"></div></div><span class="text-success">89.4%</span></td><td><span class="badge badge-success">Safe</span></td></tr>
+            <tr><td>CPLT — C Programming</td><td class="badge badge-neutral">SAS</td><td class="mono">44</td><td class="mono">40</td><td><div class="prog-track" style="width:110px;display:inline-block;vertical-align:middle;margin-right:8px;"><div class="prog-fill" style="width:90.9%;background:var(--success);"></div></div><span class="text-success">90.9%</span></td><td><span class="badge badge-success">Safe</span></td></tr>
+            <tr><td>Engineering Mathematics I</td><td class="badge badge-neutral">OP</td><td class="mono">40</td><td class="mono">29</td><td><div class="prog-track" style="width:110px;display:inline-block;vertical-align:middle;margin-right:8px;"><div class="prog-fill" style="width:72.5%;background:var(--danger);"></div></div><span class="text-danger">72.5%</span></td><td><span class="badge badge-danger">Shortage</span></td></tr>
+            <tr><td>Applied Physics</td><td class="badge badge-neutral">AK</td><td class="mono">42</td><td class="mono">36</td><td><div class="prog-track" style="width:110px;display:inline-block;vertical-align:middle;margin-right:8px;"><div class="prog-fill" style="width:85.7%;background:var(--success);"></div></div><span class="text-success">85.7%</span></td><td><span class="badge badge-success">Safe</span></td></tr>
+            <tr><td>Fundamentals of AI</td><td class="badge badge-neutral">RA</td><td class="mono">36</td><td class="mono">31</td><td><div class="prog-track" style="width:110px;display:inline-block;vertical-align:middle;margin-right:8px;"><div class="prog-fill" style="width:86.1%;background:var(--success);"></div></div><span class="text-success">86.1%</span></td><td><span class="badge badge-success">Safe</span></td></tr>
+            <tr><td>Digital Literacy Lab</td><td class="badge badge-neutral">—</td><td class="mono">18</td><td class="mono">15</td><td><div class="prog-track" style="width:110px;display:inline-block;vertical-align:middle;margin-right:8px;"><div class="prog-fill" style="width:83.3%;background:var(--success);"></div></div><span class="text-success">83.3%</span></td><td><span class="badge badge-success">Safe</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div><!-- /attendance -->
+
+    <!-- ==================================================
+         HOSTEL
+         ================================================== -->
+    <div class="page" id="page-hostel">
+      <div class="page-header"><div class="page-title">Hostel Management</div><div class="page-desc">Room allotment, mess menu, complaints and hostel fees.</div></div>
+      <div class="g3 mb-16">
+        <div class="feature-card"><div class="fc-icon" style="background:var(--brand-dim);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brand-light)" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><h3 style="font-size:14px;font-weight:600;margin-bottom:4px;">Room A-114</h3><p style="font-size:12px;color:var(--text-secondary);">Boys Hostel Block A · 1st Floor</p><span class="badge badge-success mt-8">Allotted</span></div>
+        <div class="feature-card"><div class="fc-icon" style="background:var(--success-dim);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="1.8"><path d="M3 2h18v20H3z"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="12" x2="15" y2="12"/></svg></div><h3 style="font-size:14px;font-weight:600;margin-bottom:4px;">Mess Menu</h3><p style="font-size:12px;color:var(--text-secondary);">Today: Rajma, Roti, Rice, Sabzi</p><span class="badge badge-neutral mt-8">View Full Menu</span></div>
+        <div class="feature-card"><div class="fc-icon" style="background:var(--warning-dim);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="1.8"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div><h3 style="font-size:14px;font-weight:600;margin-bottom:4px;">Raise Complaint</h3><p style="font-size:12px;color:var(--text-secondary);">Report maintenance issues.</p><span class="badge badge-success mt-8">0 Pending</span></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Hostel Fee Summary</div></div>
+        <table class="data-table"><thead><tr><th>Description</th><th>Amount</th><th>Due Date</th><th>Status</th></tr></thead><tbody>
+          <tr><td>Room Rent (Sem I)</td><td class="mono">₹20,000</td><td class="mono text-dim">20 Sep 2025</td><td><span class="badge badge-success">Paid</span></td></tr>
+          <tr><td>Mess Charges (Jan)</td><td class="mono">₹3,500</td><td class="mono text-dim">31 Jan 2026</td><td><span class="badge badge-success">Paid</span></td></tr>
+          <tr><td>Mess Charges (Mar)</td><td class="mono">₹3,500</td><td class="mono text-warning">31 Mar 2026</td><td><span class="badge badge-warning">Pending</span></td></tr>
+        </tbody></table>
+      </div>
+    </div><!-- /hostel -->
+
+    <!-- ==================================================
+         TRANSPORT
+         ================================================== -->
+    <div class="page" id="page-transport">
+      <div class="page-header"><div class="page-title">Transport</div><div class="page-desc">Bus route details, schedule and transport fee — Jaipur campus.</div></div>
+      <div class="g2 mb-16">
+        <div class="card"><div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>My Route</div></div>
+          <table class="data-table"><tbody>
+            <tr><td>Route No.</td><td class="mono fw-700">Route 03</td></tr>
+            <tr><td>Bus No.</td><td class="mono">RJ-14-GA-7788</td></tr>
+            <tr><td>Pickup Point</td><td class="text-muted">Vidhyadhar Nagar, Gate 1</td></tr>
+            <tr><td>Departure</td><td class="mono text-brand">08:00 AM</td></tr>
+            <tr><td>Arrival at Campus</td><td class="mono text-success">08:45 AM</td></tr>
+            <tr><td>Return Departure</td><td class="mono text-brand">05:45 PM</td></tr>
+          </tbody></table>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Transport Fee</div></div>
+          <table class="data-table"><tbody>
+            <tr><td>Annual Fee</td><td class="mono fw-700">₹22,000</td></tr>
+            <tr><td>Sem I (Paid)</td><td class="text-success mono">₹11,000 ✓</td></tr>
+            <tr><td>Next Due</td><td class="text-warning mono">₹11,000 — Aug 2026</td></tr>
+          </tbody></table>
+          <div class="divider"></div>
+          <button class="btn btn-primary btn-sm">Renew Pass</button>
+        </div>
+      </div>
+    </div><!-- /transport -->
+
+    <!-- ==================================================
+         LIBRARY
+         ================================================== -->
+    <div class="page" id="page-library">
+      <div class="page-header"><div class="page-title">Library</div><div class="page-desc">Issued books, due dates and JECRC library catalog.</div></div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>Currently Issued Books</div></div>
+        <table class="data-table">
+          <thead><tr><th>Book Title</th><th>Author</th><th>Issue Date</th><th>Due Date</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Introduction to Algorithms (4th Ed.)</td><td class="text-muted">CLRS</td><td class="mono text-dim">15 Mar 2026</td><td class="mono text-warning">15 Apr 2026</td><td><span class="badge badge-success">On Time</span></td></tr>
+            <tr><td>Artificial Intelligence — A Modern Approach</td><td class="text-muted">Russell & Norvig</td><td class="mono text-dim">10 Mar 2026</td><td class="mono text-warning">10 Apr 2026</td><td><span class="badge badge-success">On Time</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div><!-- /library -->
+
+    <!-- ==================================================
+         SCHOLARSHIP
+         ================================================== -->
+    <div class="page" id="page-scholarship">
+      <div class="page-header"><div class="page-title">Scholarship</div><div class="page-desc">Track scholarship applications, merit awards and disbursements.</div></div>
+      <div class="g2">
+        <div class="card"><div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>Active Scholarships</div></div>
+          <table class="data-table"><thead><tr><th>Scheme</th><th>Amount</th><th>Status</th></tr></thead><tbody>
+            <tr><td>JECRC Merit Scholarship 2025-26</td><td class="mono text-success">₹18,000</td><td><span class="badge badge-success">Credited</span></td></tr>
+            <tr><td>Rajasthan State Scholarship</td><td class="mono text-warning">₹10,000</td><td><span class="badge badge-warning">Under Review</span></td></tr>
+          </tbody></table>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Eligibility Check</div></div>
+          <div class="prog-wrap"><div class="prog-head"><span class="prog-label">CGPA Requirement (Min 7.5)</span><span class="prog-val text-success">8.65 ✓</span></div><div class="prog-track"><div class="prog-fill" style="width:86.5%;background:var(--success);"></div></div></div>
+          <div class="prog-wrap"><div class="prog-head"><span class="prog-label">Attendance (Min 75%)</span><span class="prog-val text-warning">76% ✓</span></div><div class="prog-track"><div class="prog-fill" style="width:76%;background:var(--gold);"></div></div></div>
+          <div class="prog-wrap"><div class="prog-head"><span class="prog-label">No Active Backlogs</span><span class="prog-val text-success">Eligible ✓</span></div><div class="prog-track"><div class="prog-fill" style="width:100%;background:var(--success);"></div></div></div>
+        </div>
+      </div>
+    </div><!-- /scholarship -->
+
+    <!-- ==================================================
+         SETTINGS
+         ================================================== -->
+    <div class="page" id="page-settings">
+      <div class="page-header"><div class="page-title">Settings & Preferences</div><div class="page-desc">Manage your account security, notifications and display preferences.</div></div>
+      <div class="settings-layout">
+        <div class="settings-nav">
+          <div class="sn-label">Account</div>
+          <div class="sn-item active" onclick="openStab(this,'stab-profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</div>
+          <div class="sn-item" onclick="openStab(this,'stab-kyc')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944"/></svg>KYC & Docs</div>
+          <div class="sn-label">Security</div>
+          <div class="sn-item" onclick="openStab(this,'stab-security')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Password & 2FA</div>
+          <div class="sn-item" onclick="openStab(this,'stab-sessions')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Sessions</div>
+          <div class="sn-label">Preferences</div>
+          <div class="sn-item" onclick="openStab(this,'stab-notif')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Notifications</div>
+          <div class="sn-item" onclick="openStab(this,'stab-appear')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>Appearance</div>
+        </div>
+        <div>
+          <div class="s-tab active" id="stab-profile">
+            <div class="card mb-16">
+              <div class="card-header"><div class="card-title">Profile Photo</div></div>
+              <div style="display:flex;align-items:center;gap:20px;padding:16px;background:var(--bg-overlay);border-radius:var(--r-sm);">
+                <div style="width:64px;height:64px;background:linear-gradient(135deg,var(--brand),#e67e22);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:20px;font-weight:800;flex-shrink:0;">DM</div>
+                <div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-primary btn-sm">Upload Photo</button><button class="btn btn-danger btn-sm">Remove</button></div><div class="field-hint mt-4">JPEG or PNG, max 2MB, 400×400px recommended</div></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">Personal Information</div></div>
+              <div class="form-grid mb-16">
+                <div class="form-field"><label>First Name</label><input type="text" value="Rahul"></div>
+                <div class="form-field"><label>Last Name</label><input type="text" value="Verma"></div>
+                <div class="form-field"><label>Student ID</label><input type="text" value="JU-2025-AI-047" disabled></div>
+                <div class="form-field"><label>University Email</label><input type="text" value="rahul.verma@jecrcuniversity.edu.in" disabled></div>
+                <div class="form-field"><label>Personal Email</label><input type="email" value="rahulverma07@gmail.com"></div>
+                <div class="form-field"><label>Mobile Number</label><input type="text" value="+91 94140 55678"></div>
+                <div class="form-field"><label>Date of Birth</label><input type="date" value="2007-09-22"></div>
+                <div class="form-field"><label>Blood Group</label><input type="text" value="B+"></div>
+              </div>
+              <div class="form-grid full mb-16"><div class="form-field"><label>Residential Address</label><input type="text" value="47, Vidhyadhar Nagar, Jaipur, Rajasthan – 302023"></div></div>
+              <div style="display:flex;gap:8px;"><button class="btn btn-primary">Save Changes</button><button class="btn btn-ghost">Cancel</button></div>
+            </div>
+          </div>
+          <div class="s-tab" id="stab-kyc">
+            <div class="card">
+              <div class="card-header"><div class="card-title">KYC & Document Verification</div></div>
+              <table class="data-table"><thead><tr><th>Document</th><th>Status</th><th>Uploaded On</th><th>Action</th></tr></thead><tbody>
+                <tr><td>Aadhaar Card</td><td><span class="badge badge-success">Verified</span></td><td class="mono text-dim">05 Aug 2025</td><td><button class="btn btn-ghost btn-xs">View</button></td></tr>
+                <tr><td>10th Marksheet</td><td><span class="badge badge-success">Verified</span></td><td class="mono text-dim">06 Aug 2025</td><td><button class="btn btn-ghost btn-xs">View</button></td></tr>
+                <tr><td>12th Marksheet</td><td><span class="badge badge-success">Verified</span></td><td class="mono text-dim">06 Aug 2025</td><td><button class="btn btn-ghost btn-xs">View</button></td></tr>
+                <tr><td>Transfer Certificate</td><td><span class="badge badge-warning">Pending</span></td><td class="mono text-dim">—</td><td><button class="btn btn-primary btn-xs">Upload</button></td></tr>
+                <tr><td>Passport Photo</td><td><span class="badge badge-success">Verified</span></td><td class="mono text-dim">05 Aug 2025</td><td><button class="btn btn-ghost btn-xs">View</button></td></tr>
+              </tbody></table>
+            </div>
+          </div>
+          <div class="s-tab" id="stab-security">
+            <div class="card mb-16">
+              <div class="card-header"><div class="card-title">Change Password</div></div>
+              <div class="form-grid mb-16" style="max-width:500px;">
+                <div class="form-field"><label>Current Password</label><input type="password" placeholder="••••••••••"></div>
+                <div></div>
+                <div class="form-field"><label>New Password</label><input type="password" placeholder="Min. 8 characters"></div>
+                <div class="form-field"><label>Confirm New Password</label><input type="password" placeholder="Re-enter password"></div>
+              </div>
+              <button class="btn btn-primary">Update Password</button>
+            </div>
+            <div class="card"><div class="card-header"><div class="card-title">Two-Factor Authentication</div><span class="badge badge-danger">Disabled</span></div><p class="text-muted" style="font-size:13px;margin-bottom:16px;">Enable 2FA for extra account security. You'll be prompted for an authenticator code on each login.</p><button class="btn btn-secondary btn-sm">Enable 2FA</button></div>
+          </div>
+          <div class="s-tab" id="stab-sessions">
+            <div class="card">
+              <div class="card-header"><div class="card-title">Active Login Sessions</div><button class="btn btn-danger btn-sm">Revoke All</button></div>
+              <table class="data-table"><thead><tr><th>Device</th><th>Location</th><th>IP</th><th>Last Active</th><th></th></tr></thead><tbody>
+                <tr><td>Chrome on Windows 11</td><td class="text-muted">Jaipur, Rajasthan</td><td class="mono text-dim">103.x.x.45</td><td class="text-success" style="font-size:12px;">Active now</td><td><span class="badge badge-brand">Current</span></td></tr>
+                <tr><td>Mobile (Android)</td><td class="text-muted">Jaipur, Rajasthan</td><td class="mono text-dim">49.x.x.112</td><td class="mono text-dim" style="font-size:12px;">1 day ago</td><td><button class="btn btn-ghost btn-xs">Revoke</button></td></tr>
+              </tbody></table>
+            </div>
+          </div>
+          <div class="s-tab" id="stab-notif">
+            <div class="card">
+              <div class="card-header"><div class="card-title">Notification Preferences</div></div>
+              <table class="data-table"><thead><tr><th>Notification Type</th><th>Email</th><th>SMS</th><th>Portal</th></tr></thead><tbody>
+                <tr><td>Fee Reminders</td><td><span class="badge badge-success">On</span></td><td><span class="badge badge-success">On</span></td><td><span class="badge badge-success">On</span></td></tr>
+                <tr><td>Result Publication</td><td><span class="badge badge-success">On</span></td><td><span class="badge badge-neutral">Off</span></td><td><span class="badge badge-success">On</span></td></tr>
+                <tr><td>Exam Schedule</td><td><span class="badge badge-success">On</span></td><td><span class="badge badge-success">On</span></td><td><span class="badge badge-success">On</span></td></tr>
+                <tr><td>Timetable Updates</td><td><span class="badge badge-neutral">Off</span></td><td><span class="badge badge-neutral">Off</span></td><td><span class="badge badge-success">On</span></td></tr>
+                <tr><td>Attendance Alerts</td><td><span class="badge badge-success">On</span></td><td><span class="badge badge-success">On</span></td><td><span class="badge badge-success">On</span></td></tr>
+              </tbody></table>
+            </div>
+          </div>
+          <div class="s-tab" id="stab-appear">
+            <div class="card"><div class="card-header"><div class="card-title">Theme & Display</div></div>
+              <p class="text-muted" style="font-size:13px;margin-bottom:16px;">JECRC Crimson Dark is the active theme. Additional themes coming soon.</p>
+              <div style="display:flex;gap:12px;">
+                <div style="padding:16px 24px;background:var(--bg-overlay);border:2px solid var(--brand);border-radius:var(--r-md);cursor:pointer;text-align:center;"><div style="font-size:12px;font-weight:700;color:var(--brand-muted);">Crimson Dark</div><div style="font-size:11px;color:var(--text-tertiary);">Active</div></div>
+                <div style="padding:16px 24px;background:var(--bg-overlay);border:1px solid var(--border-default);border-radius:var(--r-md);cursor:pointer;text-align:center;opacity:0.45;"><div style="font-size:12px;font-weight:700;">Light</div><div style="font-size:11px;color:var(--text-tertiary);">Coming soon</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /settings -->
+
+    <!-- ==================================================
+         HELP
+         ================================================== -->
+    <div class="page" id="page-help">
+      <div class="page-header"><div class="page-title">Help & Support</div><div class="page-desc">Find answers, raise tickets or contact the JECRC helpdesk.</div></div>
+      <div class="g3 mb-16">
+        <div class="feature-card" style="cursor:pointer;"><div class="fc-icon" style="background:var(--brand-dim);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brand-light)" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><h3 style="font-size:14px;font-weight:600;margin-bottom:4px;">FAQ</h3><p style="font-size:12px;color:var(--text-secondary);">Common questions answered.</p></div>
+        <div class="feature-card" style="cursor:pointer;"><div class="fc-icon" style="background:var(--success-dim);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><h3 style="font-size:14px;font-weight:600;margin-bottom:4px;">Live Chat</h3><p style="font-size:12px;color:var(--text-secondary);">Chat with student support.</p></div>
+        <div class="feature-card" style="cursor:pointer;"><div class="fc-icon" style="background:var(--gold-dim);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><h3 style="font-size:14px;font-weight:600;margin-bottom:4px;">Email Helpdesk</h3><p style="font-size:12px;color:var(--text-secondary);">support@jecrcuniversity.edu.in</p></div>
+      </div>
+    </div><!-- /help -->
+
+  </main>
+
+  <footer style="padding:14px 28px;border-top:1px solid rgba(0,0,0,0.08);background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;position:relative;z-index:1;">
+    <div style="font-size:11.5px;color:var(--text-tertiary);">© 2026 JECRC University, Jaipur &nbsp;·&nbsp; Student Information System v2.0</div>
+    <div style="font-size:11.5px;color:var(--text-tertiary);">Section DH-AI/DS &nbsp;·&nbsp; HOD: Dr. Bhavna Sharma &nbsp;·&nbsp; Dean: Prof.(Dr.) Naveen Hemrajani</div>
+  </footer>
+</div><!-- /main -->
+
+<script>
+/* ============================================================
+   RESULT DATA — Sem I DH-AI/DS
+   ============================================================ */
+const resultData = {
+  sem1: {
+    title: 'Semester I — Mid-Term Examination 2025-26',
+    sgpa: '8.65',
+    rows: [
+      { code:'CS-101', name:'Communication Skills', faculty:'Ms. Geetika',     cr:2, int:'34/40', ext:'51/60', tot:85, grade:'A',  pts:9  },
+      { code:'CP-101', name:'CPLT — C Programming',  faculty:'Mr. Sanjay Sharma', cr:4, int:'38/40', ext:'53/60', tot:91, grade:'A+', pts:10 },
+      { code:'MA-101', name:'Engg. Mathematics I',   faculty:'Dr. OM Prakash',    cr:4, int:'30/40', ext:'42/60', tot:72, grade:'B+', pts:8  },
+      { code:'PH-101', name:'Applied Physics',        faculty:'Dr. Ashok Kumawat', cr:3, int:'36/40', ext:'52/60', tot:88, grade:'A',  pts:9  },
+      { code:'AI-101', name:'Fundamentals of AI',     faculty:'Ms. Richa Agari',   cr:4, int:'39/40', ext:'54/60', tot:93, grade:'A+', pts:10 },
+      { code:'DL-101', name:'Digital Literacy Lab',   faculty:'—',                 cr:2, int:'38/40', ext:'55/60', tot:93, grade:'A+', pts:10 },
+    ]
+  }
+};
+
+const gradeClass = { 'A+':'grade-ap', 'A':'grade-a', 'B+':'grade-bp', 'B':'grade-b', 'C':'grade-c' };
+
+function renderResult(semKey) {
+  const d = resultData[semKey];
+  document.getElementById('res-title').innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${d.title}`;
+  document.getElementById('res-sgpa').textContent = d.sgpa;
+
+  let tbody = '', totalCr = 0, totalWt = 0;
+  d.rows.forEach(r => {
+    totalCr += r.cr; totalWt += r.cr * r.pts;
+    tbody += `<tr>
+      <td class="mono" style="font-size:11.5px;color:var(--text-tertiary);">${r.code}</td>
+      <td>${r.name}</td>
+      <td class="text-muted" style="font-size:12px;">${r.faculty}</td>
+      <td class="mono">${r.cr}</td>
+      <td class="mono">${r.int}</td>
+      <td class="mono">${r.ext}</td>
+      <td class="mono fw-700">${r.tot}</td>
+      <td><span class="grade ${gradeClass[r.grade]||'grade-a'}">${r.grade}</span></td>
+      <td class="mono">${r.pts}.0</td>
+    </tr>`;
+  });
+  document.getElementById('res-tbody').innerHTML = tbody;
+
+  const sgpa = (totalWt / totalCr).toFixed(2);
+  document.getElementById('res-tfoot').innerHTML = `<tr style="border-top:1px solid var(--border-default);background:var(--bg-overlay);">
+    <td colspan="3" style="font-family:'Syne',sans-serif;font-weight:700;color:var(--text-primary);">Total / SGPA</td>
+    <td class="mono fw-700">${totalCr}</td>
+    <td colspan="3"></td>
+    <td></td>
+    <td class="mono fw-700 text-brand" style="font-size:15px;">${sgpa}</td>
+  </tr>`;
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function nav(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + pageId);
+  if (target) target.classList.add('active');
+
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i => {
+    const fn = i.getAttribute('onclick') || '';
+    if (fn.includes("'" + pageId + "'")) i.classList.add('active');
+  });
+
+  const labels = {
+    dashboard:'Dashboard', profile:'My Profile', notes:'Study Materials',
+    results:'Examination', attendance:'Attendance', fees:'Fee Management',
+    scholarship:'Scholarship', hostel:'Hostel', transport:'Transport',
+    library:'Library', settings:'Settings & Preferences', help:'Help & Support'
+  };
+  document.getElementById('breadcrumb-current').textContent = labels[pageId] || pageId;
+  document.querySelector('.content').scrollTop = 0;
+}
+
+function openStab(el, tabId) {
+  document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sn-item').forEach(i => i.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  el.classList.add('active');
+}
+
+document.querySelectorAll('.tabs .tab-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    this.closest('.tabs').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+renderResult('sem1');
+</script>
+</body>
+</html>

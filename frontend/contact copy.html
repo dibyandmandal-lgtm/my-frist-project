@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Faculty Directory | EduNotes JECRC</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #c0392b;
+      --primary-dark: #922b21;
+      --primary-light: #e74c3c;
+      --accent: #f39c12;
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --card-border: rgba(192, 57, 43, 0.15);
+      --text: #e6edf3;
+      --muted: #7d8590;
+      --tag-bg: rgba(192, 57, 43, 0.12);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      position: fixed;
+      top: 0; width: 100%;
+      height: 80px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 5%;
+      background: rgba(13, 17, 23, 0.92);
+      backdrop-filter: blur(16px);
+      z-index: 1000;
+      border-bottom: 1px solid rgba(192, 57, 43, 0.2);
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-group img {
+      height: 46px;
+      border-radius: 8px;
+      filter: drop-shadow(0 0 10px rgba(192,57,43,0.4));
+    }
+
+    .logo-text span {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff;
+      display: block;
+      line-height: 1;
+    }
+
+    .logo-text small {
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .header-center {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+
+    .header-center span {
+      color: var(--primary-light);
+    }
+
+    .header-badge {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      padding: 7px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ===== HERO SECTION ===== */
+    .hero-section {
+      margin-top: 80px;
+      padding: 70px 5% 50px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(192,57,43,0.06) 0%, transparent 100%),
+        radial-gradient(ellipse at 50% 0%, rgba(192,57,43,0.12) 0%, transparent 60%);
+    }
+
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(192,57,43,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(192,57,43,0.05) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(192,57,43,0.1);
+      border: 1px solid rgba(192,57,43,0.3);
+      padding: 6px 18px;
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      color: #f1948a;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .section-label::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--primary-light);
+      border-radius: 50%;
+      animation: blink 2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .hero-section h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      margin-bottom: 16px;
+      line-height: 1.1;
+    }
+
+    .hero-section h1 span {
+      background: linear-gradient(120deg, #e74c3c, #f39c12);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-section p {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 580px;
+      margin: 0 auto 35px;
+      line-height: 1.7;
+    }
+
+    /* ===== SEARCH BAR ===== */
+    .search-wrap {
+      max-width: 560px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      padding: 15px 20px 15px 52px;
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 50px;
+      color: var(--text);
+      font-size: 15px;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    .search-wrap input::placeholder { color: var(--muted); }
+
+    .search-wrap input:focus {
+      border-color: rgba(192,57,43,0.5);
+      box-shadow: 0 0 0 3px rgba(192,57,43,0.1);
+    }
+
+    .search-wrap i {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    /* ===== FILTER TABS ===== */
+    .filter-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 30px 5% 0;
+    }
+
+    .filter-btn {
+      padding: 8px 20px;
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: var(--card-bg);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+      font-family: 'DM Sans', sans-serif;
+      letter-spacing: 0.5px;
+    }
+
+    .filter-btn.active,
+    .filter-btn:hover {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(192,57,43,0.3);
+    }
+
+    /* ===== TIMETABLE SECTION ===== */
+    .timetable-section {
+      max-width: 1100px;
+      margin: 50px auto 10px;
+      padding: 0 5%;
+    }
+
+    .section-heading {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-heading::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .timetable-img-wrap {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
+
+    .timetable-img-wrap img {
+      width: 100%;
+      display: block;
+      border-radius: 16px;
+    }
+
+    /* ===== GRID ===== */
+    .container {
+      max-width: 1100px;
+      margin: 50px auto 60px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+      padding: 0 5%;
+    }
+
+    /* ===== FACULTY CARD ===== */
+    .faculty-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 28px 24px;
+      text-align: center;
+      border: 1px solid var(--card-border);
+      transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .faculty-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(to right, var(--primary), var(--accent));
+      opacity: 0;
+      transition: 0.3s;
+    }
+
+    .faculty-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(192, 57, 43, 0.4);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(192,57,43,0.15);
+    }
+
+    .faculty-card:hover::before { opacity: 1; }
+
+    .profile-img {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: rgba(192, 57, 43, 0.1);
+      border: 2px solid rgba(192,57,43,0.25);
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      color: var(--primary-light);
+      transition: 0.3s;
+    }
+
+    .faculty-card:hover .profile-img {
+      background: rgba(192,57,43,0.2);
+      border-color: var(--primary-light);
+      box-shadow: 0 0 20px rgba(192,57,43,0.3);
+    }
+
+    .faculty-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #e6edf3;
+    }
+
+    .code-badge {
+      font-size: 11px;
+      background: rgba(243, 156, 18, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(243,156,18,0.25);
+      padding: 3px 10px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .dept-tag {
+      font-size: 12px;
+      background: var(--tag-bg);
+      color: #f1948a;
+      border: 1px solid rgba(192,57,43,0.2);
+      padding: 5px 14px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 18px;
+      font-weight: 600;
+    }
+
+    .subject-tag {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .subject-tag i { color: var(--primary-light); font-size: 11px; }
+
+    .info-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: 0.2s;
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+
+    .info-link:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .info-link i { color: var(--primary-light); width: 16px; font-size: 13px; }
+
+    .action-btns {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 11px;
+      border-radius: 10px;
+      border: none;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.3s;
+      text-decoration: none;
+      text-align: center;
+      font-family: 'DM Sans', sans-serif;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-call {
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      color: white;
+      box-shadow: 0 4px 12px rgba(192,57,43,0.3);
+    }
+
+    .btn-call:hover {
+      box-shadow: 0 6px 20px rgba(192,57,43,0.45);
+      transform: translateY(-1px);
+    }
+
+    .btn-mail {
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .btn-mail:hover {
+      background: rgba(255,255,255,0.09);
+      color: var(--text);
+    }
+
+    /* ===== STATS BAR ===== */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      padding: 30px 5%;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.01);
+      margin-top: 10px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat strong {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--primary-light);
+      display: block;
+    }
+
+    .stat span {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      text-align: center;
+      padding: 30px;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .footer span { color: var(--primary-light); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .header-center { display: none; }
+      .stats-bar { gap: 25px; flex-wrap: wrap; }
+    }
+
+    @media (max-width: 500px) {
+      .header-badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="logo-group">
+    <img src="https://jecrcuniversity.edu.in/wp-content/uploads/2022/01/jecrc-university-logo-header.png"
+         alt="JECRC" onerror="this.style.display='none'">
+    <div class="logo-text">
+      <span>EduNotes</span>
+      <small>JECRC University</small>
+    </div>
+  </div>
+  <div class="header-center">Faculty <span>Directory</span></div>
+  <div class="header-badge">
+    <i class="fa-solid fa-graduation-cap"></i>
+    B.Tech 1st Year · AI/DS
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero-section">
+  <div class="section-label">Section DH-AI/DS · Semester I · 2025-26</div>
+  <h1>Meet Your <span>Expert Faculty</span></h1>
+  <p>Connect directly with your professors — access their contact details, subjects, and reach out for academic support.</p>
+  <div class="search-wrap">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" id="facultySearch" onkeyup="searchFaculty()" placeholder="Search by name, subject or department…">
+  </div>
+</section>
+
+<!-- FILTER TABS -->
+<div class="filter-row">
+  <button class="filter-btn active" onclick="filterCards('all', this)">All Faculty</button>
+  <button class="filter-btn" onclick="filterCards('cs', this)">Computer Science</button>
+  <button class="filter-btn" onclick="filterCards('math', this)">Mathematics</button>
+  <button class="filter-btn" onclick="filterCards('physics', this)">Applied Physics</button>
+  <button class="filter-btn" onclick="filterCards('humanities', this)">Humanities</button>
+  <button class="filter-btn" onclick="filterCards('ai', this)">AI / Digital</button>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat"><strong>6</strong><span>Faculty Members</span></div>
+  <div class="stat"><strong>5</strong><span>Subjects</span></div>
+  <div class="stat"><strong>1</strong><span>Section</span></div>
+  <div class="stat"><strong>2025</strong><span>Academic Year</span></div>
+</div>
+
+<!-- TIMETABLE SECTION -->
+<div class="timetable-section">
+  <div class="section-heading"><i class="fa-regular fa-calendar" style="color:var(--primary-light)"></i> Class Timetable</div>
+  <div class="timetable-img-wrap">
+    <img src="/mnt/user-data/uploads/WhatsApp_Image_2026-02-24_at_10_41_26_PM.jpeg"
+         alt="JECRC Timetable Section DH-AI/DS"
+         onerror="this.parentElement.innerHTML='<p style=\'padding:30px;text-align:center;color:#7d8590\'>Timetable image not available</p>'">
+  </div>
+</div>
+
+<!-- FACULTY GRID -->
+<div class="container" id="facultyGrid">
+
+  <!-- Ms. Geetika -->
+  <div class="faculty-card" data-dept="humanities">
+    <div class="profile-img"><i class="fa-solid fa-user-tie"></i></div>
+    <h3>Ms. Geetika</h3>
+    <div class="code-badge">GE</div>
+    <div class="dept-tag">Dept. of Humanities</div>
+    <div class="subject-tag"><i class="fa-solid fa-book-open"></i> Communication Skills</div>
+    <a href="mailto:geetika@jecrcuniversity.edu.in" class="info-link">
+      <i class="fa-solid fa-envelope"></i> geetika@jecrcuniversity.edu.in
+    </a>
+    <div class="action-btns">
+      <a href="mailto:geetika@jecrcuniversity.edu.in" class="btn btn-call">Email</a>
+      <a href="#" class="btn btn-mail">Profile</a>
+    </div>
+  </div>
+
+  <!-- Mr. Sanjay Sharma -->
+  <div class="faculty-card" data-dept="cs">
+    <div class="profile-img"><i class="fa-solid fa-laptop-code"></i></div>
+    <h3>Mr. Sanjay Sharma</h3>
+    <div class="code-badge">SAS</div>
+    <div class="dept-tag">Dept. of Computer Science</div>
+    <div class="subject-tag"><i class="fa-solid fa-book-open"></i> CPLT – Computer Programming &amp; Logical Thinking</div>
+    <a href="mailto:sanjay.sharma@jecrcuniversity.edu.in" class="info-link">
+      <i class="fa-solid fa-envelope"></i> sanjay.sharma@jecrcuniversity.edu.in
+    </a>
+    <div class="action-btns">
+      <a href="mailto:sanjay.sharma@jecrcuniversity.edu.in" class="btn btn-call">Email</a>
+      <a href="#" class="btn btn-mail">Profile</a>
+    </div>
+  </div>
+
+  <!-- Dr. OM Prakash -->
+  <div class="faculty-card" data-dept="math">
+    <div class="profile-img"><i class="fa-solid fa-square-root-variable"></i></div>
+    <h3>Dr. OM Prakash</h3>
+    <div class="code-badge">OP</div>
+    <div class="dept-tag">Dept. of Mathematics</div>
+    <div class="subject-tag"><i class="fa-solid fa-book-open"></i> EM-I – Engineering Mathematics I</div>
+    <a href="mailto:om.prakash@jecrcuniversity.edu.in" class="info-link">
+      <i class="fa-solid fa-envelope"></i> om.prakash@jecrcuniversity.edu.in
+    </a>
+    <div class="action-btns">
+      <a href="mailto:om.prakash@jecrcuniversity.edu.in" class="btn btn-call">Email</a>
+      <a href="#" class="btn btn-mail">Profile</a>
+    </div>
+  </div>
+
+  <!-- Dr. Ashok Kumawat -->
+  <div class="faculty-card" data-dept="physics">
+    <div class="profile-img"><i class="fa-solid fa-atom"></i></div>
+    <h3>Dr. Ashok Kumawat</h3>
+    <div class="code-badge">AK</div>
+    <div class="dept-tag">Dept. of Applied Physics</div>
+    <div class="subject-tag"><i class="fa-solid fa-book-open"></i> Applied Physics</div>
+    <a href="mailto:ashok.kumawat@jecrcuniversity.edu.in" class="info-link">
+      <i class="fa-solid fa-envelope"></i> ashok.kumawat@jecrcuniversity.edu.in
+    </a>
+    <div class="action-btns">
+      <a href="mailto:ashok.kumawat@jecrcuniversity.edu.in" class="btn btn-call">Email</a>
+      <a href="#" class="btn btn-mail">Profile</a>
+    </div>
+  </div>
+
+  <!-- Ms. Richa Agari -->
+  <div class="faculty-card" data-dept="ai">
+    <div class="profile-img"><i class="fa-solid fa-brain"></i></div>
+    <h3>Ms. Richa Agari</h3>
+    <div class="code-badge">RA</div>
+    <div class="dept-tag">Dept. of AI &amp; Data Science</div>
+    <div class="subject-tag"><i class="fa-solid fa-book-open"></i> Fundamentals of Artificial Intelligence</div>
+    <a href="mailto:richa.agari@jecrcuniversity.edu.in" class="info-link">
+      <i class="fa-solid fa-envelope"></i> richa.agari@jecrcuniversity.edu.in
+    </a>
+    <div class="action-btns">
+      <a href="mailto:richa.agari@jecrcuniversity.edu.in" class="btn btn-call">Email</a>
+      <a href="#" class="btn btn-mail">Profile</a>
+    </div>
+  </div>
+
+  <!-- Ms. Neha Mishra (Coordinator) -->
+  <div class="faculty-card" data-dept="cs">
+    <div class="profile-img"><i class="fa-solid fa-chalkboard-user"></i></div>
+    <h3>Ms. Neha Mishra</h3>
+    <div class="code-badge">COORD</div>
+    <div class="dept-tag">Timetable Coordinator</div>
+    <div class="subject-tag"><i class="fa-solid fa-calendar-check"></i> Academic Coordination</div>
+    <a href="mailto:neha.mishra@jecrcuniversity.edu.in" class="info-link">
+      <i class="fa-solid fa-envelope"></i> neha.mishra@jecrcuniversity.edu.in
+    </a>
+    <div class="action-btns">
+      <a href="mailto:neha.mishra@jecrcuniversity.edu.in" class="btn btn-call">Email</a>
+      <a href="#" class="btn btn-mail">Profile</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  EduNotes · <span>JECRC University</span> · B.Tech First Year · Section DH-AI/DS · Semester I (2025-26) &nbsp;|&nbsp;
+  HOD: Dr. Bhavna Sharma &nbsp;|&nbsp; Dean SOE: Prof.(Dr.) Naveen Hemrajani
+</div>
+
+<script>
+  function searchFaculty() {
+    const input = document.getElementById('facultySearch').value.toLowerCase();
+    document.querySelectorAll('.faculty-card').forEach(card => {
+      const text = card.innerText.toLowerCase();
+      card.style.display = text.includes(input) ? 'block' : 'none';
+    });
+  }
+
+  function filterCards(dept, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.faculty-card').forEach(card => {
+      card.style.display = (dept === 'all' || card.dataset.dept === dept) ? 'block' : 'none';
+    });
+  }
+</script>
+
+</body>
+</html>

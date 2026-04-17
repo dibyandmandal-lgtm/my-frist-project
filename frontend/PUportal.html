@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduNotes | Poornima University</title>
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <link
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Outfit:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+  <style>
+    :root {
+      --maroon: #7c1c2e;
+      --maroon2: #9e2440;
+      --gold: #c9922a;
+      --gold2: #e8b455;
+      --cream: #fdf9f3;
+      --cream2: #f5ede0;
+      --cream3: #ede0cc;
+      --ink: #1a1208;
+      --ink2: #3d2e1a;
+      --muted: #8a7560;
+      --border: rgba(124, 28, 46, 0.13);
+      --shadow: 0 4px 32px rgba(124, 28, 46, 0.10);
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── SUBTLE GRAIN TEXTURE ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.5;
+    }
+
+    /* ── DECORATIVE CORNER ORNAMENT ── */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -120px;
+      right: -120px;
+      width: 480px;
+      height: 480px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201, 146, 42, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── THIN TOP ACCENT ── */
+    .top-bar {
+      height: 4px;
+      background: linear-gradient(90deg, var(--maroon), var(--gold), var(--maroon));
+      position: relative;
+      z-index: 10;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: relative;
+      z-index: 10;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 0 6%;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 0 rgba(124, 28, 46, 0.06), 0 4px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .nav-logo img {
+      height: 44px;
+      filter: drop-shadow(0 2px 6px rgba(124, 28, 46, 0.2));
+    }
+
+    .nav-brand {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .nav-brand-main {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--maroon);
+      letter-spacing: 0.5px;
+    }
+
+    .nav-brand-sub {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .nav-divider {
+      width: 1px;
+      height: 32px;
+      background: var(--border);
+      margin: 0 20px;
+    }
+
+    .nav-menu {
+      display: flex;
+      list-style: none;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .nav-menu a {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      color: var(--ink2);
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      transition: all .2s;
+    }
+
+    .nav-menu a:hover {
+      background: var(--cream2);
+      color: var(--maroon);
+    }
+
+    .admin-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--maroon);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all .22s;
+      box-shadow: 0 2px 12px rgba(124, 28, 46, 0.3);
+    }
+
+    .admin-btn:hover {
+      background: var(--maroon2);
+      box-shadow: 0 4px 18px rgba(124, 28, 46, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .admin-btn ion-icon {
+      font-size: 15px;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .page-body {
+      position: relative;
+      z-index: 1;
+      min-height: calc(100vh - 76px);
+      display: grid;
+      grid-template-columns: 1fr 480px;
+    }
+
+    /* ── LEFT PANEL ── */
+    .left-panel {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(145deg, var(--maroon) 0%, #4a0e1a 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 80px 10% 80px 8%;
+    }
+
+    /* Background image overlay */
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('https://images.shiksha.com/mediadata/images/1745496915phpyf90RL.jpeg') center/cover no-repeat;
+      opacity: 0.18;
+    }
+
+    /* Geometric grid overlay */
+    .left-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(201, 146, 42, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201, 146, 42, 0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    .left-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .lp-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(201, 146, 42, 0.15);
+      border: 1px solid rgba(201, 146, 42, 0.35);
+      color: var(--gold2);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 4px;
+      margin-bottom: 32px;
+    }
+
+    .lp-badge span {
+      width: 6px;
+      height: 6px;
+      background: var(--gold2);
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .lp-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(38px, 5vw, 62px);
+      font-weight: 900;
+      line-height: 1.07;
+      color: #fff;
+      margin-bottom: 24px;
+      letter-spacing: -0.5px;
+    }
+
+    .lp-heading .gold-text {
+      color: var(--gold2);
+      display: block;
+    }
+
+    .lp-desc {
+      font-size: 16px;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.65);
+      max-width: 480px;
+      margin-bottom: 44px;
+    }
+
+    /* Stats row */
+    .lp-stats {
+      display: flex;
+      gap: 0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      border-radius: 8px;
+      margin-bottom: 44px;
+    }
+
+    .lp-stat {
+      padding: 18px 28px;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      flex: 1;
+      text-align: center;
+      transition: background .2s;
+    }
+
+    .lp-stat:last-child {
+      border-right: none;
+    }
+
+    .lp-stat:hover {
+      background: rgba(201, 146, 42, 0.1);
+    }
+
+    .lp-stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--gold2);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .lp-stat-label {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.45);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    /* Social icons */
+    .lp-social {
+      display: flex;
+      gap: 12px;
+    }
+
+    .lp-social a {
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
+      transition: all .2s;
+      font-size: 16px;
+    }
+
+    .lp-social a:hover {
+      border-color: var(--gold2);
+      color: var(--gold2);
+      background: rgba(201, 146, 42, 0.1);
+    }
+
+    /* Decorative diagonal stripe */
+    .left-stripe {
+      position: absolute;
+      right: -1px;
+      top: 0;
+      bottom: 0;
+      z-index: 3;
+      width: 60px;
+      background: var(--cream);
+      clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    }
+
+    /* ── RIGHT PANEL (FORM) ── */
+    .right-panel {
+      background: var(--cream);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 52px;
+      position: relative;
+    }
+
+    /* Top decorative line */
+    .right-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .form-wrap {
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .form-eyebrow {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-eyebrow::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    .form-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 6px;
+      line-height: 1.1;
+    }
+
+    .form-subtitle {
+      font-size: 13.5px;
+      color: var(--muted);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    /* Tab switcher */
+    .tab-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--cream2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px;
+      gap: 4px;
+      margin-bottom: 28px;
+    }
+
+    .tab-btn {
+      padding: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all .2s;
+      letter-spacing: 0.3px;
+    }
+
+    .tab-btn.active {
+      background: #fff;
+      color: var(--maroon);
+      box-shadow: 0 1px 6px rgba(124, 28, 46, 0.12);
+    }
+
+    /* Select dropdown */
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      padding: 12px 14px;
+      background: #fff;
+      border: 1.5px solid var(--cream3);
+      border-radius: 8px;
+      color: var(--ink);
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border .2s, box-shadow .2s;
+      -webkit-appearance: none;
+    }
+
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%238a7560'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+
+    .field input::placeholder {
+      color: #b8a898;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--maroon);
+      box-shadow: 0 0 0 3px rgba(124, 28, 46, 0.08);
+    }
+
+    /* Icon inputs */
+    .field-icon {
+      position: relative;
+    }
+
+    .field-icon ion-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: var(--cream3);
+      pointer-events: none;
+      transition: color .2s;
+    }
+
+    .field-icon input {
+      padding-left: 40px;
+    }
+
+    .field-icon input:focus+ion-icon,
+    .field-icon:focus-within ion-icon {
+      color: var(--maroon);
+    }
+
+    /* Submit button */
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--maroon);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all .22s;
+      margin-top: 8px;
+      box-shadow: 0 4px 18px rgba(124, 28, 46, 0.28);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transform: translateX(-100%);
+      transition: transform .5s;
+    }
+
+    .submit-btn:hover {
+      background: var(--maroon2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(124, 28, 46, 0.38);
+    }
+
+    .submit-btn:hover::after {
+      transform: translateX(100%);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Divider */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+      font-size: 11px;
+      color: var(--cream3);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--cream3);
+    }
+
+    /* Footer note */
+    .form-footer-note {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .form-footer-note p {
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .form-footer-note strong {
+      color: var(--maroon);
+    }
+
+    /* ── ADMIN MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(253, 249, 243, 0.85);
+      backdrop-filter: blur(10px);
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .admin-modal {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--maroon);
+      border-radius: 12px;
+      padding: 44px 40px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 24px 64px rgba(124, 28, 46, 0.14);
+      animation: slideUp .3s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+      position: relative;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: var(--cream2);
+      border: 1px solid var(--border);
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .modal-close:hover {
+      background: #fee2e2;
+      color: #dc2626;
+      border-color: #fca5a5;
+    }
+
+    .modal-icon-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .shield-ring {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(124, 28, 46, 0.07);
+      border: 2px solid rgba(124, 28, 46, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulseRing 2.5s ease-in-out infinite;
+    }
+
+    @keyframes pulseRing {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(124, 28, 46, 0.2);
+      }
+
+      50% {
+        box-shadow: 0 0 0 10px rgba(124, 28, 46, 0);
+      }
+    }
+
+    .shield-ring ion-icon {
+      font-size: 28px;
+      color: var(--maroon);
+    }
+
+    .admin-modal h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      text-align: center;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .admin-modal .modal-sub {
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    .error-msg {
+      display: none;
+      background: #fff5f5;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .error-msg.show {
+      display: block;
+    }
+
+    .admin-submit {
+      width: 100%;
+      padding: 13px;
+      background: var(--maroon);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all .22s;
+      margin-top: 8px;
+      box-shadow: 0 4px 14px rgba(124, 28, 46, 0.25);
+    }
+
+    .admin-submit:hover {
+      background: var(--maroon2);
+      transform: translateY(-1px);
+    }
+
+    /* Subtle gold corner decoration on right panel */
+    .corner-dec {
+      position: absolute;
+      bottom: 32px;
+      right: 32px;
+      width: 60px;
+      height: 60px;
+      opacity: 0.25;
+      pointer-events: none;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(22px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-1 {
+      animation: fadeUp .7s ease both;
+    }
+
+    .animate-2 {
+      animation: fadeUp .7s .15s ease both;
+    }
+
+    .animate-3 {
+      animation: fadeUp .7s .3s ease both;
+    }
+
+    .animate-4 {
+      animation: fadeUp .7s .45s ease both;
+    }
+
+    .animate-5 {
+      animation: fadeUp .7s .6s ease both;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+      .page-body {
+        grid-template-columns: 1fr;
+      }
+
+      .left-panel {
+        padding: 60px 8%;
+        min-height: 60vh;
+      }
+
+      .left-stripe {
+        display: none;
+      }
+
+      .right-panel {
+        padding: 50px 8%;
+      }
+
+      .form-wrap {
+        max-width: 480px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      nav {
+        padding: 0 5%;
+      }
+
+      .nav-menu {
+        display: none;
+      }
+
+      .lp-heading {
+        font-size: 36px;
+      }
+
+      .lp-stats {
+        flex-direction: column;
+      }
+
+      .lp-stat {
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .right-panel {
+        padding: 40px 6%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="top-bar"></div>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-logo">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSP1gWVjDn9Ca2T5BB2tEblNAKcC972B4UfAg&s"
+         alt="EduNotes Logo">
+    <div class="nav-divider"></div>
+    <div class="nav-brand">
+      <span class="nav-brand-main">EduNotes</span>
+      <span class="nav-brand-sub">Poornima University</span>
+    </div>
+  </div>
+
+  <ul class="nav-menu">
+    <li><a href="loging page.html">Home</a></li>
+    <li><a href="description1.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="#">Support</a></li>
+    <li>
+      <button class="admin-btn" onclick="openAdminModal()">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+        Admin Panel
+      </button>
+    </li>
+  </ul>
+</nav>
+
+<!-- MAIN LAYOUT -->
+<div class="page-body">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="left-content">
+      <div class="lp-badge animate-1"><span></span> Poornima University · Jaipur, Rajasthan</div>
+
+      <h1 class="lp-heading animate-2">
+        Elevate Your<br>Learning at
+        <span class="gold-text">Poornima.</span>
+      </h1>
+
+      <p class="lp-desc animate-3">
+        Access exclusive handwritten notes, previous year questions, and engineering resources specially curated for
+        your success. One platform for every student.
+      </p>
+
+      <!-- Stats -->
+      <div class="lp-stats animate-4">
+        <div class="lp-stat">
+          <div class="lp-stat-num">8,200+</div>
+          <div class="lp-stat-label">Notes</div>
+        </div>
+        <div class="lp-stat">
+          <div class="lp-stat-num">3,100+</div>
+          <div class="lp-stat-label">Students</div>
+        </div>
+        <div class="lp-stat">
+          <div class="lp-stat-num">100%</div>
+          <div class="lp-stat-label">Free Access</div>
+        </div>
+      </div>
+
+      <!-- Social -->
+      <div class="lp-social animate-5">
+        <a href="#"><ion-icon name="logo-facebook"></ion-icon></a>
+        <a href="#"><ion-icon name="logo-instagram"></ion-icon></a>
+        <a href="#"><ion-icon name="logo-linkedin"></ion-icon></a>
+        <a href="#"><ion-icon name="logo-youtube"></ion-icon></a>
+      </div>
+    </div>
+
+    <!-- Diagonal edge -->
+    <div class="left-stripe"></div>
+  </div>
+
+  <!-- RIGHT PANEL (FORM) -->
+  <div class="right-panel">
+
+    <!-- Decorative SVG corner -->
+    <svg class="corner-dec" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="30" cy="30" r="29" stroke="#c9922a" stroke-width="1" />
+      <circle cx="30" cy="30" r="22" stroke="#c9922a" stroke-width="0.5" stroke-dasharray="3 3" />
+      <circle cx="30" cy="30" r="4" fill="#c9922a" />
+      <line x1="1" y1="30" x2="59" y2="30" stroke="#c9922a" stroke-width="0.5" />
+      <line x1="30" y1="1" x2="30" y2="59" stroke="#c9922a" stroke-width="0.5" />
+    </svg>
+
+    <div class="form-wrap">
+      <div class="form-eyebrow animate-1">Student Portal</div>
+      <h2 class="form-title animate-2" id="form-title">Welcome Back</h2>
+      <p class="form-subtitle animate-3" id="form-subtitle">Sign in to access your personalised study library</p>
+
+      <form id="loginForm">
+        <!-- Tab switcher -->
+        <div class="tab-row animate-3">
+          <button type="button" class="tab-btn active" id="studentTab" onclick="switchTab('student')">Student</button>
+          <button type="button" class="tab-btn" id="facultyTab" onclick="switchTab('faculty')">Faculty</button>
+        </div>
+
+        <!-- Student selector -->
+        <div class="field animate-4" id="student-select-group">
+          <label>Select Student (Optional)</label>
+          <select id="studentSelect">
+            <option value="">Loading students…</option>
+          </select>
+        </div>
+
+        <!-- Email -->
+        <div class="field animate-4">
+          <label>Email Address</label>
+          <div class="field-icon">
+            <input type="email" id="email" placeholder="you@poornima.edu.in" required>
+            <ion-icon name="mail-outline"></ion-icon>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="field animate-5">
+          <label>Password</label>
+          <div class="field-icon">
+            <input type="password" id="password" placeholder="Enter your password" required>
+            <ion-icon name="lock-closed-outline"></ion-icon>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn animate-5" id="submitBtn">
+          Launch Portal
+        </button>
+      </form>
+
+      <div class="form-footer-note animate-5">
+        <p>Need help? Contact <strong>support@poornima.edu.in</strong><br>or visit the Student Services desk.</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page-body -->
+
+
+<!-- ADMIN MODAL -->
+<div class="modal-overlay" id="adminModal" onclick="handleOverlayClick(event)">
+  <div class="admin-modal">
+
+    <button class="modal-close" onclick="closeAdminModal()">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+
+    <div class="modal-icon-wrap">
+      <div class="shield-ring">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+      </div>
+    </div>
+
+    <h2>Admin Panel</h2>
+    <p class="modal-sub">Authorized Access Only</p>
+
+    <div class="error-msg" id="adminError">Invalid username or password.</div>
+
+    <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+      <div class="field">
+        <label>Admin Email</label>
+        <div class="field-icon">
+          <input type="email" id="adminEmail" placeholder="admin@poornima.edu.in" required autocomplete="off">
+          <ion-icon name="mail-outline"></ion-icon>
+        </div>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="field-icon">
+          <input type="password" id="adminPassword" placeholder="Enter admin password" required>
+          <ion-icon name="lock-closed-outline"></ion-icon>
+        </div>
+      </div>
+      <button type="submit" class="admin-submit">Access Admin Panel</button>
+    </form>
+
+  </div>
+</div>
+
+
+<script>
+  /* ── ADMIN MODAL ── */
+  function openAdminModal() {
+    document.getElementById('adminModal').classList.add('active');
+    document.getElementById('adminEmail').focus();
+    document.getElementById('adminError').classList.remove('show');
+    document.getElementById('adminLoginForm').reset();
+  }
+
+  function closeAdminModal() {
+    document.getElementById('adminModal').classList.remove('active');
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('adminModal')) closeAdminModal();
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAdminModal(); });
+
+  async function handleAdminLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('adminEmail').value.trim();
+    const password = document.getElementById('adminPassword').value;
+    try {
+      const res = await fetch("http://localhost:8081/api/admin/adminlogin", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      if (!res.ok) { showAdminError('Invalid username or password.'); return; }
+      const text = await res.text();
+      const admin = text ? JSON.parse(text) : null;
+      if (!admin) { showAdminError('Invalid username or password.'); return; }
+      localStorage.setItem('adminSession', 'true');
+      localStorage.setItem('adminUsername', admin.email || email);
+      closeAdminModal();
+      window.location.href = 'admin.html';
+    } catch {
+      showAdminError('Server error. Please try again later.');
+    }
+  }
+
+  function showAdminError(msg) {
+    const b = document.getElementById('adminError');
+    b.innerText = msg; b.classList.add('show');
+    document.getElementById('adminPassword').value = '';
+    document.getElementById('adminPassword').focus();
+  }
+
+  /* ── TAB SWITCHER ── */
+  let currentRole = 'student';
+  let studentApiBase = 'http://localhost:8081';
+
+  function normalizeApiBase(v) {
+    if (!v || typeof v !== 'string') return null;
+    const t = v.trim().replace(/\/+$/, '');
+    return t || null;
+  }
+
+  function getApiBases() {
+    const saved = normalizeApiBase(localStorage.getItem('API_BASE'));
+    const origin = normalizeApiBase(window.location.origin?.startsWith('http') ? window.location.origin : '');
+    return [...new Set([saved, origin, 'http://localhost:8081', 'http://127.0.0.1:8081'].filter(Boolean))];
+  }
+
+  async function readErrorMessage(res) {
+    const ct = res.headers.get('content-type') || '';
+    if (ct.includes('application/json')) {
+      const d = await res.json().catch(() => null);
+      if (d?.message?.trim()) return d.message.trim();
+    }
+    const t = await res.text().catch(() => '');
+    return t?.trim() || 'Request failed';
+  }
+
+  function renderStudentSelect(students) {
+    const sel = document.getElementById('studentSelect');
+    sel.innerHTML = '<option value="">Select Student (Optional)</option>';
+    students.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = String(s.id);
+      const name = `${(s.firstName || '').trim()} ${(s.lastName || '').trim()}`.trim() || 'Unknown';
+      opt.textContent = `${name}${s.rollNo ? ` (${s.rollNo})` : ''}`;
+      sel.appendChild(opt);
+    });
+  }
+
+  async function loadStudentsForLogin() {
+    const sel = document.getElementById('studentSelect');
+    let lastError = null;
+    for (const base of getApiBases()) {
+      try {
+        const res = await fetch(`${base}/api/admin/students`, { cache: 'no-store' });
+        if (!res.ok) throw new Error(await readErrorMessage(res));
+        const data = await res.json();
+        if (!Array.isArray(data)) throw new Error('Invalid list');
+        studentApiBase = base;
+        localStorage.setItem('API_BASE', base);
+        renderStudentSelect(data);
+        return;
+      } catch (err) { lastError = err; }
+    }
+    sel.innerHTML = '<option value="">No students found (use email/password)</option>';
+  }
+
+  function switchTab(role) {
+    currentRole = role;
+    document.getElementById('studentTab').classList.toggle('active', role === 'student');
+    document.getElementById('facultyTab').classList.toggle('active', role === 'faculty');
+    const title = document.getElementById('form-title');
+    const subtitle = document.getElementById('form-subtitle');
+    const emailEl = document.getElementById('email');
+    const btnEl = document.getElementById('submitBtn');
+    const grpEl = document.getElementById('student-select-group');
+    if (role === 'student') {
+      title.textContent = 'Welcome Back';
+      subtitle.textContent = 'Sign in to access your personalised study library';
+      emailEl.placeholder = 'you@poornima.edu.in';
+      emailEl.type = 'email';
+      btnEl.textContent = 'Launch Portal';
+      grpEl.style.display = 'block';
+    } else {
+      title.textContent = 'Faculty Login';
+      subtitle.textContent = 'Access your teaching dashboard and resources';
+      emailEl.placeholder = 'Faculty Email or Employee ID';
+      emailEl.type = 'text';
+      btnEl.textContent = 'Access Dashboard';
+      grpEl.style.display = 'none';
+    }
+  }
+
+  function parseSelectedStudent(text) {
+    text = (text || '').trim();
+    if (!text) return { firstName: '', lastName: '', rollNo: '' };
+    const rm = text.match(/\(([^)]+)\)\s*$/);
+    const rollNo = rm ? rm[1].trim() : '';
+    const namePart = (rm ? text.slice(0, rm.index) : text).trim();
+    const parts = namePart.split(/\s+/).filter(Boolean);
+    return { firstName: parts[0] || '', lastName: parts.slice(1).join(' ') || '', rollNo };
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const identifier = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (currentRole === 'student') {
+      const sel = document.getElementById('studentSelect');
+      const sid = Number(sel.value);
+      const studentId = Number.isFinite(sid) && sid > 0 ? sid : null;
+      const parsed = parseSelectedStudent(sel.options[sel.selectedIndex]?.textContent || '');
+      try {
+        const res = await fetch(`${studentApiBase}/api/student-auth/login`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ studentId, gmail: identifier, password })
+        });
+        if (!res.ok) { alert(await readErrorMessage(res) || 'Invalid credentials.'); return; }
+        const student = await res.json();
+        const sess = {
+          ...student, id: student?.id ?? studentId ?? null, gmail: student?.gmail || identifier,
+          firstName: student?.firstName || parsed.firstName, lastName: student?.lastName || parsed.lastName,
+          rollNo: student?.rollNo || parsed.rollNo
+        };
+        localStorage.setItem('studentSession', JSON.stringify(sess));
+        localStorage.setItem('activeStudentProfile', JSON.stringify(sess));
+        window.location.href = 'Puportal(student).html';
+      } catch { alert('Server error. Please try again.'); }
+      return;
+    }
+
+    let lastError = null;
+    for (const base of getApiBases()) {
+      try {
+        const res = await fetch(`${base}/api/faculty-auth/login`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier, password })
+        });
+        if (!res.ok) {
+          const msg = await readErrorMessage(res);
+          if (res.status === 401 || res.status === 400) { alert(msg || 'Invalid credentials.'); return; }
+          throw new Error(msg || 'Login failed');
+        }
+        const faculty = await res.json();
+        const sess = { ...faculty, id: faculty?.id ?? null, email: faculty?.email || identifier };
+        studentApiBase = base;
+        localStorage.setItem('API_BASE', base);
+        localStorage.setItem('facultySession', JSON.stringify(sess));
+        localStorage.setItem('activeFacultyProfile', JSON.stringify(sess));
+        window.location.href = 'Puportal(faculty).html';
+        return;
+      } catch (err) { lastError = err; }
+    }
+    alert(lastError?.message || 'Server error. Please try again.');
+  });
+
+  loadStudentsForLogin();
+  switchTab('student');
+</script>
+
+</body>
+
+</html>

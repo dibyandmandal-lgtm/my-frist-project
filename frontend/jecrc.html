@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduNotes | JECRC University</title>
+
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #c0392b;
+      --primary-dark: #922b21;
+      --primary-light: #e74c3c;
+      --accent: #f39c12;
+      --accent2: #e67e22;
+      --glass: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --text-muted: #b8bec9;
+      --dark-bg: rgba(10, 14, 22, 0.75);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      overflow: hidden;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .main {
+      width: 100%;
+      height: 100vh;
+      background:
+        linear-gradient(135deg, rgba(120, 20, 10, 0.82) 0%, rgba(10, 14, 30, 0.88) 60%, rgba(20, 8, 40, 0.80) 100%),
+        url("https://jecrcuniversity.edu.in/wp-content/uploads/2023/02/12-2.jpg") center/cover no-repeat;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Animated grid overlay */
+    .main::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(192, 57, 43, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(192, 57, 43, 0.07) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    /* Glowing orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      animation: float 8s ease-in-out infinite;
+    }
+    .orb-1 {
+      width: 350px; height: 350px;
+      background: rgba(192, 57, 43, 0.25);
+      top: -80px; left: -80px;
+      animation-delay: 0s;
+    }
+    .orb-2 {
+      width: 250px; height: 250px;
+      background: rgba(243, 156, 18, 0.18);
+      bottom: 50px; right: 100px;
+      animation-delay: -3s;
+    }
+    .orb-3 {
+      width: 200px; height: 200px;
+      background: rgba(192, 57, 43, 0.15);
+      top: 50%; left: 45%;
+      animation-delay: -5s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-25px) scale(1.05); }
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      height: 85px;
+      padding: 0 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      position: relative;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-group img {
+      height: 52px;
+      filter: brightness(1.1) drop-shadow(0 0 14px rgba(192, 57, 43, 0.6));
+      border-radius: 8px;
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-text span {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+
+    .logo-text small {
+      font-size: 11px;
+      color: var(--accent);
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    .menu ul {
+      display: flex;
+      list-style: none;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .menu a {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      transition: 0.3s;
+      position: relative;
+    }
+
+    .menu a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px; left: 0;
+      width: 0%; height: 2px;
+      background: linear-gradient(to right, var(--primary-light), var(--accent));
+      transition: 0.3s;
+      border-radius: 2px;
+    }
+
+    .menu a:hover { color: #fff; }
+    .menu a:hover::after { width: 100%; }
+
+    .admin-link {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      padding: 9px 20px;
+      border-radius: 10px;
+      color: white !important;
+      font-weight: 700 !important;
+      box-shadow: 0 4px 18px rgba(192, 57, 43, 0.4);
+      transition: 0.3s;
+      display: flex !important;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .admin-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(192, 57, 43, 0.5);
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    }
+
+    .admin-link::after { display: none !important; }
+
+    /* ===== HERO ===== */
+    .hero {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 8%;
+      gap: 50px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .content {
+      max-width: 600px;
+      color: #fff;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(192, 57, 43, 0.2);
+      border: 1px solid rgba(192, 57, 43, 0.4);
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: #f1948a;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.7s 0.1s forwards;
+    }
+
+    .badge::before {
+      content: '';
+      width: 7px; height: 7px;
+      background: var(--primary-light);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .content h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(38px, 5.5vw, 64px);
+      line-height: 1.05;
+      font-weight: 800;
+      margin-bottom: 22px;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 0.8s 0.3s forwards;
+    }
+
+    .content h1 .highlight {
+      background: linear-gradient(120deg, #e74c3c, #f39c12, #e74c3c);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 3s linear infinite;
+    }
+
+    @keyframes shimmer {
+      to { background-position: 200% center; }
+    }
+
+    .content p {
+      font-size: 17px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 35px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s 0.5s forwards;
+    }
+
+    .stats {
+      display: flex;
+      gap: 30px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.7s forwards;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat strong {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .stat span {
+      font-size: 12px;
+      color: #7f8c8d;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .stat-divider {
+      width: 1px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* ===== LOGIN FORM ===== */
+    .form-container {
+      background: rgba(10, 14, 22, 0.6);
+      backdrop-filter: blur(24px);
+      padding: 42px;
+      border-radius: 28px;
+      border: 1px solid var(--glass-border);
+      width: 100%;
+      max-width: 410px;
+      box-shadow:
+        0 30px 60px -12px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(192, 57, 43, 0.1),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      opacity: 0;
+      transform: translateY(20px) scale(0.97);
+      animation: fadeUp 0.7s 0.6s forwards;
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .form-header .icon-wrap {
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      box-shadow: 0 10px 25px rgba(192, 57, 43, 0.4);
+    }
+
+    .form-header .icon-wrap ion-icon {
+      font-size: 28px;
+      color: white;
+    }
+
+    .form-header h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 5px;
+    }
+
+    .form-header p {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    /* Tab switcher */
+    .tab-box {
+      display: flex;
+      background: rgba(255,255,255,0.04);
+      border-radius: 14px;
+      margin-bottom: 26px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 4px;
+      gap: 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 11px;
+      background: transparent;
+      color: #6b7280;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: 0.3s;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      letter-spacing: 0.5px;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      box-shadow: 0 4px 15px rgba(192, 57, 43, 0.35);
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .input-group .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #4b5563;
+      font-size: 18px;
+      pointer-events: none;
+      transition: 0.3s;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 13px 15px 13px 44px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      color: white;
+      outline: none;
+      font-size: 15px;
+      font-family: 'DM Sans', sans-serif;
+      transition: 0.3s;
+    }
+
+    .input-group input::placeholder { color: #4b5563; }
+
+    .input-group input:focus {
+      border-color: rgba(192, 57, 43, 0.5);
+      background: rgba(192, 57, 43, 0.05);
+      box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.12);
+    }
+
+    .input-group input:focus + .input-icon,
+    .input-group:focus-within .input-icon {
+      color: var(--primary-light);
+    }
+
+    .forgot {
+      text-align: right;
+      margin-bottom: 20px;
+      margin-top: -8px;
+    }
+
+    .forgot a {
+      font-size: 13px;
+      color: #6b7280;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+
+    .forgot a:hover { color: var(--accent); }
+
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 10px 25px rgba(192, 57, 43, 0.35);
+      font-family: 'Syne', sans-serif;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      opacity: 0;
+      transition: 0.3s;
+    }
+
+    .login-btn:hover::before { opacity: 1; }
+    .login-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(192, 57, 43, 0.45); }
+    .login-btn:active { transform: translateY(0); }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 22px 0 18px;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .divider span {
+      font-size: 12px;
+      color: #374151;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .social-btn {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .social-btn ion-icon {
+      font-size: 20px;
+      color: #6b7280;
+      transition: 0.3s;
+    }
+
+    .social-btn:hover {
+      background: rgba(192, 57, 43, 0.12);
+      border-color: rgba(192, 57, 43, 0.3);
+      transform: translateY(-3px);
+    }
+
+    .social-btn:hover ion-icon { color: var(--primary-light); }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 992px) {
+      body { overflow: auto; }
+      .main { height: auto; min-height: 100vh; padding-bottom: 40px; }
+      .hero { flex-direction: column; text-align: center; padding-top: 30px; padding-bottom: 40px; }
+      .menu { display: none; }
+      .stats { justify-content: center; }
+      .badge { display: inline-flex; }
+      .form-container { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="main">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <nav class="navbar">
+    <div class="logo-group">
+      <img src="https://jecrcuniversity.edu.in/wp-content/uploads/2022/01/jecrc-university-logo-header.png" alt="JECRC University" onerror="this.style.display='none'">
+      <div class="logo-text">
+        <span>EduNotes</span>
+        <small>JECRC University</small>
+      </div>
+    </div>
+    <div class="menu">
+      <ul>
+        <li><a href="jecrc.html">HOME</a></li>
+        <li><a href="description1.html">ABOUT</a></li>
+        <li><a href="contact.html">CONTACT</a></li>
+        <li><a href="#">SUPPORT</a></li>
+        <li><a href="adminjecrc.html" class="admin-link">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          ADMIN PANEL
+        </a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="content">
+      <div class="badge">✦ Academic Resource Hub</div>
+      <h1>Unlock Your <span class="highlight">Engineering</span> Potential at JECRC</h1>
+      <p>Access comprehensive handwritten notes, previous year question papers, lab manuals, and curated study resources — built exclusively for JECRC University students.</p>
+      <div class="stats">
+        <div class="stat">
+          <strong>5000+</strong>
+          <span>Study Notes</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <strong>120+</strong>
+          <span>Subjects</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <strong>12K+</strong>
+          <span>Students</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-container">
+      <div class="form-header">
+        <div class="icon-wrap">
+          <ion-icon name="school-outline"></ion-icon>
+        </div>
+        <h3 id="form-title">Student Login</h3>
+        <p>Access your academic portal</p>
+      </div>
+
+      <form id="loginForm">
+        <div class="tab-box">
+          <button type="button" class="tab-btn active" id="studentTab" onclick="switchTab('student')">
+            Student
+          </button>
+          <button type="button" class="tab-btn" id="facultyTab" onclick="switchTab('faculty')">
+            Faculty
+          </button>
+        </div>
+
+        <div class="input-group">
+          <input type="email" id="email" placeholder="Email (@jecrcuniversity.edu.in)" required>
+          <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+        </div>
+        <div class="input-group">
+          <input type="password" id="password" placeholder="Password" required>
+          <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+        </div>
+
+        <div class="forgot"><a href="#">Forgot password?</a></div>
+
+        <button type="submit" class="login-btn" id="submitBtn">Launch Portal →</button>
+
+        <div class="divider"><span>or continue with</span></div>
+
+        <div class="social-icons">
+          <div class="social-btn"><ion-icon name="logo-google"></ion-icon></div>
+          <div class="social-btn"><ion-icon name="logo-linkedin"></ion-icon></div>
+          <div class="social-btn"><ion-icon name="logo-facebook"></ion-icon></div>
+          <div class="social-btn"><ion-icon name="logo-instagram"></ion-icon></div>
+        </div>
+      </form>
+    </div>
+  </section>
+</div>
+
+<script>
+  let currentRole = 'student';
+
+  function switchTab(role) {
+    currentRole = role;
+    document.getElementById('studentTab').classList.toggle('active', role === 'student');
+    document.getElementById('facultyTab').classList.toggle('active', role === 'faculty');
+
+    const formTitle = document.getElementById('form-title');
+    const emailInput = document.getElementById('email');
+    const submitBtn = document.getElementById('submitBtn');
+    const iconWrap = document.querySelector('.icon-wrap ion-icon');
+
+    if (role === 'student') {
+      formTitle.innerText = "Student Login";
+      emailInput.placeholder = "Email (@jecrcuniversity.edu.in)";
+      submitBtn.innerText = "Launch Portal →";
+      iconWrap.setAttribute('name', 'school-outline');
+    } else {
+      formTitle.innerText = "Faculty Login";
+      emailInput.placeholder = "Faculty ID or Email";
+      submitBtn.innerText = "Access Dashboard →";
+      iconWrap.setAttribute('name', 'person-outline');
+    }
+  }
+
+  document.getElementById("loginForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const email = document.getElementById("email").value.trim().toLowerCase();
+
+    if (currentRole === 'student') {
+      if (email.endsWith("@jecrc.edu.in") || email.endsWith("@jecrc.ac.in")) {
+        window.location.href = "student.html";
+      } else {
+        alert("⚠️ Student Access Denied: Please use your official JECRC University email.");
+      }
+    } else {
+      if (email.includes("jecrc")) {
+        window.location.href = "faculty.html";
+      } else {
+        alert("⚠️ Faculty Access Denied: Unrecognized Faculty Email/ID.");
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

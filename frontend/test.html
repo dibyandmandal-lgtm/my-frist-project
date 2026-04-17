@@ -1,0 +1,2793 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduNotes — Share & Discover Notes</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #2563EB;
+      --primary-dark: #1D4ED8;
+      --primary-light: #DBEAFE;
+      --primary-mid: #EFF6FF;
+      --accent: #F59E0B;
+      --green: #10B981;
+      --red: #EF4444;
+      --white: #FFFFFF;
+      --bg: #F8FAFF;
+      --bg2: #F1F5FD;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --border-strong: #CBD5E1;
+      --text: #0F172A;
+      --text-2: #334155;
+      --text-3: #64748B;
+      --text-4: #94A3B8;
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow: 0 4px 16px rgba(15, 23, 42, 0.08), 0 1px 4px rgba(15, 23, 42, 0.04);
+      --shadow-lg: 0 20px 60px rgba(15, 23, 42, 0.10), 0 4px 16px rgba(15, 23, 42, 0.06);
+      --shadow-blue: 0 8px 32px rgba(37, 99, 235, 0.18);
+      --radius: 12px;
+      --radius-lg: 20px;
+      --navbar-height: 68px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: var(--navbar-height);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Sora', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       FIXED STICKY NAVBAR
+       ═══════════════════════════════════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 500;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 64px;
+      height: var(--navbar-height);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+
+    nav.scrolled {
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: var(--shadow);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Sora', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #fff;
+    }
+
+    .logo span {
+      color: var(--primary);
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 6px;
+    }
+
+    .nav-links a {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-2);
+      text-decoration: none;
+      padding: 7px 14px;
+      border-radius: 8px;
+      transition: all .22s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      background: var(--primary-mid);
+      color: var(--primary);
+    }
+
+    /* Active link styling */
+    .nav-links a.active {
+      color: var(--primary);
+      font-weight: 600;
+      background: var(--primary-mid);
+    }
+
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -19px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 3px;
+      background: var(--primary);
+      border-radius: 2px;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        width: 0;
+        opacity: 0;
+      }
+
+      to {
+        width: 32px;
+        opacity: 1;
+      }
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.02);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      cursor: pointer;
+      transition: all .18s ease;
+      position: relative;
+    }
+
+    .nav-user:hover {
+      background: rgba(37, 99, 235, 0.06);
+      border-color: rgba(37, 99, 235, 0.55);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+    }
+
+    .nav-user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .nav-user-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .nav-user-name {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .nav-user-sub {
+      font-size: 11px;
+      color: var(--text-4);
+    }
+
+    .nav-user-caret {
+      font-size: 11px;
+      color: var(--text-3);
+      margin-left: 2px;
+    }
+
+    .nav-user-menu {
+      position: absolute;
+      right: 0;
+      top: 115%;
+      min-width: 180px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      padding: 8px;
+      z-index: 600;
+      display: none;
+    }
+
+    .nav-user-menu.show {
+      display: block;
+    }
+
+    .nav-user-menu-item {
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      color: var(--text-2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background .16s ease, color .16s ease;
+    }
+
+    .nav-user-menu-item i {
+      font-size: 13px;
+      color: var(--text-3);
+    }
+
+    .nav-user-menu-item:hover {
+      background: var(--primary-mid);
+      color: var(--primary);
+    }
+
+    .btn {
+      font-family: 'Sora', sans-serif;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 9px 20px;
+      border-radius: 9px;
+      cursor: pointer;
+      border: none;
+      transition: all .22s;
+      white-space: nowrap;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-2);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-mid);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: var(--shadow-blue);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 12px 32px rgba(37, 99, 235, 0.28);
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .nav-badge {
+      background: var(--primary-mid);
+      color: var(--primary);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       SECTIONS - Each section has padding-top for navbar offset
+       ═══════════════════════════════════════════════════════════ */
+    section {
+      min-height: 100vh;
+      padding-top: var(--navbar-height);
+    }
+
+    section#home {
+      min-height: auto;
+      background: #fff;
+      padding-bottom: 60px;
+    }
+
+    section#notes {
+      background: var(--bg2);
+    }
+
+    section#resources {
+      background: #fff;
+    }
+
+    section#about {
+      background: #fff;
+    }
+
+    section#universities {
+      background: linear-gradient(135deg, var(--primary) 0%, #1E3A8A 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 80px 64px 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 22px;
+      border: 1px solid rgba(37, 99, 235, 0.18);
+    }
+
+    .hero-tag i {
+      font-size: 11px;
+    }
+
+    h1.hero-title {
+      font-family: 'Lora', serif;
+      font-size: 58px;
+      font-weight: 700;
+      line-height: 1.12;
+      color: var(--text);
+      margin-bottom: 22px;
+      letter-spacing: -1px;
+    }
+
+    h1.hero-title .highlight {
+      color: var(--primary);
+      font-style: italic;
+    }
+
+    .hero-desc {
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--text-3);
+      font-weight: 400;
+      margin-bottom: 38px;
+      max-width: 480px;
+    }
+
+    .hero-cta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+    }
+
+    .hero-social-proof {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-top: 26px;
+      border-top: 1px solid var(--border);
+    }
+
+    .avatar-stack {
+      display: flex;
+    }
+
+    .avatar-stack img {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2.5px solid #fff;
+      margin-left: -9px;
+      object-fit: cover;
+    }
+
+    .avatar-stack img:first-child {
+      margin-left: 0;
+    }
+
+    .proof-text {
+      font-size: 13px;
+      color: var(--text-3);
+    }
+
+    .proof-text strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .stars {
+      color: var(--accent);
+      font-size: 12px;
+      letter-spacing: -1px;
+    }
+
+    .hero-visual {
+      position: relative;
+    }
+
+    .hero-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .hero-card-header {
+      background: linear-gradient(135deg, var(--primary) 0%, #1E40AF 100%);
+      padding: 28px 30px;
+      color: #fff;
+    }
+
+    .hero-card-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .hero-card-header p {
+      font-size: 13px;
+      opacity: .8;
+    }
+
+    .hero-card-body {
+      padding: 24px 30px;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      transition: border .2s;
+    }
+
+    .search-bar:focus-within {
+      border-color: var(--primary);
+    }
+
+    .search-bar i {
+      color: var(--text-4);
+      font-size: 13px;
+    }
+
+    .search-bar input {
+      border: none;
+      background: none;
+      font-family: 'Sora', sans-serif;
+      font-size: 13.5px;
+      color: var(--text);
+      outline: none;
+      flex: 1;
+    }
+
+    .search-bar input::placeholder {
+      color: var(--text-4);
+    }
+
+    .note-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .note-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .note-item:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+      transform: translateY(-1px);
+    }
+
+    .note-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .note-icon.blue {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .note-icon.green {
+      background: #D1FAE5;
+      color: var(--green);
+    }
+
+    .note-icon.amber {
+      background: #FEF3C7;
+      color: var(--accent);
+    }
+
+    .note-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .note-info h5 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .note-info p {
+      font-size: 11.5px;
+      color: var(--text-4);
+      margin-top: 2px;
+    }
+
+    .note-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .note-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .note-badge.new {
+      background: #DCFCE7;
+      color: #15803D;
+    }
+
+    .note-badge.hot {
+      background: #FEF3C7;
+      color: #B45309;
+    }
+
+    .note-badge.top {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+
+    .note-dl {
+      font-size: 11px;
+      color: var(--text-4);
+    }
+
+    .card-footer {
+      padding: 16px 30px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg);
+    }
+
+    .card-footer span {
+      font-size: 12px;
+      color: var(--text-3);
+    }
+
+    .card-footer a {
+      font-size: 12.5px;
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* Floating badges */
+    .badge-float {
+      position: absolute;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: floatBob 4s ease-in-out infinite;
+    }
+
+    @keyframes floatBob {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    .badge-float.left {
+      left: -44px;
+      top: 50%;
+      transform: translateY(-50%);
+      animation-delay: .5s;
+    }
+
+    .badge-float.right {
+      right: -40px;
+      bottom: 90px;
+      animation-delay: 1.2s;
+    }
+
+    .badge-float .bf-icon {
+      font-size: 22px;
+    }
+
+    .badge-float .bf-text h6 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .badge-float .bf-text p {
+      font-size: 11px;
+      color: var(--text-3);
+    }
+
+    /* ── STATS STRIP ── */
+    .stats-strip {
+      max-width: 1280px;
+      margin: 60px auto 0;
+      padding: 0 64px;
+    }
+
+    .stats-inner {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-item {
+      padding: 30px 32px;
+      border-right: 1px solid var(--border);
+      transition: background .2s;
+    }
+
+    .stat-item:last-child {
+      border-right: none;
+    }
+
+    .stat-item:hover {
+      background: var(--primary-mid);
+    }
+
+    .stat-num {
+      font-family: 'Lora', serif;
+      font-size: 38px;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-3);
+      font-weight: 500;
+    }
+
+    .stat-change {
+      font-size: 11.5px;
+      color: var(--green);
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 80px 64px;
+    }
+
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 14px;
+    }
+
+    .section-tag::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+
+    h2.section-title {
+      font-family: 'Lora', serif;
+      font-size: 42px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+      letter-spacing: -.5px;
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      font-size: 16px;
+      color: var(--text-3);
+      max-width: 520px;
+      line-height: 1.75;
+    }
+
+    /* ── HOW IT WORKS (Notes Section) ── */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      margin-top: 54px;
+    }
+
+    .step-card {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      border: 1px solid var(--border);
+      position: relative;
+      transition: all .28s;
+    }
+
+    .step-card:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-4px);
+      border-color: rgba(37, 99, 235, .2);
+    }
+
+    .step-num {
+      position: absolute;
+      top: 28px;
+      right: 28px;
+      font-family: 'Lora', serif;
+      font-size: 52px;
+      font-weight: 700;
+      color: var(--primary-light);
+      line-height: 1;
+      user-select: none;
+    }
+
+    .step-icon {
+      width: 52px;
+      height: 52px;
+      background: var(--primary-light);
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: var(--primary);
+      margin-bottom: 22px;
+    }
+
+    .step-card h4 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .step-card p {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--text-3);
+    }
+
+    /* ── FEATURES (Resources Section) ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 54px;
+    }
+
+    .feat-card {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      border: 1px solid var(--border);
+      display: flex;
+      gap: 22px;
+      transition: all .28s;
+    }
+
+    .feat-card:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-3px);
+      border-color: rgba(37, 99, 235, .2);
+    }
+
+    .feat-card.wide {
+      grid-column: span 2;
+    }
+
+    .feat-icon-wrap {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .feat-icon-wrap.blue {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .feat-icon-wrap.green {
+      background: #D1FAE5;
+      color: var(--green);
+    }
+
+    .feat-icon-wrap.amber {
+      background: #FEF3C7;
+      color: var(--accent);
+    }
+
+    .feat-icon-wrap.red {
+      background: #FEE2E2;
+      color: var(--red);
+    }
+
+    .feat-icon-wrap.indigo {
+      background: #E0E7FF;
+      color: #4338CA;
+    }
+
+    .feat-icon-wrap.teal {
+      background: #CCFBF1;
+      color: #0D9488;
+    }
+
+    .feat-content h4 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .feat-content p {
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: var(--text-3);
+    }
+
+    /* ── TESTIMONIALS (About Section) ── */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 54px;
+    }
+
+    .testi-card {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      padding: 30px 28px;
+      border: 1px solid var(--border);
+      transition: all .28s;
+    }
+
+    .testi-card:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-3px);
+    }
+
+    .testi-stars {
+      color: var(--accent);
+      font-size: 13px;
+      margin-bottom: 14px;
+      letter-spacing: 1px;
+    }
+
+    .testi-text {
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text-2);
+      margin-bottom: 20px;
+      font-style: italic;
+      font-family: 'Lora', serif;
+    }
+
+    .testi-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .testi-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--border);
+    }
+
+    .testi-avatar-init {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .testi-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .testi-role {
+      font-size: 12px;
+      color: var(--text-4);
+      margin-top: 2px;
+    }
+
+    /* ── UNIVERSITY SECTION ── */
+    section#universities::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .uni-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 80px 64px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .uni-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 48px;
+    }
+
+    .uni-header .section-tag {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .uni-header .section-tag::before {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .uni-header h2 {
+      color: #fff;
+    }
+
+    .uni-header p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 15px;
+    }
+
+    .uni-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .uni-card {
+      background: rgba(255, 255, 255, 0.09);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius);
+      padding: 24px 22px;
+      cursor: pointer;
+      transition: all .25s;
+      backdrop-filter: blur(8px);
+    }
+
+    .uni-card:hover,
+    .uni-card.active {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: translateY(-3px);
+    }
+
+    .uni-card h5 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 5px;
+    }
+
+    .uni-card p {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 14px;
+    }
+
+    .uni-card .uni-stats {
+      display: flex;
+      gap: 14px;
+    }
+
+    .uni-card .uni-stats span {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .uni-cta-row {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .btn-white {
+      background: #fff;
+      color: var(--primary);
+      font-weight: 700;
+      padding: 13px 32px;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      transition: all .22s;
+      font-family: 'Sora', sans-serif;
+    }
+
+    .btn-white:hover {
+      background: var(--primary-light);
+      transform: translateY(-1px);
+    }
+
+    .btn-white-outline {
+      background: transparent;
+      color: #fff;
+      border: 1.5px solid rgba(255, 255, 255, 0.4);
+      font-weight: 600;
+      padding: 13px 28px;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all .22s;
+      font-family: 'Sora', sans-serif;
+    }
+
+    .btn-white-outline:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #fff;
+    }
+
+    /* ── CTA BANNER ── */
+    .cta-banner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 64px 80px;
+    }
+
+    .cta-inner {
+      background: var(--primary-mid);
+      border: 1px solid rgba(37, 99, 235, 0.18);
+      border-radius: 24px;
+      padding: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-inner::after {
+      content: '';
+      position: absolute;
+      right: -80px;
+      top: -80px;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.12), transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-content h2 {
+      font-family: 'Lora', serif;
+      font-size: 38px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 14px;
+      letter-spacing: -.5px;
+    }
+
+    .cta-content p {
+      font-size: 15px;
+      color: var(--text-3);
+      line-height: 1.7;
+      max-width: 460px;
+    }
+
+    .cta-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--text);
+      color: rgba(248, 250, 255, 0.8);
+      padding: 64px 64px 36px;
+    }
+
+    .footer-grid {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .footer-brand .logo {
+      color: #fff;
+      margin-bottom: 14px;
+    }
+
+    .footer-brand .logo span {
+      color: var(--blue-light, #93C5FD);
+    }
+
+    .footer-brand p {
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: rgba(248, 250, 255, 0.5);
+      max-width: 280px;
+      margin-bottom: 22px;
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 10px;
+    }
+
+    .social-btn {
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all .2s;
+      text-decoration: none;
+    }
+
+    .social-btn:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .footer-col h5 {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.9);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 18px;
+    }
+
+    .footer-col a {
+      display: block;
+      font-size: 13.5px;
+      color: rgba(248, 250, 255, 0.5);
+      text-decoration: none;
+      margin-bottom: 10px;
+      transition: color .2s;
+      cursor: pointer;
+    }
+
+    .footer-col a:hover {
+      color: rgba(248, 250, 255, 0.9);
+    }
+
+    .footer-bottom {
+      max-width: 1280px;
+      margin: 28px auto 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12.5px;
+      color: rgba(248, 250, 255, 0.3);
+    }
+
+    /* ── MODAL ── */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      padding: 20px;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      width: 440px;
+      padding: 48px 44px;
+      position: relative;
+      box-shadow: var(--shadow-lg);
+      animation: modalIn .35s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.95) translateY(16px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 18px;
+      right: 20px;
+      background: var(--bg2);
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--text-3);
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .close-btn:hover {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    .modal-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .modal-logo .logo-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 13px;
+    }
+
+    .modal-logo span {
+      color: var(--primary);
+    }
+
+    .modal-title {
+      font-family: 'Lora', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .modal-sub {
+      font-size: 13px;
+      color: var(--text-3);
+      margin-bottom: 28px;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-2);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .field .inp-wrap {
+      position: relative;
+    }
+
+    .field .inp-wrap i {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-4);
+      font-size: 13px;
+    }
+
+    .field input {
+      width: 100%;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      padding: 12px 13px 12px 38px;
+      font-family: 'Sora', sans-serif;
+      font-size: 13.5px;
+      border-radius: 9px;
+      outline: none;
+      transition: border .22s, box-shadow .22s;
+    }
+
+    .field input::placeholder {
+      color: var(--text-4);
+    }
+
+    .field input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .row-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      font-size: 12.5px;
+    }
+
+    .row-between label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--text-3);
+      cursor: pointer;
+    }
+
+    .row-between input[type="checkbox"] {
+      accent-color: var(--primary);
+      width: 14px;
+      height: 14px;
+    }
+
+    .row-between a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .modal-btn {
+      width: 100%;
+      padding: 13px;
+      font-family: 'Sora', sans-serif;
+      font-size: 13.5px;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .22s;
+      border: none;
+    }
+
+    .modal-btn.primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: var(--shadow-blue);
+    }
+
+    .modal-btn.primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .divider-or {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 18px 0;
+      font-size: 12px;
+      color: var(--text-4);
+    }
+
+    .divider-or::before,
+    .divider-or::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .modal-btn.google {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      color: var(--text-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .modal-btn.google:hover {
+      border-color: var(--border-strong);
+      background: var(--bg);
+    }
+
+    .switch-link {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--text-3);
+    }
+
+    .switch-link a {
+      color: var(--primary);
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .more-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      color: var(--text-2);
+      padding: 13px 16px;
+      font-family: 'Sora', sans-serif;
+      font-size: 13.5px;
+      font-weight: 500;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .22s;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+
+    .more-item i {
+      color: var(--primary);
+      width: 16px;
+      font-size: 15px;
+    }
+
+    .more-item:hover {
+      border-color: var(--primary);
+      background: var(--primary-mid);
+      color: var(--primary);
+    }
+
+    /* ── UNIVERSITIES MODAL ── */
+    .uni-list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all .2s;
+      background: #fff;
+    }
+
+    .uni-list-item:hover {
+      border-color: var(--primary);
+      background: var(--primary-mid);
+      transform: translateX(4px);
+    }
+
+    .uni-list-info h6 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .uni-list-info p {
+      font-size: 12px;
+      color: var(--text-3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .uni-list-info p i {
+      font-size: 10px;
+      color: var(--text-4);
+    }
+
+    .uni-list-stats {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .uni-list-stats span {
+      font-size: 11px;
+      color: var(--text-3);
+      font-weight: 600;
+    }
+
+    .uni-list-stats .notes-count {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .fade-in {
+      animation: fadeUp .7s ease both;
+    }
+
+    .delay-1 {
+      animation-delay: .1s;
+    }
+
+    .delay-2 {
+      animation-delay: .2s;
+    }
+
+    .delay-3 {
+      animation-delay: .35s;
+    }
+
+    .delay-4 {
+      animation-delay: .5s;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width:1100px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 60px 32px 0;
+        gap: 48px;
+      }
+
+      .badge-float {
+        display: none;
+      }
+
+      .stats-strip,
+      .section-wrap,
+      .cta-banner {
+        padding-left: 32px;
+        padding-right: 32px;
+      }
+
+      .uni-inner {
+        padding: 60px 32px;
+      }
+
+      h1.hero-title {
+        font-size: 44px;
+      }
+
+      .hero-social-proof {
+        flex-wrap: wrap;
+      }
+
+      nav {
+        padding: 0 24px;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+        padding: 0 32px 40px;
+      }
+
+      footer {
+        padding: 48px 32px 28px;
+      }
+
+      .footer-bottom {
+        padding: 0 32px;
+      }
+    }
+
+    @media (max-width:768px) {
+
+      .nav-links,
+      .nav-badge {
+        display: none;
+      }
+
+      .steps-grid,
+      .features-grid,
+      .testimonials-grid,
+      .uni-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .feat-card.wide {
+        grid-column: span 1;
+      }
+
+      .stats-inner {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      h2.section-title {
+        font-size: 32px;
+      }
+
+      .cta-inner {
+        flex-direction: column;
+        padding: 40px 28px;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-box {
+        width: 95vw;
+        padding: 36px 24px;
+      }
+
+      .uni-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════
+     FIXED NAVBAR - Always visible at top
+     ═══════════════════════════════════════════════════════════ -->
+  <nav id="navbar">
+    <a href="#home" class="logo">
+      <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+      Edu<span>Notes</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#home" class="nav-link active">Home</a></li>
+      <li><a href="#notes" class="nav-link">Notes Library</a></li>
+      <li><a href="#resources" class="nav-link">Resources</a></li>
+      <li><a href="#about" class="nav-link">About</a></li>
+      <li><a href="#universities" class="nav-link">Universities</a></li>
+    </ul>
+    <div class="nav-actions">
+      <span class="nav-badge">✦ New: AI Search</span>
+      <button class="btn btn-ghost" onclick="openModal('loginModal')">Login</button>
+      <button class="btn btn-primary" onclick="openModal('signupModal')">Get Started Free</button>
+      <button class="btn btn-ghost" onclick="openModal('moreModal')" style="padding:9px 12px;">•••</button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════
+     SECTION: HOME
+     ═══════════════════════════════════════════════════════════ -->
+  <section id="home">
+    <div class="hero">
+      <div class="fade-in">
+        <div class="hero-tag"><i class="fas fa-bolt"></i> Student Platform 2025 · 50K+ Notes</div>
+        <h1 class="hero-title">
+          Study Smarter,<br>
+          Learn from <span class="highlight">Each Other.</span>
+        </h1>
+        <p class="hero-desc">Discover, share, and download study notes from top students across every university.
+          Collaborate smarter and ace your exams with community-powered knowledge.</p>
+        <div class="hero-cta">
+          <button class="btn btn-primary" style="padding:13px 28px;font-size:14px;" onclick="openModal('signupModal')">
+            <i class="fas fa-rocket" style="margin-right:8px;"></i>Start Exploring Free
+          </button>
+          <button class="btn btn-ghost" style="padding:13px 22px;font-size:14px;">
+            <i class="fas fa-play-circle" style="margin-right:8px; color:var(--primary);"></i>Watch Demo
+          </button>
+        </div>
+        <div class="hero-social-proof">
+          <div class="avatar-stack">
+            <img src="https://i.pravatar.cc/40?img=1" alt="student" />
+            <img src="https://i.pravatar.cc/40?img=5" alt="student" />
+            <img src="https://i.pravatar.cc/40?img=11" alt="student" />
+            <img src="https://i.pravatar.cc/40?img=21" alt="student" />
+            <img src="https://i.pravatar.cc/40?img=31" alt="student" />
+          </div>
+          <div>
+            <div class="stars">★★★★★</div>
+            <p class="proof-text"><strong>12,000+ students</strong> already studying smarter</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual fade-in delay-3">
+        <div class="badge-float left">
+          <div class="bf-icon">📚</div>
+          <div class="bf-text">
+            <h6>New Notes</h6>
+            <p>+240 today</p>
+          </div>
+        </div>
+        <div class="hero-card">
+          <div class="hero-card-header">
+            <h3>📖 Browse Study Notes</h3>
+            <p>Find notes from top students at your university</p>
+          </div>
+          <div class="hero-card-body">
+            <div class="search-bar">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Search notes, topics, subjects…" />
+              <button
+                style="background:var(--primary);border:none;color:#fff;padding:6px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;">Search</button>
+            </div>
+            <div class="note-list">
+              <div class="note-item">
+                <div class="note-icon blue"><i class="fas fa-code"></i></div>
+                <div class="note-info">
+                  <h5>Data Structures & Algorithms — Complete Notes</h5>
+                  <p>Poornima University · B.Tech CSE · Sem 3</p>
+                </div>
+                <div class="note-meta">
+                  <span class="note-badge new">New</span>
+                  <span class="note-dl"><i class="fas fa-download" style="font-size:10px;"></i> 1.2k</span>
+                </div>
+              </div>
+              <div class="note-item">
+                <div class="note-icon amber"><i class="fas fa-flask"></i></div>
+                <div class="note-info">
+                  <h5>Organic Chemistry — Reaction Mechanisms</h5>
+                  <p>JECRC University · B.Sc Chemistry · Sem 4</p>
+                </div>
+                <div class="note-meta">
+                  <span class="note-badge hot">🔥 Hot</span>
+                  <span class="note-dl"><i class="fas fa-download" style="font-size:10px;"></i> 890</span>
+                </div>
+              </div>
+              <div class="note-item">
+                <div class="note-icon green"><i class="fas fa-chart-line"></i></div>
+                <div class="note-info">
+                  <h5>Business Analytics — Excel + Python</h5>
+                  <p>Manipal University · MBA · Sem 2</p>
+                </div>
+                <div class="note-meta">
+                  <span class="note-badge top">⭐ Top</span>
+                  <span class="note-dl"><i class="fas fa-download" style="font-size:10px;"></i> 2.1k</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span>Showing 3 of <strong>50,000+</strong> notes</span>
+            <a href="#notes">View all notes →</a>
+          </div>
+        </div>
+        <div class="badge-float right">
+          <div class="bf-icon">🏆</div>
+          <div class="bf-text">
+            <h6>Top Contributor</h6>
+            <p>Earn recognition points</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-strip">
+      <div class="stats-inner">
+        <div class="stat-item">
+          <div class="stat-num">50K+</div>
+          <div class="stat-label">Notes Published</div>
+          <div class="stat-change">↑ +2,400 this month</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">120+</div>
+          <div class="stat-label">Universities Listed</div>
+          <div class="stat-change">↑ +8 new this month</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">12K+</div>
+          <div class="stat-label">Active Students</div>
+          <div class="stat-change">↑ +1,100 this month</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">98%</div>
+          <div class="stat-label">Satisfaction Rate</div>
+          <div class="stat-change">★ 4.9 / 5.0 rating</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+     SECTION: NOTES LIBRARY
+     ═══════════════════════════════════════════════════════════ -->
+  <section id="notes">
+    <div class="section-wrap">
+      <div class="section-tag">How It Works</div>
+      <h2 class="section-title">Three Steps to Better Grades</h2>
+      <p class="section-sub">From joining to downloading your first set of notes — it takes less than 2 minutes.</p>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <div class="step-icon"><i class="fas fa-user-plus"></i></div>
+          <h4>Create Your Account</h4>
+          <p>Sign up with your student email or Google account in seconds. Tell us your university and course — we'll
+            personalise your feed instantly.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <div class="step-icon"><i class="fas fa-search"></i></div>
+          <h4>Find & Download Notes</h4>
+          <p>Search by subject, semester, or topic. Filter by university, rating, or exam type. Download verified,
+            high-quality PDFs in one click.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <div class="step-icon"><i class="fas fa-upload"></i></div>
+          <h4>Share & Get Recognised</h4>
+          <p>Upload your own notes, earn community points, and build your student reputation. Help thousands of peers
+            and grow your academic profile.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+     SECTION: RESOURCES
+     ═══════════════════════════════════════════════════════════ -->
+  <section id="resources">
+    <div class="section-wrap">
+      <div class="section-tag">Platform Features</div>
+      <h2 class="section-title">Everything You Need to Excel</h2>
+      <p class="section-sub">Built specifically for Indian university students — every feature designed to save time and
+        boost performance.</p>
+      <div class="features-grid">
+        <div class="feat-card">
+          <div class="feat-icon-wrap blue"><i class="fas fa-users"></i></div>
+          <div class="feat-content">
+            <h4>Community Driven Content</h4>
+            <p>Notes written and reviewed by top-performing students. Verified for accuracy and completeness by peer
+              reviewers before publishing.</p>
+          </div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon-wrap green"><i class="fas fa-cloud-download-alt"></i></div>
+          <div class="feat-content">
+            <h4>Instant PDF Downloads</h4>
+            <p>Download any note as a formatted PDF in one click. Works offline, across all devices — laptop, phone, or
+              tablet.</p>
+          </div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon-wrap indigo"><i class="fas fa-robot"></i></div>
+          <div class="feat-content">
+            <h4>AI-Powered Smart Search</h4>
+            <p>Find exactly what you need using our new AI search. Ask naturally: "DSA notes for B.Tech sem 3 Jaipur"
+              and get pinpoint results instantly.</p>
+          </div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon-wrap amber"><i class="fas fa-star"></i></div>
+          <div class="feat-content">
+            <h4>Ratings & Reviews</h4>
+            <p>Every note is rated by students who used it. See download counts, star ratings, and comments before you
+              commit to downloading.</p>
+          </div>
+        </div>
+        <div class="feat-card wide">
+          <div class="feat-icon-wrap teal"><i class="fas fa-shield-alt"></i></div>
+          <div class="feat-content">
+            <h4>Verified, Exam-Ready Content — Quality Guaranteed</h4>
+            <p>All uploaded notes go through a content verification process. Our moderation team checks for accuracy,
+              completeness, and syllabus alignment. You only download what's been quality-approved — never waste time on
+              incorrect or outdated material again.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+     SECTION: ABOUT
+     ═══════════════════════════════════════════════════════════ -->
+  <section id="about">
+    <div class="section-wrap" style="max-width:100%; padding-top:80px;">
+      <div style="max-width:1280px; margin:0 auto; padding:0 64px;">
+        <div class="section-tag">Student Reviews</div>
+        <h2 class="section-title">What Students Are Saying</h2>
+        <p class="section-sub">Real feedback from real students across universities who study with EduNotes every day.
+        </p>
+        <div class="testimonials-grid">
+          <div class="testi-card">
+            <div class="testi-stars">★★★★★</div>
+            <p class="testi-text">"Found complete DSA notes for my Poornima B.Tech course in under 30 seconds. Saved me
+              days of preparation — I went from struggling to scoring 89% in my semester exam."</p>
+            <div class="testi-author">
+              <div class="testi-avatar-init">R</div>
+              <div>
+                <div class="testi-name">Rahul Sharma</div>
+                <div class="testi-role">B.Tech CSE · Poornima University</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="testi-stars">★★★★★</div>
+            <p class="testi-text">"I uploaded my Organic Chemistry notes and got 450 downloads in the first week. The
+              recognition points system genuinely motivates you to help other students."</p>
+            <div class="testi-author">
+              <div class="testi-avatar-init" style="background:#FEF3C7;color:#B45309;">P</div>
+              <div>
+                <div class="testi-name">Priya Meena</div>
+                <div class="testi-role">B.Sc Chemistry · JECRC University</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="testi-stars">★★★★☆</div>
+            <p class="testi-text">"The AI search is genuinely impressive — I typed a casual question and it found
+              exactly the topic I needed. EduNotes has become my go-to study companion for my MBA."</p>
+            <div class="testi-author">
+              <div class="testi-avatar-init" style="background:#D1FAE5;color:#065F46;">A</div>
+              <div>
+                <div class="testi-name">Ankit Gupta</div>
+                <div class="testi-role">MBA Analytics · Manipal University</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA BANNER -->
+    <div class="cta-banner" style="padding-top:64px;">
+      <div class="cta-inner">
+        <div class="cta-content">
+          <h2>Ready to Study Smarter?</h2>
+          <p>Join 12,000+ students who are already sharing knowledge, downloading notes, and scoring higher — completely
+            free to get started.</p>
+        </div>
+        <div class="cta-actions">
+          <button class="btn btn-primary" style="padding:14px 32px;font-size:15px;" onclick="openModal('signupModal')">
+            <i class="fas fa-graduation-cap" style="margin-right:9px;"></i>Create Free Account
+          </button>
+          <button class="btn btn-ghost" style="padding:14px 22px;font-size:15px;">
+            Learn More
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+     SECTION: UNIVERSITIES
+     ═══════════════════════════════════════════════════════════ -->
+  <section id="universities">
+    <div class="uni-inner">
+      <div class="uni-header">
+        <div>
+          <div class="section-tag">Browse by University</div>
+          <h2 class="section-title" style="color:#fff;">Your University Is Here</h2>
+        </div>
+        <p>Covering 120+ universities<br>across India and growing.</p>
+      </div>
+      <div class="uni-grid">
+        <div class="uni-card active">
+          <h5>🏛️ Poornima University</h5>
+          <p>Jaipur, Rajasthan</p>
+          <div class="uni-stats">
+            <span><i class="fas fa-file-alt"></i> 8,200 notes</span>
+            <span><i class="fas fa-users"></i> 3.1k students</span>
+          </div>
+        </div>
+        <div class="uni-card">
+          <h5>🎓 JECRC University</h5>
+          <p>Jaipur, Rajasthan</p>
+          <div class="uni-stats">
+            <span><i class="fas fa-file-alt"></i> 6,400 notes</span>
+            <span><i class="fas fa-users"></i> 2.4k students</span>
+          </div>
+        </div>
+        <div class="uni-card">
+          <h5>🌟 Manipal University</h5>
+          <p>Jaipur, Rajasthan</p>
+          <div class="uni-stats">
+            <span><i class="fas fa-file-alt"></i> 5,100 notes</span>
+            <span><i class="fas fa-users"></i> 1.9k students</span>
+          </div>
+        </div>
+        <div class="uni-card">
+          <h5>🔬 Techno India Univ.</h5>
+          <p>Kolkata, West Bengal</p>
+          <div class="uni-stats">
+            <span><i class="fas fa-file-alt"></i> 4,700 notes</span>
+            <span><i class="fas fa-users"></i> 1.7k students</span>
+          </div>
+        </div>
+      </div>
+      <div class="uni-cta-row">
+        <button class="btn-white" onclick="openModal('signupModal')">Browse My University's Notes</button>
+        <button class="btn-white-outline" onclick="openModal('universitiesModal')">View All 120+ Universities →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════════════════════ -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#home" class="logo" style="margin-bottom:12px;">
+          <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+          Edu<span style="color:#93C5FD;">Notes</span>
+        </a>
+        <p>India's largest student note-sharing platform. Made for students, by students. Helping you learn better,
+          together.</p>
+        <div class="footer-socials">
+          <a href="#" class="social-btn"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" class="social-btn"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Platform</h5>
+        <a href="#notes">Browse Notes</a>
+        <a href="#notes">Upload Notes</a>
+        <a href="#universities">Universities</a>
+        <a href="#resources">AI Search</a>
+        <a href="#about">Leaderboard</a>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <a href="#about">About Us</a>
+        <a href="#about">Blog</a>
+        <a href="#about">Careers</a>
+        <a href="#about">Press Kit</a>
+        <a href="#about">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h5>Support</h5>
+        <a href="#about">Help Center</a>
+        <a href="#about">Community</a>
+        <a href="#about">Privacy Policy</a>
+        <a href="#about">Terms of Service</a>
+        <a href="#about">Report Issue</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 EduNotes. Made for students, by students.</span>
+      <span>Designed with ♥ in Jaipur, India 🇮🇳</span>
+    </div>
+  </footer>
+
+  <!-- PROFILE CARD & MESSAGE BAR -->
+  <div id="messageBox" style="text-align:center;margin:16px 0;font-weight:600;"></div>
+  <div id="profileCard" class="hide"
+    style="max-width:320px;margin:0 auto 32px auto;padding:16px;border-radius:12px;border:1px solid #E2E8F0;background:#FFFFFF;display:none;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div id="profileAvatar"
+        style="width:40px;height:40px;border-radius:999px;background:#DBEAFE;color:#1D4ED8;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;">
+      </div>
+      <div>
+        <div id="profileName" style="font-weight:700;">User</div>
+        <div id="profileEmail" style="font-size:12px;color:#64748B;"></div>
+        <div id="profileUniversity" style="font-size:12px;color:#64748B;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+     MODALS
+     ═══════════════════════════════════════════════════════════ -->
+
+  <!-- LOGIN MODAL -->
+  <div class="modal" id="loginModal">
+    <div class="modal-box">
+      <button class="close-btn" onclick="closeModal('loginModal')">×</button>
+      <div class="modal-logo">
+        <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        Edu<span>Notes</span>
+      </div>
+      <h2 class="modal-title">Welcome back</h2>
+      <p class="modal-sub">Sign in to access your notes and library</p>
+      <div class="field">
+        <label>Email address</label>
+        <div class="inp-wrap"><i class="fas fa-envelope"></i><input id="loginEmail" type="email"
+            placeholder="you@university.ac.in" /></div>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="inp-wrap"><i class="fas fa-lock"></i><input id="loginPassword" type="password"
+            placeholder="Enter your password" /></div>
+      </div>
+      <div class="row-between">
+        <label><input type="checkbox" /> Remember me</label>
+        <a>Forgot password?</a>
+      </div>
+      <button class="modal-btn primary" onclick="login()">Sign In</button>
+      <div class="divider-or">or continue with</div>
+      <button class="modal-btn google">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="16" height="16" alt="G" />
+        Continue with Google
+      </button>
+      <p class="switch-link">No account yet? <a onclick="closeModal('loginModal');openModal('signupModal')">Create one
+          for free →</a></p>
+    </div>
+  </div>
+
+  <!-- SIGNUP MODAL -->
+  <div class="modal" id="signupModal">
+    <div class="modal-box">
+      <button class="close-btn" onclick="closeModal('signupModal')">×</button>
+      <div class="modal-logo">
+        <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        Edu<span>Notes</span>
+      </div>
+      <h2 class="modal-title">Create your account</h2>
+      <p class="modal-sub">Join thousands of students sharing knowledge</p>
+      <div class="field">
+        <label>Full name</label>
+        <div class="inp-wrap"><i class="fas fa-user"></i><input id="signupName" type="text"
+            placeholder="Your full name" /></div>
+      </div>
+      <div class="field">
+        <label>University / Schools</label>
+        <div class="inp-wrap"><i class="fas fa-university"></i><input id="signupUniversity" type="text"
+            placeholder="e.g. Poornima University, Jaipur" /></div>
+      </div>
+      <div class="field">
+        <label>Email address</label>
+        <div class="inp-wrap"><i class="fas fa-envelope"></i><input id="signupEmail" type="email"
+            placeholder="you@university.ac.in" /></div>
+      </div>
+      <div class="field">
+        <label>Create password</label>
+        <div class="inp-wrap"><i class="fas fa-lock"></i><input id="signupPassword" type="password"
+            placeholder="Min. 8 characters" /></div>
+      </div>
+      <button class="modal-btn primary" onclick="signup()">Create My Free Account</button>
+      <div class="divider-or">or</div>
+      <button class="modal-btn google">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="16" height="16" alt="G" />
+        Sign up with Google
+      </button>
+      <p class="switch-link">Already have an account? <a onclick="closeModal('signupModal');openModal('loginModal')">Log
+          in →</a></p>
+    </div>
+  </div>
+
+  <!-- MORE MODAL -->
+  <div class="modal" id="moreModal">
+    <div class="modal-box">
+      <button class="close-btn" onclick="closeModal('moreModal')">×</button>
+      <div class="modal-logo" style="margin-bottom:24px;">
+        <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        Edu<span>Notes</span>
+      </div>
+      <button class="more-item"><i class="fas fa-chalkboard-teacher"></i> Educator / Admin Login</button>
+      <button class="more-item"><i class="fas fa-upload"></i> Upload My Notes</button>
+      <button class="more-item"><i class="fas fa-bookmark"></i> My Saved Notes</button>
+      <button class="more-item"><i class="fas fa-headset"></i> Student Support</button>
+      <button class="more-item"><i class="fas fa-comment-dots"></i> Feedback & Reviews</button>
+    </div>
+  </div>
+
+  <!-- ALL UNIVERSITIES MODAL -->
+  <div class="modal" id="universitiesModal">
+    <div class="modal-box"
+      style="width:720px; max-width:90vw; max-height:85vh; overflow:hidden; display:flex; flex-direction:column;">
+      <button class="close-btn" onclick="closeModal('universitiesModal')">×</button>
+      <div class="modal-logo" style="margin-bottom:8px;">
+        <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        Edu<span>Notes</span>
+      </div>
+      <h2 class="modal-title" style="margin-bottom:8px;">All Universities</h2>
+      <p class="modal-sub" style="margin-bottom:20px;">Browse and search from 120+ universities across India</p>
+
+      <!-- Search Bar -->
+      <div class="search-bar" style="margin-bottom:20px;">
+        <i class="fas fa-search"></i>
+        <input type="text" id="uniSearch" placeholder="Search by university name or city..."
+          onkeyup="filterUniversities()" />
+      </div>
+
+      <!-- University List Container -->
+      <div id="universityList" style="flex:1; overflow-y:auto; padding-right:8px;">
+        <!-- Universities will be loaded here by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+     JAVASCRIPT - Smooth Scrolling & Active Link Highlighting
+     ═══════════════════════════════════════════════════════════ -->
+  <script>
+    // ═══════════════════════════════════════════════════════════
+    // 1. SMOOTH SCROLLING ON NAVBAR CLICKS
+    // ═══════════════════════════════════════════════════════════
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('section[id]');
+    const navbar = document.getElementById('navbar');
+
+    // Add click event to all nav links
+    navLinks.forEach(link => {
+      link.addEventListener('click', function (e) {
+        e.preventDefault(); // Prevent default anchor behavior
+
+        const targetId = this.getAttribute('href');
+        const targetSection = document.querySelector(targetId);
+
+        if (targetSection) {
+          // Smooth scroll to the section
+          targetSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    // 2. ACTIVE LINK HIGHLIGHTING ON SCROLL
+    // ═══════════════════════════════════════════════════════════
+    function updateActiveLink() {
+      let currentSection = '';
+      const scrollPosition = window.scrollY + 100; // Offset for better detection
+
+      // Find which section is currently in viewport
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+
+        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+          currentSection = section.getAttribute('id');
+        }
+      });
+
+      // Update active class on nav links
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${currentSection}`) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // 3. NAVBAR SCROLL EFFECT
+    // ═══════════════════════════════════════════════════════════
+    let scrollTimeout;
+    window.addEventListener('scroll', function () {
+      // Add scrolled class to navbar for enhanced shadow
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+
+      // Update active link (debounced for performance)
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(updateActiveLink, 50);
+    });
+
+    // Initial call to set active link on page load
+    updateActiveLink();
+
+    // ═══════════════════════════════════════════════════════════
+    // 4. LOGO CLICK - SCROLL TO TOP
+    // ═══════════════════════════════════════════════════════════
+    document.querySelector('.logo').addEventListener('click', function (e) {
+      e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+
+    // Close nav user menu when clicking outside
+    document.addEventListener('click', function () {
+      const menu = document.getElementById('navUserMenu');
+      if (menu) menu.classList.remove('show');
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    // 5. MODAL FUNCTIONS
+    // ═══════════════════════════════════════════════════════════
+    function openModal(id) {
+      document.getElementById(id).classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    // Close modal when clicking outside
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+          modal.classList.remove('show');
+          document.body.style.overflow = '';
+        }
+      });
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    // 6. UNIVERSITY CARD TOGGLE
+    // ═══════════════════════════════════════════════════════════
+    document.querySelectorAll('.uni-card').forEach(card => {
+      card.addEventListener('click', function () {
+        document.querySelectorAll('.uni-card').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    // 7. SCROLL REVEAL ANIMATIONS
+    // ═══════════════════════════════════════════════════════════
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    // Observe elements for scroll animations
+    document.querySelectorAll('.step-card, .feat-card, .testi-card, .stat-item, .uni-card').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity .55s ease, transform .55s ease, box-shadow .28s, border-color .28s, background .2s';
+      observer.observe(el);
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    // 8. ALL UNIVERSITIES MODAL - POPULATE & SEARCH
+    // ═══════════════════════════════════════════════════════════
+
+    // Sample university data (120+ universities)
+    const universities = [
+      { name: "Poornima University", city: "Jaipur", state: "Rajasthan", notes: "8,200", students: "3.1k", icon: "🏛️" },
+      { name: "JECRC University", city: "Jaipur", state: "Rajasthan", notes: "6,400", students: "2.4k", icon: "🎓" },
+      { name: "Manipal University", city: "Jaipur", state: "Rajasthan", notes: "5,100", students: "1.9k", icon: "🌟" },
+      { name: "Techno India University", city: "Kolkata", state: "West Bengal", notes: "4,700", students: "1.7k", icon: "🔬" },
+      { name: "Amity University", city: "Noida", state: "Uttar Pradesh", notes: "9,500", students: "4.2k", icon: "🏫" },
+      { name: "Lovely Professional University", city: "Phagwara", state: "Punjab", notes: "12,300", students: "5.8k", icon: "💼" },
+      { name: "SRM Institute", city: "Chennai", state: "Tamil Nadu", notes: "8,900", students: "3.9k", icon: "🎯" },
+      { name: "VIT University", city: "Vellore", state: "Tamil Nadu", notes: "10,200", students: "4.5k", icon: "⭐" },
+      { name: "BITS Pilani", city: "Pilani", state: "Rajasthan", notes: "7,800", students: "3.3k", icon: "🔥" },
+      { name: "IIT Delhi", city: "New Delhi", state: "Delhi", notes: "6,500", students: "2.8k", icon: "🏆" },
+      { name: "IIT Bombay", city: "Mumbai", state: "Maharashtra", notes: "7,200", students: "3.1k", icon: "🎖️" },
+      { name: "IIT Madras", city: "Chennai", state: "Tamil Nadu", notes: "6,900", students: "2.9k", icon: "🥇" },
+      { name: "NIT Trichy", city: "Tiruchirappalli", state: "Tamil Nadu", notes: "5,400", students: "2.3k", icon: "🏅" },
+      { name: "Anna University", city: "Chennai", state: "Tamil Nadu", notes: "8,100", students: "3.6k", icon: "📚" },
+      { name: "Delhi University", city: "New Delhi", state: "Delhi", notes: "11,200", students: "5.2k", icon: "📖" },
+      { name: "Jadavpur University", city: "Kolkata", state: "West Bengal", notes: "5,800", students: "2.5k", icon: "🎓" },
+      { name: "Pune University", city: "Pune", state: "Maharashtra", notes: "7,400", students: "3.2k", icon: "🏛️" },
+      { name: "Mumbai University", city: "Mumbai", state: "Maharashtra", notes: "9,800", students: "4.4k", icon: "🌆" },
+      { name: "Bangalore University", city: "Bangalore", state: "Karnataka", notes: "8,600", students: "3.8k", icon: "💻" },
+      { name: "Osmania University", city: "Hyderabad", state: "Telangana", notes: "6,700", students: "2.9k", icon: "🏫" },
+      { name: "Calcutta University", city: "Kolkata", state: "West Bengal", notes: "7,900", students: "3.4k", icon: "📚" },
+      { name: "Jamia Millia Islamia", city: "New Delhi", state: "Delhi", notes: "5,600", students: "2.4k", icon: "🕌" },
+      { name: "Aligarh Muslim University", city: "Aligarh", state: "Uttar Pradesh", notes: "6,200", students: "2.7k", icon: "🎓" },
+      { name: "Banaras Hindu University", city: "Varanasi", state: "Uttar Pradesh", notes: "7,100", students: "3.1k", icon: "🕉️" },
+      { name: "Jawaharlal Nehru University", city: "New Delhi", state: "Delhi", notes: "5,300", students: "2.3k", icon: "📖" },
+      { name: "Christ University", city: "Bangalore", state: "Karnataka", notes: "6,800", students: "3.0k", icon: "⛪" },
+      { name: "Symbiosis International", city: "Pune", state: "Maharashtra", notes: "7,600", students: "3.3k", icon: "🌐" },
+      { name: "NMIMS University", city: "Mumbai", state: "Maharashtra", notes: "6,400", students: "2.8k", icon: "💼" },
+      { name: "Chandigarh University", city: "Mohali", state: "Punjab", notes: "8,300", students: "3.7k", icon: "🎯" },
+      { name: "Shiv Nadar University", city: "Greater Noida", state: "Uttar Pradesh", notes: "4,900", students: "2.1k", icon: "🏫" },
+      { name: "Ashoka University", city: "Sonipat", state: "Haryana", notes: "4,200", students: "1.8k", icon: "🌳" },
+      { name: "OP Jindal University", city: "Sonipat", state: "Haryana", notes: "4,500", students: "1.9k", icon: "⚖️" },
+      { name: "Bennett University", city: "Greater Noida", state: "Uttar Pradesh", notes: "3,800", students: "1.6k", icon: "📰" },
+      { name: "Thapar University", city: "Patiala", state: "Punjab", notes: "5,700", students: "2.5k", icon: "🔧" },
+      { name: "Nirma University", city: "Ahmedabad", state: "Gujarat", notes: "5,200", students: "2.3k", icon: "🏗️" },
+      { name: "PDPU University", city: "Gandhinagar", state: "Gujarat", notes: "4,600", students: "2.0k", icon: "⚡" },
+      { name: "DAIICT", city: "Gandhinagar", state: "Gujarat", notes: "3,900", students: "1.7k", icon: "💡" },
+      { name: "IIT Kanpur", city: "Kanpur", state: "Uttar Pradesh", notes: "6,300", students: "2.7k", icon: "🚀" },
+      { name: "IIT Kharagpur", city: "Kharagpur", state: "West Bengal", notes: "6,600", students: "2.8k", icon: "🔬" },
+      { name: "IIT Roorkee", city: "Roorkee", state: "Uttarakhand", notes: "6,100", students: "2.6k", icon: "🏔️" },
+      { name: "IIT Guwahati", city: "Guwahati", state: "Assam", notes: "5,500", students: "2.4k", icon: "🌏" },
+      { name: "IIT Hyderabad", city: "Hyderabad", state: "Telangana", notes: "4,800", students: "2.1k", icon: "🎓" },
+      { name: "NIT Surathkal", city: "Mangalore", state: "Karnataka", notes: "5,100", students: "2.2k", icon: "🌊" },
+      { name: "NIT Warangal", city: "Warangal", state: "Telangana", notes: "4,900", students: "2.1k", icon: "🏛️" },
+      { name: "NIT Calicut", city: "Calicut", state: "Kerala", notes: "4,700", students: "2.0k", icon: "🌴" },
+      { name: "IIIT Hyderabad", city: "Hyderabad", state: "Telangana", notes: "5,300", students: "2.3k", icon: "💻" },
+      { name: "IIIT Bangalore", city: "Bangalore", state: "Karnataka", notes: "4,400", students: "1.9k", icon: "🖥️" },
+      { name: "IIIT Delhi", city: "New Delhi", state: "Delhi", notes: "4,600", students: "2.0k", icon: "📱" },
+      { name: "Birla Institute of Technology", city: "Ranchi", state: "Jharkhand", notes: "5,800", students: "2.5k", icon: "🏭" },
+      { name: "PSG College of Technology", city: "Coimbatore", state: "Tamil Nadu", notes: "4,300", students: "1.9k", icon: "⚙️" }
+    ];
+
+    // Keep track of currently displayed universities
+    let currentUniversitiesList = universities;
+
+    // Populate universities list
+    function populateUniversities(filteredList = universities) {
+      const container = document.getElementById('universityList');
+      currentUniversitiesList = filteredList; // Update current list
+
+      if (filteredList.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:var(--text-3); padding:40px 20px;">No universities found. Try a different search.</p>';
+        return;
+      }
+
+      container.innerHTML = filteredList.map((uni, index) => `
+      <div class="uni-list-item" onclick="goToUniversity(${index})">
+        <div class="uni-list-info">
+          <h6>${uni.icon} ${uni.name}</h6>
+          <p><i class="fas fa-map-marker-alt"></i> ${uni.city}, ${uni.state}</p>
+        </div>
+        <div class="uni-list-stats">
+          <span class="notes-count">${uni.notes} notes</span>
+          <span>${uni.students} students</span>
+        </div>
+      </div>
+    `).join('');
+    }
+
+
+      function goToUniversity(index) {
+        const uni = currentUniversitiesList[index];
+        // Store university data in localStorage
+        localStorage.setItem('selectedUniversity', JSON.stringify(uni));
+
+        // Navigate to university details page
+        if (uni.name === "Poornima University") {
+          window.location.href = 'poornima.html';
+        } else if (uni.name === "JECRC University") {
+          window.location.href = 'jecrc.html';
+        } else {
+          alert(uni.name + " notes are coming soon!");
+        }
+      }
+
+    // Filter universities based on search
+    function filterUniversities() {
+      const searchInput = document.getElementById('uniSearch').value.toLowerCase();
+      const filtered = universities.filter(uni =>
+        uni.name.toLowerCase().includes(searchInput) ||
+        uni.city.toLowerCase().includes(searchInput) ||
+        uni.state.toLowerCase().includes(searchInput)
+      );
+      populateUniversities(filtered);
+    }
+
+    // Load universities when modal opens
+    const universitiesModal = document.getElementById('universitiesModal');
+    universitiesModal.addEventListener('click', function (e) {
+      if (e.target === universitiesModal) {
+        closeModal('universitiesModal');
+      }
+    });
+
+    // Override openModal to populate universities when opening this specific modal
+    const originalOpenModal = openModal;
+    openModal = function (id) {
+      if (id === 'universitiesModal') {
+        populateUniversities();
+        document.getElementById('uniSearch').value = '';
+      }
+      originalOpenModal(id);
+    };
+
+
+
+
+
+
+    async function signup() {
+
+      const name = document.getElementById("signupName").value
+      const university = document.getElementById("signupUniversity").value
+      const email = document.getElementById("signupEmail").value
+      const password = document.getElementById("signupPassword").value
+
+      try {
+
+        const res = await fetch("http://localhost:8081/api/auth/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name: name,
+            university: university,
+            email: email,
+            password: password
+          })
+        })
+
+        if (res.ok) {
+          closeModal("signupModal");
+          showMessage("Account created! Logging you in…", "green");
+          // Auto-login so profile create hoy page ar kone
+          const loginRes = await fetch("http://localhost:8081/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: email, password: password })
+          });
+          if (loginRes.ok) {
+            const user = await loginRes.json();
+            localStorage.setItem("user", JSON.stringify(user));
+            showProfile(user);
+            showMessage("Welcome, " + (user.name || "User") + "!", "green");
+          } else {
+            showMessage("Account created successfully. Please log in.", "green");
+          }
+        } else {
+          const err = await res.json().catch(() => ({}));
+          showMessage(err.message || "Account creation failed (email may already exist)", "red");
+        }
+
+      } catch (error) {
+
+        showMessage("Server error", "red")
+
+      }
+
+    }
+
+
+    async function login() {
+
+      const email = document.getElementById("loginEmail").value
+      const password = document.getElementById("loginPassword").value
+
+      try {
+
+        const res = await fetch("http://localhost:8081/api/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password
+          })
+        })
+
+        if (res.ok) {
+          const user = await res.json();
+          if (!user) {
+            showMessage("Invalid email or password", "red");
+            return;
+          }
+          localStorage.setItem("user", JSON.stringify(user));
+          closeModal("loginModal");
+          showProfile(user);
+          showMessage("Login successful", "green");
+        } else {
+          showMessage("Invalid email or password", "red");
+        }
+
+      } catch (error) {
+
+        showMessage("Server error", "red")
+
+      }
+
+    }
+
+
+    function showProfile(user) {
+      const card = document.getElementById("profileCard");
+      card.classList.remove("hide");
+      card.style.display = "block";
+      document.getElementById("profileName").textContent = user.name || "User";
+      document.getElementById("profileEmail").textContent = user.email || "";
+      document.getElementById("profileUniversity").textContent = user.university || "—";
+      const initial = (user.name && user.name.trim()) ? user.name.trim().charAt(0).toUpperCase() : "U";
+      document.getElementById("profileAvatar").textContent = initial;
+
+      document.querySelector(".nav-actions").innerHTML = `
+    <div class="nav-user" id="navUser" onclick="toggleUserMenu(event)">
+      <div class="nav-user-avatar">${initial}</div>
+      <div class="nav-user-text">
+        <span class="nav-user-name">${user.name || "User"}</span>
+        <span class="nav-user-sub">${user.university || "Student"}</span>
+      </div>
+      <span class="nav-user-caret"><i class="fas fa-chevron-down"></i></span>
+      <div class="nav-user-menu" id="navUserMenu">
+        <div class="nav-user-menu-item" onclick="scrollToProfile(event)">
+          <i class="fas fa-user-circle"></i><span>View profile card</span>
+        </div>
+        <div class="nav-user-menu-item" onclick="logout(event)">
+          <i class="fas fa-right-from-bracket"></i><span>Logout</span>
+        </div>
+      </div>
+    </div>
+  `;
+    }
+
+
+    function toggleUserMenu(event) {
+      event.stopPropagation();
+      const menu = document.getElementById("navUserMenu");
+      if (menu) {
+        menu.classList.toggle("show");
+      }
+    }
+
+    function scrollToProfile(event) {
+      event.stopPropagation();
+      const card = document.getElementById("profileCard");
+      if (card) {
+        card.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      const menu = document.getElementById("navUserMenu");
+      if (menu) {
+        menu.classList.remove("show");
+      }
+    }
+
+    function logout(event) {
+      if (event) event.stopPropagation();
+      localStorage.removeItem("user");
+      const card = document.getElementById("profileCard");
+      card.classList.add("hide");
+      card.style.display = "none";
+      location.reload();
+    }
+
+
+    window.onload = function () {
+
+      const user = JSON.parse(localStorage.getItem("user"))
+
+      if (user) {
+
+        showProfile(user)
+
+      }
+
+    }
+
+    function showMessage(text, color) {
+
+      const box = document.getElementById("messageBox")
+
+      box.innerText = text
+      box.style.color = color
+
+      setTimeout(() => {
+        box.innerText = ""
+      }, 3000)
+
+    }
+  </script>
+
+</body>
+
+</html>

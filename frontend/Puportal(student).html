@@ -1,0 +1,2935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poornima University — Student Information System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS — Enterprise Light Theme
+   ============================================================ */
+:root {
+  /* Core Palette */
+  --bg-base:      #f4f7fb;
+  --bg-raised:    #ffffff;
+  --bg-overlay:   #f8fafc;
+  --bg-elevated:  #eef2f7;
+  --bg-hover:     #e9eef7;
+  --bg-active:    #dde7f5;
+
+  /* Borders */
+  --border-subtle:  rgba(15,23,42,0.06);
+  --border-default: rgba(15,23,42,0.10);
+  --border-strong:  rgba(15,23,42,0.18);
+  --border-accent:  rgba(82,130,255,0.35);
+
+  /* Brand */
+  --brand:        #2563eb;
+  --brand-light:  #1d4ed8;
+  --brand-dim:    rgba(37,99,235,0.12);
+  --brand-glow:   rgba(37,99,235,0.2);
+
+  /* Semantic */
+  --success:      #22c55e;
+  --success-dim:  rgba(34,197,94,0.12);
+  --warning:      #f59e0b;
+  --warning-dim:  rgba(245,158,11,0.12);
+  --danger:       #ef4444;
+  --danger-dim:   rgba(239,68,68,0.12);
+  --info:         #38bdf8;
+  --info-dim:     rgba(56,189,248,0.12);
+  --purple:       #a78bfa;
+  --purple-dim:   rgba(167,139,250,0.12);
+
+  /* Text */
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary:  #64748b;
+  --text-inverse:   #f8fafc;
+
+  /* Shadows */
+  --shadow-sm:  0 1px 3px rgba(15,23,42,0.08);
+  --shadow-md:  0 6px 18px rgba(15,23,42,0.10);
+  --shadow-lg:  0 16px 36px rgba(15,23,42,0.12);
+  --shadow-glow: 0 0 30px rgba(82,130,255,0.15);
+
+  /* Layout */
+  --sidebar-w: 252px;
+  --topbar-h:  60px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { font-size: 14px; scroll-behavior: smooth; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  display: flex;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle grain texture */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9998; opacity: 0.2;
+}
+
+a { text-decoration: none; color: inherit; }
+button { font-family: inherit; }
+input, select, textarea { font-family: inherit; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg-elevated); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--bg-active); }
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar {
+  width: var(--sidebar-w);
+  height: 100vh;
+  position: fixed; top: 0; left: 0;
+  background: var(--bg-raised);
+  border-right: 1px solid var(--border-default);
+  display: flex; flex-direction: column;
+  z-index: 200;
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* Sidebar gradient accent line */
+.sidebar::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 1px; height: 100%;
+  background: linear-gradient(to bottom, transparent, var(--brand), transparent);
+  opacity: 0.4;
+}
+
+.sb-head {
+  padding: 0 16px;
+  height: var(--topbar-h);
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.sb-logo {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--brand) 0%, #7c5cfc 100%);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 13px; letter-spacing: -0.5px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(82,130,255,0.35);
+}
+
+.sb-brand { line-height: 1.2; }
+.sb-brand-name { font-weight: 700; font-size: 13.5px; letter-spacing: 0.2px; }
+.sb-brand-sub { font-size: 10.5px; color: var(--text-tertiary); letter-spacing: 0.3px; }
+
+.sb-search {
+  margin: 12px 12px 4px;
+  position: relative;
+}
+.sb-search input {
+  width: 100%;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 7px 10px 7px 32px;
+  font-size: 12px; outline: none;
+  transition: border-color 0.2s;
+}
+.sb-search input::placeholder { color: var(--text-tertiary); }
+.sb-search input:focus { border-color: var(--brand); }
+.sb-search svg {
+  position: absolute; left: 9px; top: 50%; transform: translateY(-50%);
+  width: 13px; height: 13px; color: var(--text-tertiary);
+}
+
+.sb-nav { flex: 1; overflow-y: auto; padding: 4px 10px 12px; }
+
+.sb-section-label {
+  font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1.2px;
+  color: var(--text-tertiary);
+  padding: 14px 8px 5px;
+}
+
+.sb-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  margin-bottom: 1px;
+  border: 1px solid transparent;
+}
+.sb-item svg { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.7; transition: opacity 0.15s; }
+.sb-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+.sb-item:hover svg { opacity: 1; }
+.sb-item.active {
+  background: var(--brand-dim);
+  color: var(--brand-light);
+  border-color: var(--border-accent);
+  font-weight: 600;
+}
+.sb-item.active svg { opacity: 1; color: var(--brand-light); }
+.sb-item.active::before {
+  content: '';
+  position: absolute; left: -10px; top: 50%;
+  transform: translateY(-50%);
+  width: 2px; height: 18px;
+  background: var(--brand);
+  border-radius: 99px;
+}
+
+.sb-badge {
+  margin-left: auto;
+  background: var(--brand);
+  color: white; font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 99px; line-height: 1.5;
+}
+.sb-badge.danger { background: var(--danger); }
+.sb-badge.warning { background: var(--warning); color: #000; }
+
+.sb-divider { height: 1px; background: var(--border-subtle); margin: 6px 8px; }
+
+.sb-foot {
+  border-top: 1px solid var(--border-subtle);
+  padding: 10px 10px 12px;
+}
+
+.sb-user {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer; transition: background 0.15s;
+}
+.sb-user:hover { background: var(--bg-hover); }
+.sb-user-av {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--brand), #a855f7);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+.sb-user-info { flex: 1; min-width: 0; }
+.sb-user-name { font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-user-role { font-size: 10.5px; color: var(--text-tertiary); }
+.sb-user-more { color: var(--text-tertiary); width: 14px; height: 14px; flex-shrink: 0; }
+
+/* ============================================================
+   MAIN LAYOUT
+   ============================================================ */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex; flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+.topbar {
+  height: var(--topbar-h);
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-default);
+  display: flex; align-items: center;
+  padding: 0 28px;
+  gap: 16px;
+  position: sticky; top: 0; z-index: 100;
+  flex-shrink: 0;
+}
+
+.topbar-breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-tertiary);
+}
+.topbar-breadcrumb .crumb-active { color: var(--text-primary); font-weight: 600; font-size: 13px; }
+.topbar-breadcrumb svg { width: 13px; height: 13px; }
+
+.topbar-spacer { flex: 1; }
+
+.topbar-chip {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-default);
+  padding: 5px 12px 5px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 12px; color: var(--text-secondary);
+  cursor: pointer; transition: all 0.15s;
+}
+.topbar-chip:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.topbar-chip svg { width: 14px; height: 14px; }
+
+.topbar-icon-btn {
+  width: 34px; height: 34px;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s; position: relative;
+}
+.topbar-icon-btn:hover { border-color: var(--border-strong); background: var(--bg-elevated); }
+.topbar-icon-btn svg { width: 16px; height: 16px; color: var(--text-secondary); }
+.notif-pip {
+  position: absolute; top: 7px; right: 7px;
+  width: 6px; height: 6px;
+  background: var(--danger); border-radius: 50%;
+  border: 1.5px solid var(--bg-raised);
+}
+
+.topbar-avatar {
+  width: 30px; height: 30px;
+  background: linear-gradient(135deg, var(--brand), #a855f7);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; cursor: pointer;
+  border: 2px solid var(--border-strong);
+  transition: border-color 0.15s;
+}
+.topbar-avatar:hover { border-color: var(--brand); }
+
+.sem-badge {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--success-dim);
+  border: 1px solid rgba(34,197,94,0.2);
+  color: var(--success);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 11px; font-weight: 600;
+}
+
+/* ============================================================
+   PAGE CONTENT AREA
+   ============================================================ */
+.content {
+  flex: 1;
+  padding: 28px 28px 40px;
+  overflow-y: auto;
+}
+
+.page { display: none; animation: pageFade 0.3s ease; }
+.page.active { display: block; }
+@keyframes pageFade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-header { margin-bottom: 24px; }
+.page-title { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+.page-desc { font-size: 13px; color: var(--text-secondary); margin-top: 3px; }
+
+/* ============================================================
+   GRID UTILITIES
+   ============================================================ */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+.g-7-5 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; }
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px;
+}
+.card-title {
+  font-size: 13.5px; font-weight: 600;
+  display: flex; align-items: center; gap: 7px;
+}
+.card-title svg { width: 15px; height: 15px; color: var(--brand-light); }
+.card-action {
+  font-size: 12px; color: var(--brand-light);
+  cursor: pointer; font-weight: 500;
+  display: flex; align-items: center; gap: 4px;
+}
+.card-action:hover { color: var(--brand); }
+.card-action svg { width: 13px; height: 13px; }
+
+/* ============================================================
+   KPI STAT CARDS
+   ============================================================ */
+.kpi-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  position: relative; overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: default;
+}
+.kpi-card::before {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.kpi-card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+.kpi-card:hover::before { opacity: 0.6; }
+.kpi-brand::before { background: var(--brand); }
+.kpi-success::before { background: var(--success); }
+.kpi-warning::before { background: var(--warning); }
+.kpi-purple::before { background: var(--purple); }
+
+.kpi-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px;
+}
+.kpi-icon svg { width: 17px; height: 17px; }
+.kpi-icon.brand { background: var(--brand-dim); color: var(--brand-light); }
+.kpi-icon.success { background: var(--success-dim); color: var(--success); }
+.kpi-icon.warning { background: var(--warning-dim); color: var(--warning); }
+.kpi-icon.purple { background: var(--purple-dim); color: var(--purple); }
+.kpi-icon.danger { background: var(--danger-dim); color: var(--danger); }
+.kpi-icon.info { background: var(--info-dim); color: var(--info); }
+
+.kpi-label { font-size: 11.5px; color: var(--text-secondary); font-weight: 500; margin-bottom: 5px; letter-spacing: 0.2px; }
+.kpi-value { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; }
+.kpi-sub { font-size: 11.5px; color: var(--text-tertiary); margin-top: 6px; }
+.kpi-trend {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 11px; font-weight: 600; padding: 2px 7px;
+  border-radius: 99px; margin-top: 7px;
+}
+.kpi-trend.up { background: var(--success-dim); color: var(--success); }
+.kpi-trend.down { background: var(--danger-dim); color: var(--danger); }
+.kpi-trend.neutral { background: var(--warning-dim); color: var(--warning); }
+.kpi-trend svg { width: 10px; height: 10px; }
+
+/* ============================================================
+   DATA TABLE
+   ============================================================ */
+.data-table-wrap { overflow-x: auto; }
+.data-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+.data-table thead tr {
+  border-bottom: 1px solid var(--border-default);
+}
+.data-table th {
+  padding: 10px 14px; text-align: left;
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--text-tertiary); white-space: nowrap;
+}
+.data-table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary); vertical-align: middle;
+}
+.data-table td:first-child { color: var(--text-primary); font-weight: 500; }
+.data-table tbody tr { transition: background 0.1s; }
+.data-table tbody tr:hover { background: var(--bg-hover); }
+.data-table tbody tr:last-child td { border-bottom: none; }
+
+/* ============================================================
+   BADGES & CHIPS
+   ============================================================ */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 600;
+  padding: 3px 9px; border-radius: 99px; white-space: nowrap;
+}
+.badge svg { width: 10px; height: 10px; }
+.badge-success { background: var(--success-dim); color: var(--success); }
+.badge-danger  { background: var(--danger-dim);  color: var(--danger); }
+.badge-warning { background: var(--warning-dim); color: var(--warning); }
+.badge-info    { background: var(--info-dim);    color: var(--info); }
+.badge-brand   { background: var(--brand-dim);   color: var(--brand-light); }
+.badge-purple  { background: var(--purple-dim);  color: var(--purple); }
+.badge-neutral { background: rgba(15,23,42,0.06); color: var(--text-secondary); }
+
+/* ============================================================
+   PROGRESS BARS
+   ============================================================ */
+.prog-wrap { margin-bottom: 14px; }
+.prog-wrap:last-child { margin-bottom: 0; }
+.prog-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 12.5px; }
+.prog-head .prog-label { color: var(--text-secondary); }
+.prog-head .prog-val { font-weight: 600; font-size: 12px; }
+.prog-track { height: 5px; background: rgba(15,23,42,0.08); border-radius: 99px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 99px; transition: width 1.2s cubic-bezier(0.16,1,0.3,1); }
+
+/* ============================================================
+   TIMELINE / ANNOUNCEMENTS
+   ============================================================ */
+.announce-list { display: flex; flex-direction: column; gap: 2px; }
+.announce-item {
+  display: flex; align-items: flex-start; gap: 13px;
+  padding: 12px 10px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s; cursor: pointer;
+}
+.announce-item:hover { background: var(--bg-hover); }
+.announce-date {
+  flex-shrink: 0;
+  width: 40px; text-align: center;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: 5px 6px;
+  border: 1px solid var(--border-default);
+}
+.announce-date .ad-day { font-size: 16px; font-weight: 700; line-height: 1; font-family: 'JetBrains Mono', monospace; }
+.announce-date .ad-mon { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-tertiary); margin-top: 2px; }
+.announce-body { flex: 1; }
+.announce-body h4 { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.announce-body p  { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+.announce-tag { margin-top: 5px; }
+
+/* ============================================================
+   FORM ELEMENTS
+   ============================================================ */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-grid.full { grid-template-columns: 1fr; }
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+.form-field label {
+  font-size: 11.5px; font-weight: 600;
+  color: var(--text-secondary); letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.form-field input, .form-field select, .form-field textarea {
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 9px 12px;
+  font-size: 13px; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-field input:focus, .form-field select:focus, .form-field textarea:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(82,130,255,0.1);
+}
+.form-field input:disabled {
+  opacity: 0.45; cursor: not-allowed;
+  background: var(--bg-elevated);
+}
+.form-field input::placeholder { color: var(--text-tertiary); }
+.form-field select { cursor: pointer; }
+
+.field-hint { font-size: 11px; color: var(--text-tertiary); }
+.field-error { font-size: 11px; color: var(--danger); }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  padding: 8px 16px; border-radius: var(--radius-sm);
+  border: 1px solid transparent; cursor: pointer;
+  transition: all 0.15s; white-space: nowrap;
+  line-height: 1;
+}
+.btn svg { width: 14px; height: 14px; }
+.btn-primary {
+  background: var(--brand); color: white;
+  border-color: var(--brand);
+  box-shadow: 0 2px 8px rgba(82,130,255,0.3);
+}
+.btn-primary:hover { background: #4070ee; box-shadow: 0 4px 16px rgba(82,130,255,0.4); }
+.btn-secondary {
+  background: var(--bg-elevated); color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+.btn-secondary:hover { background: var(--bg-active); }
+.btn-ghost {
+  background: transparent; color: var(--text-secondary);
+  border-color: var(--border-default);
+}
+.btn-ghost:hover { background: var(--bg-hover); color: var(--text-primary); }
+.btn-danger { background: var(--danger-dim); color: var(--danger); border-color: rgba(239,68,68,0.25); }
+.btn-danger:hover { background: rgba(239,68,68,0.2); }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-xs { padding: 4px 10px; font-size: 11px; border-radius: 6px; }
+.btn-icon {
+  width: 32px; height: 32px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--bg-elevated); border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s;
+}
+.btn-icon svg { width: 14px; height: 14px; color: var(--text-secondary); }
+.btn-icon:hover { background: var(--bg-active); border-color: var(--border-strong); }
+
+/* ============================================================
+   TABS (inline)
+   ============================================================ */
+.tabs { display: flex; gap: 4px; padding: 3px; background: var(--bg-overlay); border-radius: var(--radius-sm); width: fit-content; }
+.tab-btn {
+  padding: 6px 14px; border-radius: 6px;
+  font-size: 12px; font-weight: 500;
+  color: var(--text-secondary); cursor: pointer;
+  transition: all 0.15s; border: none; background: transparent;
+}
+.tab-btn:hover { color: var(--text-primary); }
+.tab-btn.active {
+  background: var(--bg-elevated);
+  color: var(--text-primary); font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ============================================================
+   ALERT BANNER
+   ============================================================ */
+.alert {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 13px 16px; border-radius: var(--radius-md);
+  border: 1px solid transparent; margin-bottom: 16px;
+  font-size: 13px;
+}
+.alert svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+.alert-warning { background: var(--warning-dim); border-color: rgba(245,158,11,0.25); color: var(--warning); }
+.alert-danger  { background: var(--danger-dim);  border-color: rgba(239,68,68,0.25); color: var(--danger); }
+.alert-success { background: var(--success-dim); border-color: rgba(34,197,94,0.25); color: var(--success); }
+.alert-info    { background: var(--info-dim);    border-color: rgba(56,189,248,0.25); color: var(--info); }
+.alert-body { flex: 1; }
+.alert-title { font-weight: 700; margin-bottom: 2px; }
+.alert-msg { font-size: 12px; opacity: 0.85; }
+.alert-close { cursor: pointer; opacity: 0.6; transition: opacity 0.15s; }
+.alert-close:hover { opacity: 1; }
+
+/* ============================================================
+   EMPTY / PLACEHOLDER
+   ============================================================ */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center;
+  padding: 60px 20px;
+}
+.empty-state svg { width: 56px; height: 56px; color: var(--text-tertiary); margin-bottom: 16px; opacity: 0.4; }
+.empty-state h3 { font-size: 15px; color: var(--text-secondary); margin-bottom: 6px; }
+.empty-state p  { font-size: 13px; color: var(--text-tertiary); max-width: 280px; line-height: 1.5; }
+
+/* ============================================================
+   PROFILE HERO
+   ============================================================ */
+.profile-cover {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  overflow: hidden; margin-bottom: 20px;
+}
+.profile-cover-bg {
+  height: 100px;
+  background: linear-gradient(135deg, #eaf1ff 0%, #f6ecff 40%, #e8f7ff 100%);
+  position: relative; overflow: hidden;
+}
+.profile-cover-bg::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 20px,
+    rgba(82,130,255,0.03) 20px,
+    rgba(82,130,255,0.03) 40px
+  );
+}
+.profile-cover-bg::after {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(82,130,255,0.12), transparent 70%);
+  border-radius: 50%;
+}
+.profile-cover-body { padding: 0 24px 24px; position: relative; }
+.profile-cover-av {
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, var(--brand), #a855f7);
+  border-radius: 50%;
+  border: 3px solid var(--bg-raised);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700;
+  margin-top: -36px; margin-bottom: 12px;
+}
+.profile-name { font-size: 18px; font-weight: 700; letter-spacing: -0.2px; }
+.profile-meta { font-size: 12.5px; color: var(--text-secondary); margin-top: 3px; }
+.profile-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+
+/* ============================================================
+   SETTINGS TABS
+   ============================================================ */
+.settings-layout { display: grid; grid-template-columns: 200px 1fr; gap: 16px; }
+.settings-nav {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 8px;
+  height: fit-content;
+  position: sticky; top: calc(var(--topbar-h) + 16px);
+}
+.sn-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-tertiary); padding: 10px 10px 5px; }
+.sn-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: var(--radius-sm);
+  color: var(--text-secondary); font-size: 12.5px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s; margin-bottom: 1px;
+}
+.sn-item svg { width: 14px; height: 14px; opacity: 0.7; }
+.sn-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+.sn-item.active { background: var(--brand-dim); color: var(--brand-light); font-weight: 600; }
+.sn-item.active svg { opacity: 1; }
+
+.s-tab { display: none; }
+.s-tab.active { display: block; }
+
+/* ============================================================
+   HOSTEL / TRANSPORT CARDS
+   ============================================================ */
+.feature-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 24px; text-align: center;
+  transition: border-color 0.2s;
+}
+.feature-card:hover { border-color: var(--border-strong); }
+.fc-icon {
+  width: 52px; height: 52px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px;
+}
+.fc-icon svg { width: 24px; height: 24px; }
+
+/* ============================================================
+   RESULT GRADE CHIPS
+   ============================================================ */
+.grade {
+  display: inline-block; padding: 3px 10px;
+  border-radius: 6px; font-size: 11.5px; font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+.grade-ap { background: rgba(34,197,94,0.15); color: #4ade80; }
+.grade-a  { background: var(--success-dim); color: var(--success); }
+.grade-bp { background: var(--brand-dim); color: var(--brand-light); }
+.grade-b  { background: var(--purple-dim); color: var(--purple); }
+.grade-c  { background: var(--warning-dim); color: var(--warning); }
+
+/* ============================================================
+   QUICK ACTIONS BAR
+   ============================================================ */
+.quick-actions {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+/* ============================================================
+   NOTICE TICKER
+   ============================================================ */
+.ticker-wrap {
+  background: rgba(245,158,11,0.06);
+  border: 1px solid rgba(245,158,11,0.15);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center;
+  overflow: hidden; margin-bottom: 20px;
+}
+.ticker-label {
+  background: var(--warning);
+  color: #000; font-size: 10.5px; font-weight: 700;
+  padding: 6px 12px; white-space: nowrap; flex-shrink: 0;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.ticker-text {
+  padding: 6px 16px; font-size: 12px; color: var(--text-secondary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ============================================================
+   NOTES LIST
+   ============================================================ */
+.note-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s; cursor: pointer;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.note-row:last-child { border-bottom: none; }
+.note-row:hover { background: var(--bg-hover); }
+.note-file-icon {
+  width: 38px; height: 46px;
+  background: var(--brand-dim);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-sm);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.note-file-icon svg { width: 16px; height: 16px; color: var(--brand-light); }
+.note-file-type { font-size: 9px; color: var(--brand-light); font-weight: 700; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; }
+.note-info { flex: 1; min-width: 0; }
+.note-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.note-meta { font-size: 11.5px; color: var(--text-tertiary); margin-top: 2px; display: flex; gap: 10px; }
+.note-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+/* ============================================================
+   FEE TIMELINE
+   ============================================================ */
+.fee-timeline { position: relative; padding-left: 20px; }
+.fee-timeline::before {
+  content: '';
+  position: absolute; left: 6px; top: 8px; bottom: 8px;
+  width: 1px; background: var(--border-default);
+}
+.ft-item { position: relative; margin-bottom: 20px; }
+.ft-item:last-child { margin-bottom: 0; }
+.ft-dot {
+  position: absolute; left: -20px; top: 3px;
+  width: 13px; height: 13px; border-radius: 50%;
+  border: 2px solid var(--bg-raised); flex-shrink: 0;
+}
+.ft-dot.paid  { background: var(--success); }
+.ft-dot.due   { background: var(--danger); }
+.ft-dot.upcoming { background: var(--text-tertiary); }
+.ft-label { font-size: 13px; font-weight: 600; }
+.ft-meta  { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.ft-amount { font-size: 14px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1280px) {
+  :root { --sidebar-w: 220px; }
+  .g4 { grid-template-columns: repeat(2,1fr); }
+  .g3 { grid-template-columns: repeat(2,1fr); }
+}
+@media (max-width: 900px) {
+  :root { --sidebar-w: 52px; }
+  .sb-brand, .sb-section-label, .sb-item span, .sb-badge,
+  .sb-user-info, .sb-search, .sb-user-more { display: none; }
+  .sb-item { justify-content: center; padding: 10px; }
+  .sb-item.active::before { display: none; }
+  .sb-user { justify-content: center; padding: 10px; }
+  .g2, .g-7-5 { grid-template-columns: 1fr; }
+  .settings-layout { grid-template-columns: 1fr; }
+  .content { padding: 20px 16px; }
+}
+@media (max-width: 640px) {
+  .g3 { grid-template-columns: 1fr; }
+  .g4 { grid-template-columns: 1fr 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   MICRO-INTERACTIONS
+   ============================================================ */
+.btn:active { transform: scale(0.97); }
+.kpi-card { transition: transform 0.2s, border-color 0.2s; }
+
+/* ============================================================
+   STAGGERED ENTRY ANIMATION
+   ============================================================ */
+.stagger > * {
+  opacity: 0;
+  animation: staggerIn 0.4s ease forwards;
+}
+.stagger > *:nth-child(1) { animation-delay: 0.02s; }
+.stagger > *:nth-child(2) { animation-delay: 0.06s; }
+.stagger > *:nth-child(3) { animation-delay: 0.10s; }
+.stagger > *:nth-child(4) { animation-delay: 0.14s; }
+.stagger > *:nth-child(5) { animation-delay: 0.18s; }
+.stagger > *:nth-child(6) { animation-delay: 0.22s; }
+.stagger > *:nth-child(7) { animation-delay: 0.26s; }
+@keyframes staggerIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* misc */
+.mono { font-family: 'JetBrains Mono', monospace; }
+.text-success { color: var(--success); }
+.text-danger  { color: var(--danger); }
+.text-warning { color: var(--warning); }
+.text-brand   { color: var(--brand-light); }
+.text-muted   { color: var(--text-secondary); }
+.text-dim     { color: var(--text-tertiary); }
+.fw-700 { font-weight: 700; }
+.mt-4 { margin-top: 4px; }
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mt-20 { margin-top: 20px; }
+.mb-12 { margin-bottom: 12px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-20 { margin-bottom: 20px; }
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.gap-16 { gap: 16px; }
+.divider { height: 1px; background: var(--border-subtle); margin: 14px 0; }
+</style>
+</head>
+<body>
+
+<!-- ======================================================
+     SIDEBAR
+     ====================================================== -->
+<aside class="sidebar">
+  <div class="sb-head">
+    <div class="sb-logo">PU</div>
+    <div class="sb-brand">
+      <div class="sb-brand-name">PU Portal</div>
+      <div class="sb-brand-sub">Student System v3.1</div>
+    </div>
+  </div>
+
+  <div class="sb-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" placeholder="Search portal...">
+  </div>
+
+  <nav class="sb-nav">
+    <div class="sb-section-label">Overview</div>
+    <a class="sb-item active" onclick="nav('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      <span>Dashboard</span>
+    </a>
+    <a class="sb-item" onclick="nav('profile')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>My Profile</span>
+    </a>
+
+    <div class="sb-section-label">Academic</div>
+    <a class="sb-item" onclick="nav('notes')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      <span>Study Materials</span>
+      <span class="sb-badge">3</span>
+    </a>
+    <a class="sb-item" onclick="nav('results')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Examination</span>
+    </a>
+    <a class="sb-item" onclick="nav('assignments')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Assignments</span>
+    </a>
+    <a class="sb-item" onclick="nav('todayAttendance')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Today Attendance</span>
+    </a>
+
+    <a class="sb-item" onclick="nav('attendance')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Attendance</span>
+      <span class="sb-badge warning">78%</span>
+    </a>
+
+    <div class="sb-section-label">Finance</div>
+    <a class="sb-item" onclick="nav('fees')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      <span>Fee Management</span>
+      <span class="sb-badge danger">Due</span>
+    </a>
+    <a class="sb-item" onclick="nav('scholarship')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      <span>Scholarship</span>
+    </a>
+
+    <div class="sb-section-label">Campus</div>
+    <a class="sb-item" onclick="nav('hostel')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Hostel</span>
+    </a>
+    <a class="sb-item" onclick="nav('transport')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      <span>Transport</span>
+    </a>
+    <a class="sb-item" onclick="nav('library')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      <span>Library</span>
+    </a>
+
+    <div class="sb-divider"></div>
+    <a class="sb-item" onclick="nav('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span>Settings</span>
+    </a>
+    <a class="sb-item" onclick="nav('help')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span>Help & Support</span>
+    </a>
+  </nav>
+
+  <div class="sb-foot">
+    <div class="sb-user" onclick="nav('profile')">
+      <div class="sb-user-av" id="sidebarUserAvatar">DD</div>
+      <div class="sb-user-info">
+        <div class="sb-user-name" id="sidebarUserName">Debraj Das</div>
+        <div class="sb-user-role">B.Tech CSE · Sem 3</div>
+      </div>
+      <svg class="sb-user-more" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+    </div>
+  </div>
+</aside>
+
+<!-- ======================================================
+     MAIN
+     ====================================================== -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-breadcrumb">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      <span id="breadcrumb-current" class="crumb-active">Dashboard</span>
+    </div>
+
+    <div class="topbar-spacer"></div>
+
+    <div class="sem-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Sem 3 · 2025-26
+    </div>
+
+    <div class="topbar-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Feb 27, 2026
+    </div>
+
+    <div class="topbar-icon-btn" title="Notifications">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <div class="notif-pip"></div>
+    </div>
+
+    <div class="topbar-icon-btn" title="Messages">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    </div>
+
+    <div class="topbar-avatar" id="topbarAvatar" onclick="nav('profile')" title="My Profile">DD</div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="content" id="content-root">
+
+    <!-- ================================================
+         PAGE: DASHBOARD
+         ================================================ -->
+    <div class="page active" id="page-dashboard">
+      <div class="alert alert-danger">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div class="alert-body">
+          <div class="alert-title">Fee Payment Overdue</div>
+          <div class="alert-msg">₹25,000 is pending for Semester 3. Due date: 15 March 2026. Late fee will apply after the deadline.</div>
+        </div>
+        <div class="alert-close" onclick="this.closest('.alert').remove()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+      </div>
+
+      <div class="ticker-wrap">
+        <div class="ticker-label">📢 Notice</div>
+        <div class="ticker-text">University will remain closed on 26 Feb 2026 (Mahashivratri) &nbsp;·&nbsp; Tech-Fest '26 Project Registration open till 5 Mar &nbsp;·&nbsp; Microsoft Campus Drive on 10 Mar for CSE/IT Final Year</div>
+      </div>
+
+      <!-- KPI Row -->
+      <div class="g4 stagger mb-20">
+        <div class="kpi-card kpi-brand" onclick="nav('results')">
+          <div class="kpi-icon brand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="kpi-label">Current CGPA</div>
+          <div class="kpi-value">8.42</div>
+          <div class="kpi-trend up">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            +0.32 this sem
+          </div>
+        </div>
+        <div class="kpi-card kpi-warning" onclick="nav('attendance')">
+          <div class="kpi-icon warning">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+          </div>
+          <div class="kpi-label">Attendance</div>
+          <div class="kpi-value text-warning">78%</div>
+          <div class="kpi-trend neutral">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Min required: 75%
+          </div>
+        </div>
+        <div class="kpi-card" onclick="nav('fees')">
+          <div class="kpi-icon danger">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+          <div class="kpi-label">Fee Due</div>
+          <div class="kpi-value text-danger">₹25,000</div>
+          <div class="kpi-trend down">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+            Due 15 Mar 2026
+          </div>
+        </div>
+        <div class="kpi-card kpi-purple">
+          <div class="kpi-icon purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+          </div>
+          <div class="kpi-label">Semester Rank</div>
+          <div class="kpi-value">#14</div>
+          <div class="kpi-trend up">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            Top 20% cohort
+          </div>
+        </div>
+      </div>
+
+      <!-- Main content grid -->
+      <div class="g-7-5 stagger">
+        <!-- Left Column -->
+        <div class="flex-col gap-16">
+
+          <!-- Quick Actions -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                Quick Actions
+              </div>
+            </div>
+            <div class="quick-actions">
+              <button class="btn btn-primary btn-sm" onclick="nav('fees')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                Pay Fees
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="nav('results')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                View Results
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="nav('notes')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download Notes
+              </button>
+              <button class="btn btn-ghost btn-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Exam Form
+              </button>
+              <button class="btn btn-ghost btn-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                Admit Card
+              </button>
+              <button class="btn btn-ghost btn-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/></svg>
+                ID Card
+              </button>
+            </div>
+          </div>
+
+          <!-- Academic Performance Trend -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                Subject-wise Performance
+              </div>
+              <span class="badge badge-brand">Sem 2</span>
+            </div>
+            <div class="prog-wrap">
+              <div class="prog-head"><span class="prog-label">Data Structures (BCS201)</span><span class="prog-val text-success">A+ · 90/100</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:90%;background:var(--success);"></div></div>
+            </div>
+            <div class="prog-wrap">
+              <div class="prog-head"><span class="prog-label">Operating Systems (BCS202)</span><span class="prog-val text-brand">A · 83/100</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:83%;background:var(--brand);"></div></div>
+            </div>
+            <div class="prog-wrap">
+              <div class="prog-head"><span class="prog-label">Discrete Mathematics (BMA201)</span><span class="prog-val" style="color:var(--purple);">B+ · 70/100</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:70%;background:var(--purple);"></div></div>
+            </div>
+            <div class="prog-wrap">
+              <div class="prog-head"><span class="prog-label">Computer Networks (BCS203)</span><span class="prog-val text-success">A · 85/100</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:85%;background:var(--success);"></div></div>
+            </div>
+            <div class="prog-wrap">
+              <div class="prog-head"><span class="prog-label">Database Management (BCS204)</span><span class="prog-val text-brand">A+ · 92/100</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:92%;background:var(--brand);"></div></div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Recent Activity
+              </div>
+              <span class="card-action">View all <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+            </div>
+            <table class="data-table">
+              <thead><tr>
+                <th>Activity</th><th>Date</th><th>Status</th>
+              </tr></thead>
+              <tbody>
+                <tr>
+                  <td>Fee Payment — 2nd Installment</td>
+                  <td class="mono text-dim">05 Feb 2026</td>
+                  <td><span class="badge badge-success">Completed</span></td>
+                </tr>
+                <tr>
+                  <td>Semester II Result Published</td>
+                  <td class="mono text-dim">28 Jan 2026</td>
+                  <td><span class="badge badge-brand">Available</span></td>
+                </tr>
+                <tr>
+                  <td>Mid-Term 1 Marks Uploaded</td>
+                  <td class="mono text-dim">18 Jan 2026</td>
+                  <td><span class="badge badge-success">Viewed</span></td>
+                </tr>
+                <tr>
+                  <td>Exam Form — Semester III</td>
+                  <td class="mono text-dim">10 Jan 2026</td>
+                  <td><span class="badge badge-warning">Pending</span></td>
+                </tr>
+                <tr>
+                  <td>Library Book Return</td>
+                  <td class="mono text-dim">02 Jan 2026</td>
+                  <td><span class="badge badge-success">Returned</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="flex-col gap-16">
+
+          <!-- Announcements -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 17H2a3 3 0 000 6h20a3 3 0 000-6zm0 0v-5a10 10 0 00-20 0v5"/></svg>
+                Announcements
+              </div>
+              <span class="badge badge-danger">3 New</span>
+            </div>
+            <div class="announce-list">
+              <div class="announce-item">
+                <div class="announce-date">
+                  <div class="ad-day" style="color:var(--text-primary);">25</div>
+                  <div class="ad-mon">Feb</div>
+                </div>
+                <div class="announce-body">
+                  <h4>Holiday — Mahashivratri</h4>
+                  <p>University closed on 26th Feb. All classes, labs and exams cancelled.</p>
+                  <div class="announce-tag"><span class="badge badge-neutral">Holiday</span></div>
+                </div>
+              </div>
+              <div class="announce-item">
+                <div class="announce-date">
+                  <div class="ad-day" style="color:#f9a8d4;">02</div>
+                  <div class="ad-mon" style="color:#f9a8d4;">Mar</div>
+                </div>
+                <div class="announce-body">
+                  <h4>Tech-Fest '26 Registration</h4>
+                  <p>Register projects and teams for the annual PU technical festival. Limited slots available.</p>
+                  <div class="announce-tag"><span class="badge badge-purple">Event</span></div>
+                </div>
+              </div>
+              <div class="announce-item">
+                <div class="announce-date">
+                  <div class="ad-day" style="color:var(--success);">10</div>
+                  <div class="ad-mon" style="color:var(--success);">Mar</div>
+                </div>
+                <div class="announce-body">
+                  <h4>Placement Drive — Microsoft</h4>
+                  <p>Campus recruitment for final year CSE/IT. Register via TnP Cell portal by 5 Mar.</p>
+                  <div class="announce-tag"><span class="badge badge-success">Placement</span></div>
+                </div>
+              </div>
+              <div class="announce-item">
+                <div class="announce-date">
+                  <div class="ad-day" style="color:var(--info);">15</div>
+                  <div class="ad-mon" style="color:var(--info);">Mar</div>
+                </div>
+                <div class="announce-body">
+                  <h4>Fee Deadline — Sem 3</h4>
+                  <p>Last date for 3rd installment payment. Late fee of ₹500/day applies after deadline.</p>
+                  <div class="announce-tag"><span class="badge badge-danger">Urgent</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Timetable Today -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Today's Schedule
+              </div>
+              <span class="badge badge-neutral">Friday</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;gap:12px;align-items:center;padding:10px 12px;background:var(--brand-dim);border-radius:var(--radius-sm);border:1px solid var(--border-accent);">
+                <div style="min-width:68px;font-size:11px;color:var(--brand-light);font-family:'JetBrains Mono',monospace;font-weight:500;">09:00–10:00</div>
+                <div><div style="font-size:13px;font-weight:600;">Data Structures Lab</div><div style="font-size:11.5px;color:var(--text-secondary);">Room 204 · Dr. Sharma</div></div>
+                <span class="badge badge-brand" style="margin-left:auto;">Live</span>
+              </div>
+              <div style="display:flex;gap:12px;align-items:center;padding:10px 12px;background:var(--bg-overlay);border-radius:var(--radius-sm);border:1px solid var(--border-subtle);">
+                <div style="min-width:68px;font-size:11px;color:var(--text-tertiary);font-family:'JetBrains Mono',monospace;">11:00–12:00</div>
+                <div><div style="font-size:13px;font-weight:600;color:var(--text-secondary);">Discrete Maths</div><div style="font-size:11.5px;color:var(--text-tertiary);">Room 110 · Prof. Gupta</div></div>
+              </div>
+              <div style="display:flex;gap:12px;align-items:center;padding:10px 12px;background:var(--bg-overlay);border-radius:var(--radius-sm);border:1px solid var(--border-subtle);">
+                <div style="min-width:68px;font-size:11px;color:var(--text-tertiary);font-family:'JetBrains Mono',monospace;">14:00–15:00</div>
+                <div><div style="font-size:13px;font-weight:600;color:var(--text-secondary);">Operating Systems</div><div style="font-size:11.5px;color:var(--text-tertiary);">Room 308 · Dr. Mehra</div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div><!-- /dashboard -->
+
+    <!-- ================================================
+         PAGE: PROFILE
+         ================================================ -->
+    <div class="page" id="page-profile">
+      <div class="page-header">
+        <div class="page-title">My Profile</div>
+        <div class="page-desc">Your academic identity, enrollment information and campus records.</div>
+      </div>
+
+      <div class="profile-cover">
+        <div class="profile-cover-bg"></div>
+        <div class="profile-cover-body">
+          <div class="profile-cover-av" id="profileCoverAvatar">DD</div>
+          <div class="profile-name" id="profileName">Debraj Das</div>
+          <div class="profile-meta">B.Tech Computer Science & Engineering &nbsp;·&nbsp; Poornima University, Jaipur</div>
+          <div class="profile-tags">
+            <span class="badge badge-brand">3rd Semester</span>
+            <span class="badge badge-neutral">2024–2028 Batch</span>
+            <span class="badge badge-success">CGPA: 8.42</span>
+            <span class="badge badge-neutral" id="profileRollTag">Roll: PU-2024-CSE-102</span>
+            <span class="badge badge-purple">CSE Div-B</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="g2">
+        <div class="card">
+
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Personal Details
+            </div>
+            <button class="btn btn-ghost btn-xs">Edit</button>
+          </div>
+          <table class="data-table">
+            <tbody>
+              <tr><td>Full Name</td><td class="text-muted" id="profileFullName">Debraj Das</td></tr>
+              <tr><td>Date of Birth</td><td class="text-muted" id="profileDateOfBirth">14 August 2006</td></tr>
+              <tr><td>Gender</td><td class="text-muted" id="profileGender">Male</td></tr>
+              <tr><td>Blood Group</td><td class="text-muted">O+</td></tr>
+              <tr><td>Category</td><td class="text-muted">General</td></tr>
+              <tr><td>Nationality</td><td class="text-muted">Indian</td></tr>
+              <tr><td>Aadhaar</td><td class="text-muted mono">XXXX-XXXX-7842</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.27 9.7 19.79 19.79 0 011.2 1.12 2 2 0 013.18 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L7.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+              Contact Information
+            </div>
+          </div>
+          <table class="data-table">
+            <tbody>
+              <tr><td>University Email</td><td class="text-muted mono" id="contactUniversityEmail" style="font-size:12px;">debraj.das@pu.ac.in</td></tr>
+              <tr><td>Personal Email</td><td class="text-muted" id="contactPersonalEmail">debrajdas06@gmail.com</td></tr>
+              <tr><td>Mobile</td><td class="text-muted mono" id="contactMobile">+91 98765 43210</td></tr>
+              <tr><td>Alternate Mobile</td><td class="text-muted mono">+91 87654 32109</td></tr>
+              <tr><td>Address</td><td class="text-muted">123, Salt Lake City, Kolkata, WB – 700091</td></tr>
+              <tr><td>Guardian Name</td><td class="text-muted">Ranjit Das</td></tr>
+              <tr><td>Guardian Mobile</td><td class="text-muted mono">+91 70000 12345</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              Enrollment & Academic
+            </div>
+          </div>
+          <table class="data-table">
+            <tbody>
+              <tr><td>Registration No.</td><td class="text-muted mono" id="enrollmentRegistrationNo">PU-2024-CSE-102</td></tr>
+              <tr><td>Enrollment No.</td><td class="text-muted mono" id="enrollmentNo">24BTCSE0102</td></tr>
+              <tr><td>Programme</td><td class="text-muted">B.Tech (CSE)</td></tr>
+              <tr><td>Branch</td><td class="text-muted" id="academicBranch">Computer Science & Engineering</td></tr>
+              <tr><td>Current Semester</td><td><span class="badge badge-brand">3rd Semester</span></td></tr>
+              <tr><td>Admission Year</td><td class="text-muted">2024</td></tr>
+              <tr><td>Expected Graduation</td><td class="text-muted">May 2028</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              Academic Summary
+            </div>
+          </div>
+          <div class="prog-wrap mt-4">
+            <div class="prog-head"><span class="prog-label">Overall CGPA</span><span class="prog-val">8.42 / 10</span></div>
+            <div class="prog-track"><div class="prog-fill" style="width:84.2%;background:var(--brand);"></div></div>
+          </div>
+          <div class="prog-wrap">
+            <div class="prog-head"><span class="prog-label">Attendance (All Subjects)</span><span class="prog-val text-warning">78%</span></div>
+            <div class="prog-track"><div class="prog-fill" style="width:78%;background:var(--warning);"></div></div>
+          </div>
+          <div class="prog-wrap">
+            <div class="prog-head"><span class="prog-label">Assignments Submitted</span><span class="prog-val">12 / 15</span></div>
+            <div class="prog-track"><div class="prog-fill" style="width:80%;background:var(--success);"></div></div>
+          </div>
+          <div class="divider"></div>
+          <table class="data-table">
+            <tbody>
+              <tr><td>Backlogs</td><td><span class="badge badge-success">None</span></td></tr>
+              <tr><td>Sem 1 SGPA</td><td class="text-muted mono">7.80</td></tr>
+              <tr><td>Sem 2 SGPA</td><td class="text-muted mono">8.42</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div><!-- /profile -->
+
+    <!-- ================================================
+         PAGE: NOTES
+         ================================================ -->
+    <div class="page" id="page-notes">
+      <div class="page-header flex justify-between items-center">
+        <div>
+          <div class="page-title">Study Materials</div>
+          <div class="page-desc">Download lecture notes, reference books and previous year question papers.</div>
+        </div>
+        <button class="btn btn-primary btn-sm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Upload Material
+        </button>
+      </div>
+
+      <div class="flex gap-12 mb-20 items-center">
+        <div class="tabs">
+          <button class="tab-btn active">All Files</button>
+          <button class="tab-btn">Sem 3</button>
+          <button class="tab-btn">Sem 2</button>
+          <button class="tab-btn">Sem 1</button>
+          <button class="tab-btn">PYQs</button>
+          <button class="tab-btn" onclick="window.location.href ='gen(1st year).html'">Get   you   course   notes</button>
+          <button class="tab-btn" onclick="window.location.href = '1stpage.html'">Select all courses notes</button>
+        </div>
+        <div style="flex:1;"></div>
+        <button class="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></button>
+      </div>
+
+      <div class="card mb-16">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Faculty Uploaded Materials
+          </div>
+          <span class="badge badge-brand" id="facultyUploadedCount">0 files</span>
+        </div>
+        <div id="facultyUploadedNotesRows"></div>
+        <div id="facultyUploadedEmpty" class="text-muted" style="padding:14px 16px;">No faculty uploaded notes yet.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+            Semester 2 Materials
+          </div>
+          <span class="badge badge-neutral">5 files</span>
+        </div>
+        <div>
+          <div class="note-row">
+            <div class="note-file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="note-file-type">pdf</span></div>
+            <div class="note-info">
+              <div class="note-title">Data Structures — Unit 1 to 3 (Complete Notes)</div>
+              <div class="note-meta"><span>4.2 MB</span><span>·</span><span>Uploaded: Yesterday</span><span>·</span><span class="badge badge-brand" style="font-size:10px;">Sem 2</span></div>
+            </div>
+            <div class="note-actions">
+              <button class="btn-icon" title="Preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="btn btn-primary btn-xs">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download
+              </button>
+            </div>
+          </div>
+          <div class="note-row">
+            <div class="note-file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="note-file-type">pdf</span></div>
+            <div class="note-info">
+              <div class="note-title">Operating Systems — Full Lecture Notes (All Units)</div>
+              <div class="note-meta"><span>12.0 MB</span><span>·</span><span>Uploaded: 5 days ago</span><span>·</span><span class="badge badge-brand" style="font-size:10px;">Sem 2</span></div>
+            </div>
+            <div class="note-actions">
+              <button class="btn-icon" title="Preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="btn btn-primary btn-xs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button>
+            </div>
+          </div>
+          <div class="note-row">
+            <div class="note-file-icon" style="background:var(--warning-dim);border-color:rgba(245,158,11,0.3);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="note-file-type" style="color:var(--warning);">pyq</span></div>
+            <div class="note-info">
+              <div class="note-title">Discrete Mathematics — Previous Year Questions (2021–24)</div>
+              <div class="note-meta"><span>1.5 MB</span><span>·</span><span>Uploaded: 1 week ago</span><span>·</span><span class="badge badge-warning" style="font-size:10px;">PYQ</span></div>
+            </div>
+            <div class="note-actions">
+              <button class="btn-icon" title="Preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="btn btn-primary btn-xs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button>
+            </div>
+          </div>
+          <div class="note-row">
+            <div class="note-file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="note-file-type">pdf</span></div>
+            <div class="note-info">
+              <div class="note-title">Database Management Systems — Notes + SQL Exercises</div>
+              <div class="note-meta"><span>8.7 MB</span><span>·</span><span>Uploaded: 2 weeks ago</span><span>·</span><span class="badge badge-brand" style="font-size:10px;">Sem 2</span></div>
+            </div>
+            <div class="note-actions">
+              <button class="btn-icon" title="Preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="btn btn-primary btn-xs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button>
+            </div>
+          </div>
+          <div class="note-row">
+            <div class="note-file-icon" style="background:var(--purple-dim);border-color:rgba(167,139,250,0.3);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="note-file-type" style="color:var(--purple);">ppt</span></div>
+            <div class="note-info">
+              <div class="note-title">Computer Networks — Lecture Slides (Unit 1–4)</div>
+              <div class="note-meta"><span>22.3 MB</span><span>·</span><span>Uploaded: 3 weeks ago</span><span>·</span><span class="badge badge-purple" style="font-size:10px;">PPT</span></div>
+            </div>
+            <div class="note-actions">
+              <button class="btn-icon" title="Preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="btn btn-primary btn-xs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /notes -->
+
+    <!-- ================================================
+         PAGE: ASSIGNMENTS
+         ================================================ -->
+    <div class="page" id="page-assignments">
+      <div class="page-header flex justify-between items-center">
+        <div>
+          <div class="page-title">Assignments</div>
+          <div class="page-desc">Faculty uploaded assignments, deadlines and downloadable PDFs.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Faculty Uploaded Assignments
+          </div>
+          <span class="badge badge-brand" id="facultyAssignmentCount">0 items</span>
+        </div>
+        <div id="facultyAssignmentRows"></div>
+        <div id="facultyAssignmentEmpty" class="text-muted" style="padding:14px 16px;">No assignments published yet.</div>
+      </div>
+    </div><!-- /assignments -->
+
+    <!-- ================================================
+         PAGE: FEES
+         ================================================ -->
+    <div class="page" id="page-fees">
+      <div class="page-header flex justify-between items-center">
+        <div>
+          <div class="page-title">Fee Management</div>
+          <div class="page-desc">Track all payments, pending dues and download fee receipts.</div>
+        </div>
+        <button class="btn btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          Pay Now
+        </button>
+      </div>
+
+      <div class="alert alert-warning mb-16">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div class="alert-body">
+          <div class="alert-title">Payment Reminder</div>
+          <div class="alert-msg">₹25,000 is due by 15 March 2026. A late fee of ₹500/day will be charged after the due date. Your admit card may be withheld.</div>
+        </div>
+      </div>
+
+      <div class="g4 mb-20">
+        <div class="kpi-card"><div class="kpi-icon brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><div class="kpi-label">Total Fee (Sem 3)</div><div class="kpi-value">₹85,000</div></div>
+        <div class="kpi-card kpi-success"><div class="kpi-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-label">Amount Paid</div><div class="kpi-value text-success">₹60,000</div></div>
+        <div class="kpi-card"><div class="kpi-icon danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="kpi-label">Amount Pending</div><div class="kpi-value text-danger">₹25,000</div></div>
+        <div class="kpi-card"><div class="kpi-icon warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="kpi-label">Due Date</div><div class="kpi-value" style="font-size:18px;margin-top:4px;" class="text-warning">15 Mar 26</div></div>
+      </div>
+
+      <div class="g-7-5">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
+              Payment History
+            </div>
+            <button class="btn btn-ghost btn-xs">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>
+              Export
+            </button>
+          </div>
+          <table class="data-table">
+            <thead><tr>
+              <th>Txn ID</th><th>Date</th><th>Description</th><th>Amount</th><th>Mode</th><th>Status</th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td class="mono" style="font-size:11px;color:var(--text-tertiary);">TXN2402001</td>
+                <td class="mono text-dim">12 Jan 2026</td>
+                <td>Sem 3 — 1st Installment</td>
+                <td class="mono fw-700 text-success">₹35,000</td>
+                <td><span class="badge badge-neutral">UPI</span></td>
+                <td><span class="badge badge-success">Paid</span></td>
+              </tr>
+              <tr>
+                <td class="mono" style="font-size:11px;color:var(--text-tertiary);">TXN2402087</td>
+                <td class="mono text-dim">05 Feb 2026</td>
+                <td>Sem 3 — 2nd Installment</td>
+                <td class="mono fw-700 text-success">₹25,000</td>
+                <td><span class="badge badge-neutral">NEFT</span></td>
+                <td><span class="badge badge-success">Paid</span></td>
+              </tr>
+              <tr>
+                <td class="mono" style="font-size:11px;color:var(--text-tertiary);">—</td>
+                <td class="mono text-dim">—</td>
+                <td>Sem 3 — 3rd Installment</td>
+                <td class="mono fw-700 text-danger">₹25,000</td>
+                <td><span class="badge badge-neutral">—</span></td>
+                <td><span class="badge badge-danger">Pending</span></td>
+              </tr>
+              <tr>
+                <td class="mono" style="font-size:11px;color:var(--text-tertiary);">TXN2307112</td>
+                <td class="mono text-dim">10 Aug 2024</td>
+                <td>Sem 1 — Full Payment</td>
+                <td class="mono fw-700 text-success">₹82,000</td>
+                <td><span class="badge badge-neutral">DD</span></td>
+                <td><span class="badge badge-success">Paid</span></td>
+              </tr>
+              <tr>
+                <td class="mono" style="font-size:11px;color:var(--text-tertiary);">TXN2401045</td>
+                <td class="mono text-dim">08 Jan 2025</td>
+                <td>Sem 2 — Full Payment</td>
+                <td class="mono fw-700 text-success">₹82,000</td>
+                <td><span class="badge badge-neutral">UPI</span></td>
+                <td><span class="badge badge-success">Paid</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex-col gap-16">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                Payment Timeline
+              </div>
+            </div>
+            <div class="fee-timeline">
+              <div class="ft-item">
+                <div class="ft-dot paid"></div>
+                <div class="flex justify-between items-center">
+                  <div><div class="ft-label">1st Installment</div><div class="ft-meta">Paid via UPI · 12 Jan 2026</div></div>
+                  <div class="ft-amount text-success">₹35,000</div>
+                </div>
+              </div>
+              <div class="ft-item">
+                <div class="ft-dot paid"></div>
+                <div class="flex justify-between items-center">
+                  <div><div class="ft-label">2nd Installment</div><div class="ft-meta">Paid via NEFT · 05 Feb 2026</div></div>
+                  <div class="ft-amount text-success">₹25,000</div>
+                </div>
+              </div>
+              <div class="ft-item">
+                <div class="ft-dot due"></div>
+                <div class="flex justify-between items-center">
+                  <div><div class="ft-label text-danger">3rd Installment</div><div class="ft-meta text-danger">Due by 15 Mar 2026</div></div>
+                  <div class="ft-amount text-danger">₹25,000</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+            <div class="prog-wrap">
+              <div class="prog-head"><span class="prog-label">Payment Progress</span><span class="prog-val">₹60,000 / ₹85,000</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:70.5%;background:var(--brand);"></div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                Fee Receipts
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg-overlay);border-radius:var(--radius-sm);">
+                <div><div style="font-size:13px;font-weight:600;">Receipt #2402087</div><div style="font-size:11.5px;color:var(--text-tertiary);">Sem 3 · 2nd Installment</div></div>
+                <button class="btn btn-ghost btn-xs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>PDF</button>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg-overlay);border-radius:var(--radius-sm);">
+                <div><div style="font-size:13px;font-weight:600;">Receipt #2402001</div><div style="font-size:11.5px;color:var(--text-tertiary);">Sem 3 · 1st Installment</div></div>
+                <button class="btn btn-ghost btn-xs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>PDF</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /fees -->
+
+    <!-- ================================================
+         PAGE: RESULTS
+         ================================================ -->
+    <div class="page" id="page-results">
+      <div class="page-header flex justify-between items-center">
+        <div>
+          <div class="page-title">Examination Results</div>
+          <div class="page-desc">Semester-wise detailed report card and grade sheet.</div>
+        </div>
+        <button class="btn btn-secondary btn-sm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>
+          Download Marksheet
+        </button>
+      </div>
+
+      <div class="g4 mb-20">
+        <div class="kpi-card kpi-brand"><div class="kpi-icon brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-label">Semester 2 SGPA</div><div class="kpi-value" id="res-sgpa">8.42</div></div>
+        <div class="kpi-card kpi-success"><div class="kpi-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div><div class="kpi-label">Overall CGPA</div><div class="kpi-value text-success">8.10</div></div>
+        <div class="kpi-card"><div class="kpi-icon info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/></svg></div><div class="kpi-label">Active Backlogs</div><div class="kpi-value text-success">0</div></div>
+        <div class="kpi-card kpi-purple"><div class="kpi-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div><div class="kpi-label">Credits Earned</div><div class="kpi-value">48 / 60</div></div>
+      </div>
+
+      <div class="flex gap-12 mb-16 items-center">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchSem('sem2')">Semester 2</button>
+          <button class="tab-btn" onclick="switchSem('sem1')">Semester 1</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" id="res-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Semester II — Main Examination 2025
+          </div>
+          <span class="badge badge-success">Pass</span>
+        </div>
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead><tr>
+              <th>Subject Code</th><th>Subject Name</th><th>Credits</th><th>Internal (40)</th><th>External (60)</th><th>Total (100)</th><th>Grade</th><th>Points</th>
+            </tr></thead>
+            <tbody id="res-tbody"></tbody>
+            <tfoot id="res-tfoot"></tfoot>
+          </table>
+        </div>
+      </div>
+    </div><!-- /results -->
+
+    <!-- ================================================
+         PAGE: TODAY ATTENDANCE
+         ================================================ -->
+    <div class="page" id="page-todayAttendance">
+      <div class="page-header">
+        <div class="page-title">Today Attendance</div>
+        <div class="page-desc">Today's classes with faculty, timing, room number and attendance marking status.</div>
+      </div>
+
+      <div class="g4 mb-20">
+        <div class="kpi-card kpi-brand">
+          <div class="kpi-icon brand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div class="kpi-label">Total Classes</div>
+          <div class="kpi-value" id="todayAttTotal">0</div>
+          <div class="kpi-trend neutral">Scheduled for today</div>
+        </div>
+        <div class="kpi-card kpi-success">
+          <div class="kpi-icon success">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <div class="kpi-label">Marked</div>
+          <div class="kpi-value text-success" id="todayAttMarked">0</div>
+          <div class="kpi-trend up">Present/Absent submitted</div>
+        </div>
+        <div class="kpi-card kpi-warning">
+          <div class="kpi-icon warning">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6"/><path d="M12 16h.01"/></svg>
+          </div>
+          <div class="kpi-label">Pending Mark</div>
+          <div class="kpi-value text-warning" id="todayAttPending">0</div>
+          <div class="kpi-trend neutral">Not marked yet</div>
+        </div>
+        <div class="kpi-card kpi-purple">
+          <div class="kpi-icon purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></svg>
+          </div>
+          <div class="kpi-label">Day</div>
+          <div class="kpi-value" id="todayAttDay">-</div>
+          <div class="kpi-trend neutral">Current day schedule</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18v18H3z"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+            Class-wise Attendance for <span id="todayAttDate">Today</span>
+          </div>
+          <span class="badge badge-neutral">Live Tracker</span>
+        </div>
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Period</th>
+                <th>Time</th>
+                <th>Subject</th>
+                <th>Faculty</th>
+                <th>Room No.</th>
+                <th>Attendance</th>
+                <th>Marked At</th>
+              </tr>
+            </thead>
+            <tbody id="todayAttendanceRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div><!-- /todayAttendance -->
+
+    <!-- ================================================
+         PAGE: ATTENDANCE
+         ================================================ -->
+    <div class="page" id="page-attendance">
+      <div class="page-header">
+        <div class="page-title">Attendance Record</div>
+        <div class="page-desc">Subject-wise attendance for the current semester. Minimum required: 75%.</div>
+      </div>
+      <div class="alert alert-warning">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div class="alert-body">
+          <div class="alert-title">Attendance Warning — Discrete Mathematics</div>
+          <div class="alert-msg">Your attendance in Discrete Mathematics is 68%, which is below the 75% minimum required to sit the examination.</div>
+        </div>
+      </div>
+      <div class="card mt-16">
+        <div class="card-header">
+          <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Semester 3 Attendance</div>
+          <span class="badge badge-neutral">Jan–Mar 2026</span>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>Subject</th><th>Faculty</th><th>Total Classes</th><th>Attended</th><th>Attendance %</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Data Structures</td><td class="text-muted">Dr. Sharma</td><td class="mono">45</td><td class="mono">40</td><td><div class="prog-track" style="width:120px;display:inline-block;vertical-align:middle;margin-right:8px;"><div class="prog-fill" style="width:88.8%;background:var(--success);"></div></div><span class="text-success">88.8%</span></td><td><span class="badge badge-success">Safe</span></td></tr>
+            <tr><td>Operating Systems</td><td class="text-muted">Dr. Mehra</td><td class="mono">42</td><td class="mono">34</td><td><div class="prog-track" style="width:120px;display:inline-block;vertical-align:middle;margin-right:8px;"><div class="prog-fill" style="width:81%;background:var(--success);"></div></div><span class="text-success">81.0%</span></td><td><span class="badge badge-success">Safe</span></td></tr>
+            <tr><td>Discrete Mathematics</td><td class="text-muted">Prof. Gupta</td><td class="mono">38</td><td class="mono">26</td><td><div class="prog-track" style="width:120px;display:inline-block;vertical-align:middle;margin-right:8px;"><div class="prog-fill" style="width:68%;background:var(--danger);"></div></div><span class="text-danger">68.4%</span></td><td><span class="badge badge-danger">Shortage</span></td></tr>
+            <tr><td>Computer Networks</td><td class="text-muted">Prof. Rao</td><td class="mono">40</td><td class="mono">34</td><td><div class="prog-track" style="width:120px;display:inline-block;vertical-align:middle;margin-right:8px;"><div class="prog-fill" style="width:85%;background:var(--success);"></div></div><span class="text-success">85.0%</span></td><td><span class="badge badge-success">Safe</span></td></tr>
+            <tr><td>DBMS Lab</td><td class="text-muted">Dr. Verma</td><td class="mono">20</td><td class="mono">16</td><td><div class="prog-track" style="width:120px;display:inline-block;vertical-align:middle;margin-right:8px;"><div class="prog-fill" style="width:80%;background:var(--success);"></div></div><span class="text-success">80.0%</span></td><td><span class="badge badge-success">Safe</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ================================================
+         PAGE: HOSTEL
+         ================================================ -->
+    <div class="page" id="page-hostel">
+      <div class="page-header">
+        <div class="page-title">Hostel Management</div>
+        <div class="page-desc">Room allotment, mess menu, complaint tracking and hostel fees.</div>
+      </div>
+      <div class="g3 mb-16">
+        <div class="feature-card"><div class="fc-icon" style="background:var(--brand-dim);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brand-light)" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><h3 style="font-size:14px;font-weight:600;margin-bottom:4px;">Room B-204</h3><p style="font-size:12px;color:var(--text-secondary);">Boys Hostel Block B · 2nd Floor</p><span class="badge badge-success mt-8">Allotted</span></div>
+        <div class="feature-card"><div class="fc-icon" style="background:var(--success-dim);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="1.8"><path d="M3 2h18v20H3z"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="17" x2="13" y2="17"/></svg></div><h3 style="font-size:14px;font-weight:600;margin-bottom:4px;">Mess Menu</h3><p style="font-size:12px;color:var(--text-secondary);">Today: Dal Tadka, Rice, Roti, Salad</p><span class="badge badge-neutral mt-8">View Full Menu</span></div>
+        <div class="feature-card"><div class="fc-icon" style="background:var(--warning-dim);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="1.8"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><h3 style="font-size:14px;font-weight:600;margin-bottom:4px;">Raise Complaint</h3><p style="font-size:12px;color:var(--text-secondary);">Report maintenance issues to warden.</p><span class="badge badge-warning mt-8">0 Pending</span></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Hostel Fee Summary</div></div>
+        <table class="data-table"><thead><tr><th>Description</th><th>Amount</th><th>Due Date</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Room Rent (Sem 3)</td><td class="mono">₹18,000</td><td class="mono text-dim">20 Jan 2026</td><td><span class="badge badge-success">Paid</span></td></tr>
+          <tr><td>Mess Charges (Jan)</td><td class="mono">₹3,200</td><td class="mono text-dim">31 Jan 2026</td><td><span class="badge badge-success">Paid</span></td></tr>
+          <tr><td>Mess Charges (Feb)</td><td class="mono">₹3,200</td><td class="mono text-dim">28 Feb 2026</td><td><span class="badge badge-warning">Pending</span></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- ================================================
+         PAGE: TRANSPORT
+         ================================================ -->
+    <div class="page" id="page-transport">
+      <div class="page-header">
+        <div class="page-title">Transport</div>
+        <div class="page-desc">Bus route details, schedule and transport fee management.</div>
+      </div>
+      <div class="g2 mb-16">
+        <div class="card"><div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>My Route</div></div>
+          <table class="data-table"><tbody>
+            <tr><td>Route No.</td><td class="mono fw-700">Route 07</td></tr>
+            <tr><td>Bus No.</td><td class="mono">RJ-14-AB-1234</td></tr>
+            <tr><td>Pickup Point</td><td class="text-muted">Mansarovar Metro, Gate 2</td></tr>
+            <tr><td>Departure</td><td class="mono text-brand">08:10 AM</td></tr>
+            <tr><td>Arrival at Campus</td><td class="mono text-success">08:55 AM</td></tr>
+            <tr><td>Return Departure</td><td class="mono text-brand">05:30 PM</td></tr>
+          </tbody></table>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Transport Fee</div></div>
+          <table class="data-table"><tbody>
+            <tr><td>Annual Fee</td><td class="mono fw-700">₹24,000</td></tr>
+            <tr><td>Sem 3 (Paid)</td><td class="text-success mono">₹12,000 ✓</td></tr>
+            <tr><td>Next Due</td><td class="text-warning mono">₹12,000 — Jul 2026</td></tr>
+          </tbody></table>
+          <div class="divider"></div>
+          <button class="btn btn-primary btn-sm">Renew Pass</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================
+         PAGE: LIBRARY
+         ================================================ -->
+    <div class="page" id="page-library">
+      <div class="page-header">
+        <div class="page-title">Library</div>
+        <div class="page-desc">Issued books, due dates and library catalog access.</div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>Currently Issued Books</div></div>
+        <table class="data-table">
+          <thead><tr><th>Book Title</th><th>Author</th><th>Issue Date</th><th>Due Date</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Introduction to Algorithms (3rd Ed.)</td><td class="text-muted">CLRS</td><td class="mono text-dim">12 Feb 2026</td><td class="mono text-warning">12 Mar 2026</td><td><span class="badge badge-success">On Time</span></td></tr>
+            <tr><td>Operating System Concepts</td><td class="text-muted">Silberschatz</td><td class="mono text-dim">01 Feb 2026</td><td class="mono text-warning">01 Mar 2026</td><td><span class="badge badge-warning">Due Soon</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ================================================
+         PAGE: SCHOLARSHIP
+         ================================================ -->
+    <div class="page" id="page-scholarship">
+      <div class="page-header">
+        <div class="page-title">Scholarship</div>
+        <div class="page-desc">Track scholarship applications, merit awards and disbursements.</div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>Active Scholarships</div></div>
+          <table class="data-table"><thead><tr><th>Scheme</th><th>Amount</th><th>Status</th></tr></thead><tbody>
+            <tr><td>Merit Scholarship 2024–25</td><td class="mono text-success">₹15,000</td><td><span class="badge badge-success">Credited</span></td></tr>
+            <tr><td>State Govt. Scholarship</td><td class="mono text-warning">₹8,000</td><td><span class="badge badge-warning">Under Review</span></td></tr>
+          </tbody></table>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Eligibility</div></div>
+          <div class="prog-wrap"><div class="prog-head"><span class="prog-label">CGPA Requirement (Min 7.5)</span><span class="prog-val text-success">8.42 ✓</span></div><div class="prog-track"><div class="prog-fill" style="width:84%;background:var(--success);"></div></div></div>
+          <div class="prog-wrap"><div class="prog-head"><span class="prog-label">Attendance (Min 75%)</span><span class="prog-val text-warning">78% ✓</span></div><div class="prog-track"><div class="prog-fill" style="width:78%;background:var(--warning);"></div></div></div>
+          <div class="prog-wrap"><div class="prog-head"><span class="prog-label">No Active Backlogs</span><span class="prog-val text-success">Eligible ✓</span></div><div class="prog-track"><div class="prog-fill" style="width:100%;background:var(--success);"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================
+         PAGE: SETTINGS
+         ================================================ -->
+    <div class="page" id="page-settings">
+      <div class="page-header">
+        <div class="page-title">Settings & Preferences</div>
+        <div class="page-desc">Manage your account security, notifications and display preferences.</div>
+      </div>
+      <div class="settings-layout">
+        <div class="settings-nav">
+          <div class="sn-label">Account</div>
+          <div class="sn-item active" onclick="openStab(this,'stab-profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</div>
+          <div class="sn-item" onclick="openStab(this,'stab-kyc')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>KYC & Docs</div>
+          <div class="sn-label">Security</div>
+          <div class="sn-item" onclick="openStab(this,'stab-security')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Password & 2FA</div>
+          <div class="sn-item" onclick="openStab(this,'stab-sessions')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Sessions</div>
+          <div class="sn-label">Preferences</div>
+          <div class="sn-item" onclick="openStab(this,'stab-notif')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Notifications</div>
+          <div class="sn-item" onclick="openStab(this,'stab-appear')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>Appearance</div>
+        </div>
+
+        <div>
+          <!-- Profile Tab -->
+          <div class="s-tab active" id="stab-profile">
+            <div class="card mb-16">
+              <div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile Photo</div></div>
+              <div style="display:flex;align-items:center;gap:20px;padding:16px;background:var(--bg-overlay);border-radius:var(--radius-sm);">
+                <div style="width:64px;height:64px;background:linear-gradient(135deg,var(--brand),#a855f7);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex-shrink:0;">DD</div>
+                <div>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="btn btn-primary btn-sm">Upload Photo</button>
+                    <button class="btn btn-danger btn-sm">Remove</button>
+                  </div>
+                  <div class="field-hint mt-4">JPEG or PNG, max 2MB, 400×400px recommended</div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Personal Information</div></div>
+              <div class="form-grid mb-16">
+                <div class="form-field"><label>First Name</label><input type="text" id="settingsFirstName" value="Debraj"></div>
+                <div class="form-field"><label>Last Name</label><input type="text" id="settingsLastName" value="Das"></div>
+                <div class="form-field"><label>Student ID</label><input type="text" id="settingsStudentId" value="PU-2024-CSE-102" disabled></div>
+                <div class="form-field"><label>University Email</label><input type="text" id="settingsUniversityEmail" value="debraj.das@pu.ac.in" disabled></div>
+                <div class="form-field"><label>Personal Email</label><input type="email" id="settingsPersonalEmail" value="debrajdas06@gmail.com"></div>
+                <div class="form-field"><label>Mobile Number</label><input type="text" id="settingsMobileNumber" value="+91 98765 43210"></div>
+                <div class="form-field"><label>Alternate Mobile</label><input type="text" value="+91 87654 32109"></div>
+                <div class="form-field"><label>Date of Birth</label><input type="date" id="settingsDateOfBirth" value="2006-08-14"></div>
+              </div>
+              <div class="form-grid full mb-16">
+                <div class="form-field"><label>Residential Address</label><input type="text" id="settingsResidentialAddress" value="123, Salt Lake City, Kolkata, West Bengal – 700091"></div>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button class="btn btn-primary">Save Changes</button>
+                <button class="btn btn-ghost">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- KYC Tab -->
+          <div class="s-tab" id="stab-kyc">
+            <div class="card">
+              <div class="card-header"><div class="card-title">KYC & Document Verification</div></div>
+              <table class="data-table">
+                <thead><tr><th>Document</th><th>Status</th><th>Uploaded On</th><th>Action</th></tr></thead>
+                <tbody>
+                  <tr><td>Aadhaar Card</td><td><span class="badge badge-success">Verified</span></td><td class="mono text-dim">12 Aug 2024</td><td><button class="btn btn-ghost btn-xs">View</button></td></tr>
+                  <tr><td>10th Marksheet</td><td><span class="badge badge-success">Verified</span></td><td class="mono text-dim">14 Aug 2024</td><td><button class="btn btn-ghost btn-xs">View</button></td></tr>
+                  <tr><td>12th Marksheet</td><td><span class="badge badge-success">Verified</span></td><td class="mono text-dim">14 Aug 2024</td><td><button class="btn btn-ghost btn-xs">View</button></td></tr>
+                  <tr><td>Transfer Certificate</td><td><span class="badge badge-warning">Pending</span></td><td class="mono text-dim">—</td><td><button class="btn btn-primary btn-xs">Upload</button></td></tr>
+                  <tr><td>Passport Photo</td><td><span class="badge badge-success">Verified</span></td><td class="mono text-dim">12 Aug 2024</td><td><button class="btn btn-ghost btn-xs">View</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Security Tab -->
+          <div class="s-tab" id="stab-security">
+            <div class="card mb-16">
+              <div class="card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Change Password</div></div>
+              <div class="form-grid mb-16" style="max-width:500px;">
+                <div class="form-field"><label>Current Password</label><input type="password" placeholder="••••••••••"></div>
+                <div></div>
+                <div class="form-field"><label>New Password</label><input type="password" placeholder="Min. 8 characters"></div>
+                <div class="form-field"><label>Confirm New Password</label><input type="password" placeholder="Re-enter password"></div>
+              </div>
+              <button class="btn btn-primary">Update Password</button>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">Two-Factor Authentication</div><span class="badge badge-danger">Disabled</span></div>
+              <p class="text-muted" style="font-size:13px;margin-bottom:16px;">Enable 2FA to add an extra layer of security to your account. You'll be asked for a code from your authenticator app each time you log in.</p>
+              <button class="btn btn-secondary btn-sm">Enable 2FA via Authenticator App</button>
+            </div>
+          </div>
+
+          <!-- Sessions Tab -->
+          <div class="s-tab" id="stab-sessions">
+            <div class="card">
+              <div class="card-header"><div class="card-title">Active Login Sessions</div><button class="btn btn-danger btn-sm">Revoke All</button></div>
+              <table class="data-table">
+                <thead><tr><th>Device</th><th>Location</th><th>IP Address</th><th>Last Active</th><th></th></tr></thead>
+                <tbody>
+                  <tr><td>Chrome on Windows 11</td><td class="text-muted">Jaipur, Rajasthan</td><td class="mono text-dim">103.x.x.12</td><td class="text-success" style="font-size:12px;">Active now</td><td><span class="badge badge-brand">Current</span></td></tr>
+                  <tr><td>Mobile (Android)</td><td class="text-muted">Kolkata, WB</td><td class="mono text-dim">122.x.x.88</td><td class="text-dim mono" style="font-size:12px;">2 days ago</td><td><button class="btn btn-ghost btn-xs">Revoke</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Notifications Tab -->
+          <div class="s-tab" id="stab-notif">
+            <div class="card">
+              <div class="card-header"><div class="card-title">Notification Preferences</div></div>
+              <table class="data-table">
+                <thead><tr><th>Notification Type</th><th>Email</th><th>SMS</th><th>Portal</th></tr></thead>
+                <tbody>
+                  <tr><td>Fee Reminders</td><td><span class="badge badge-success">On</span></td><td><span class="badge badge-success">On</span></td><td><span class="badge badge-success">On</span></td></tr>
+                  <tr><td>Result Publication</td><td><span class="badge badge-success">On</span></td><td><span class="badge badge-neutral">Off</span></td><td><span class="badge badge-success">On</span></td></tr>
+                  <tr><td>Exam Schedule</td><td><span class="badge badge-success">On</span></td><td><span class="badge badge-success">On</span></td><td><span class="badge badge-success">On</span></td></tr>
+                  <tr><td>Announcements</td><td><span class="badge badge-neutral">Off</span></td><td><span class="badge badge-neutral">Off</span></td><td><span class="badge badge-success">On</span></td></tr>
+                  <tr><td>Attendance Alerts</td><td><span class="badge badge-success">On</span></td><td><span class="badge badge-success">On</span></td><td><span class="badge badge-success">On</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Appearance Tab -->
+          <div class="s-tab" id="stab-appear">
+            <div class="card">
+              <div class="card-header"><div class="card-title">Theme & Display</div></div>
+              <p class="text-muted" style="font-size:13px;margin-bottom:16px;">Dark mode is currently active. Additional themes will be available in future updates.</p>
+              <div style="display:flex;gap:12px;">
+                <div style="padding:16px 24px;background:var(--bg-overlay);border:2px solid var(--brand);border-radius:var(--radius-md);cursor:pointer;text-align:center;">
+                  <div style="font-size:12px;font-weight:600;color:var(--brand-light);">Dark</div>
+                  <div style="font-size:11px;color:var(--text-tertiary);">Active</div>
+                </div>
+                <div style="padding:16px 24px;background:var(--bg-overlay);border:1px solid var(--border-default);border-radius:var(--radius-md);cursor:pointer;text-align:center;opacity:0.5;">
+                  <div style="font-size:12px;font-weight:600;">Light</div>
+                  <div style="font-size:11px;color:var(--text-tertiary);">Coming soon</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /settings -->
+
+    <!-- ================================================
+         PAGE: HELP
+         ================================================ -->
+    <div class="page" id="page-help">
+      <div class="page-header">
+        <div class="page-title">Help & Support</div>
+        <div class="page-desc">Find answers, raise tickets or contact the university helpdesk.</div>
+      </div>
+      <div class="g3 mb-16">
+        <div class="feature-card" style="cursor:pointer;"><div class="fc-icon" style="background:var(--brand-dim);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brand-light)" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><h3 style="font-size:14px;font-weight:600;margin-bottom:4px;">FAQ</h3><p style="font-size:12px;color:var(--text-secondary);">Find answers to common questions.</p></div>
+        <div class="feature-card" style="cursor:pointer;"><div class="fc-icon" style="background:var(--success-dim);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><h3 style="font-size:14px;font-weight:600;margin-bottom:4px;">Live Chat</h3><p style="font-size:12px;color:var(--text-secondary);">Chat with student support team.</p></div>
+        <div class="feature-card" style="cursor:pointer;"><div class="fc-icon" style="background:var(--warning-dim);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><h3 style="font-size:14px;font-weight:600;margin-bottom:4px;">Email Helpdesk</h3><p style="font-size:12px;color:var(--text-secondary);">support@poornima.edu.in</p></div>
+      </div>
+    </div>
+
+  </main><!-- /content -->
+
+  <footer style="padding:14px 28px;border-top:1px solid var(--border-subtle);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+    <div style="font-size:11.5px;color:var(--text-tertiary);">© 2026 Poornima University · Student Information System v3.1</div>
+    <div style="font-size:11.5px;color:var(--text-tertiary);">Designed by Debraj Das &nbsp;·&nbsp; Last login: Today 09:14 AM</div>
+  </footer>
+</div><!-- /main -->
+
+<script>
+/* ============================================================
+   EXAM RESULT DATA
+   ============================================================ */
+const resultData = {
+  sem2: {
+    title: 'Semester II — Main Examination 2025',
+    sgpa: '8.42',
+    rows: [
+      { code:'BCS201', name:'Data Structures & Algorithms', cr:4, int:'38/40', ext:'52/60', tot:90, grade:'A+', pts:10 },
+      { code:'BCS202', name:'Operating Systems', cr:4, int:'35/40', ext:'48/60', tot:83, grade:'A', pts:9 },
+      { code:'BMA201', name:'Discrete Mathematics', cr:3, int:'30/40', ext:'40/60', tot:70, grade:'B+', pts:8 },
+      { code:'BCS203', name:'Computer Networks', cr:4, int:'34/40', ext:'51/60', tot:85, grade:'A', pts:9 },
+      { code:'BCS204', name:'Database Management Systems', cr:4, int:'38/40', ext:'54/60', tot:92, grade:'A+', pts:10 },
+      { code:'BCS205', name:'DBMS Lab', cr:2, int:'40/40', ext:'58/60', tot:98, grade:'A+', pts:10 },
+    ]
+  },
+  sem1: {
+    title: 'Semester I — Main Examination 2024',
+    sgpa: '7.80',
+    rows: [
+      { code:'BMA101', name:'Engineering Mathematics I', cr:4, int:'32/40', ext:'45/60', tot:77, grade:'B+', pts:8 },
+      { code:'BPH101', name:'Engineering Physics', cr:3, int:'35/40', ext:'42/60', tot:77, grade:'A', pts:9 },
+      { code:'BCS101', name:'C Programming', cr:4, int:'39/40', ext:'55/60', tot:94, grade:'A+', pts:10 },
+      { code:'BCS102', name:'Engineering Drawing', cr:2, int:'28/40', ext:'38/60', tot:66, grade:'B', pts:7 },
+      { code:'BHU101', name:'Communication Skills', cr:2, int:'36/40', ext:'46/60', tot:82, grade:'A', pts:9 },
+    ]
+  }
+};
+
+const gradeClass = { 'A+': 'grade-ap', 'A': 'grade-a', 'B+': 'grade-bp', 'B': 'grade-b', 'C': 'grade-c' };
+const CLASS_ALLOTMENTS_STORAGE_KEY = 'pu_class_allotments_v1';
+const FACULTY_ATTENDANCE_STORAGE_KEY = 'pu_faculty_attendance_v1';
+const DEFAULT_CLASS_ALLOTMENTS = [
+  { id: 'allot_default_1', startTime: '09:00 AM', endTime: '10:30 AM', subject: 'Data Structures', branch: 'B.Tech CSE', semester: '4th Semester', teacher: 'Dr. Deepak Mehta', room: 'Room 201', days: 'Mon, Wed, Fri' },
+  { id: 'allot_default_2', startTime: '11:00 AM', endTime: '12:30 PM', subject: 'Microprocessors', branch: 'B.Tech ECE', semester: '6th Semester', teacher: 'Rajesh Verma', room: 'Lab 2', days: 'Tue, Thu' },
+  { id: 'allot_default_3', startTime: '02:00 PM', endTime: '03:30 PM', subject: 'Business Ethics', branch: 'MBA', semester: '2nd Semester', teacher: 'Anita Singh', room: 'Room 105', days: 'Mon, Tue' }
+];
+const dayToShort = { Sunday: 'Sun', Monday: 'Mon', Tuesday: 'Tue', Wednesday: 'Wed', Thursday: 'Thu', Friday: 'Fri', Saturday: 'Sat' };
+
+function parseStoredArray(key) {
+  const raw = localStorage.getItem(key);
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.warn('Invalid localStorage payload for key:', key, error);
+    return [];
+  }
+}
+
+function formatTimeForDisplay(value) {
+  const text = String(value || '').trim();
+  if (!text) return '-';
+  if (/am|pm/i.test(text)) return text;
+  const match = text.match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) return text;
+  let hours = Number(match[1]);
+  const minutes = match[2];
+  const suffix = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12;
+  return `${String(hours).padStart(2, '0')}:${minutes} ${suffix}`;
+}
+
+function normalizeAllotment(item, index = 0) {
+  if (!item || typeof item !== 'object') return null;
+  const subject = String(item.subject || '').trim();
+  if (!subject) return null;
+  const days = Array.isArray(item.days) ? item.days.join(', ') : String(item.days || '').trim();
+  return {
+    id: String(item.id || `allot_${Date.now()}_${index}`).trim(),
+    subject,
+    teacher: String(item.teacher || 'Faculty').trim() || 'Faculty',
+    room: String(item.room || '-').trim() || '-',
+    startTime: formatTimeForDisplay(item.startTime || ''),
+    endTime: formatTimeForDisplay(item.endTime || ''),
+    days
+  };
+}
+
+function readClassAllotments() {
+  const stored = parseStoredArray(CLASS_ALLOTMENTS_STORAGE_KEY)
+    .map((item, index) => normalizeAllotment(item, index))
+    .filter(Boolean);
+  if (stored.length) return stored;
+  localStorage.setItem(CLASS_ALLOTMENTS_STORAGE_KEY, JSON.stringify(DEFAULT_CLASS_ALLOTMENTS));
+  return DEFAULT_CLASS_ALLOTMENTS.slice();
+}
+
+function readFacultyAttendanceRecords() {
+  return parseStoredArray(FACULTY_ATTENDANCE_STORAGE_KEY)
+    .filter((item) => item && typeof item === 'object' && item.classId && item.date);
+}
+
+function buildTodayAttendanceFromAllotments(now) {
+  const dayName = now.toLocaleDateString('en-US', { weekday: 'long' });
+  const shortDay = dayToShort[dayName] || '';
+  const dateValue = now.toISOString().slice(0, 10);
+  const attendanceRecords = readFacultyAttendanceRecords();
+
+  const todayClasses = readClassAllotments()
+    .filter((item) => String(item.days || '').split(',').map((day) => day.trim()).includes(shortDay));
+
+  return todayClasses.map((item, index) => {
+    const attendance = attendanceRecords.find((record) => record.classId === item.id && record.date === dateValue);
+    const markedAt = attendance?.markedAt
+      ? new Date(attendance.markedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+      : '-';
+    return {
+      period: String(index + 1),
+      time: `${item.startTime} - ${item.endTime}`,
+      subject: item.subject,
+      faculty: item.teacher,
+      room: item.room,
+      status: attendance ? 'Marked' : 'Not Marked',
+      markedAt
+    };
+  });
+}
+
+function attendanceBadgeConfig(status) {
+  const normalized = String(status || '').toLowerCase();
+  if (normalized === 'marked') return { cls: 'badge-success', textCls: 'text-success' };
+  if (normalized === 'present') return { cls: 'badge-success', textCls: 'text-success' };
+  if (normalized === 'absent') return { cls: 'badge-danger', textCls: 'text-danger' };
+  if (normalized === 'late') return { cls: 'badge-warning', textCls: 'text-warning' };
+  return { cls: 'badge-neutral', textCls: 'text-muted' };
+}
+
+function renderTodayAttendance() {
+  const rowsEl = document.getElementById('todayAttendanceRows');
+  if (!rowsEl) return;
+
+  const now = new Date();
+  const dayName = now.toLocaleDateString('en-US', { weekday: 'long' });
+  const schedule = buildTodayAttendanceFromAllotments(now);
+
+  const total = schedule.length;
+  const pending = schedule.filter(item => item.status === 'Not Marked').length;
+  const marked = total - pending;
+
+  const totalEl = document.getElementById('todayAttTotal');
+  const markedEl = document.getElementById('todayAttMarked');
+  const pendingEl = document.getElementById('todayAttPending');
+  const dayEl = document.getElementById('todayAttDay');
+  const dateEl = document.getElementById('todayAttDate');
+
+  if (totalEl) totalEl.textContent = String(total);
+  if (markedEl) markedEl.textContent = String(marked);
+  if (pendingEl) pendingEl.textContent = String(pending);
+  if (dayEl) dayEl.textContent = dayName;
+  if (dateEl) dateEl.textContent = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+  if (!schedule.length) {
+    rowsEl.innerHTML = '<tr><td colspan="7" class="text-muted" style="padding:18px;">No allotted classes scheduled for today.</td></tr>';
+    return;
+  }
+
+  rowsEl.innerHTML = schedule.map((item) => {
+    const badge = attendanceBadgeConfig(item.status);
+    return `<tr>
+      <td class="mono">${escapeHtml(item.period)}</td>
+      <td class="mono">${escapeHtml(item.time)}</td>
+      <td>${escapeHtml(item.subject)}</td>
+      <td class="text-muted">${escapeHtml(item.faculty)}</td>
+      <td class="mono">${escapeHtml(item.room)}</td>
+      <td><span class="badge ${badge.cls}">${escapeHtml(item.status)}</span></td>
+      <td class="mono ${badge.textCls}">${escapeHtml(item.markedAt || '-')}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderResult(semKey) {
+  const d = resultData[semKey];
+  document.getElementById('res-title').innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    ${d.title}`;
+  document.getElementById('res-sgpa').textContent = d.sgpa;
+
+  let tbody = '';
+  let totalCr = 0, totalWt = 0;
+  d.rows.forEach(r => {
+    totalCr += r.cr; totalWt += r.cr * r.pts;
+    tbody += `<tr>
+      <td class="mono" style="font-size:12px;color:var(--text-tertiary);">${r.code}</td>
+      <td>${r.name}</td>
+      <td class="mono">${r.cr}</td>
+      <td class="mono">${r.int}</td>
+      <td class="mono">${r.ext}</td>
+      <td class="mono fw-700">${r.tot}</td>
+      <td><span class="grade ${gradeClass[r.grade] || 'grade-a'}">${r.grade}</span></td>
+      <td class="mono">${r.pts}.0</td>
+    </tr>`;
+  });
+  document.getElementById('res-tbody').innerHTML = tbody;
+
+  const sgpa = (totalWt / totalCr).toFixed(2);
+  document.getElementById('res-tfoot').innerHTML = `<tr style="border-top:1px solid var(--border-default);background:var(--bg-overlay);">
+    <td colspan="2" style="font-weight:700;color:var(--text-primary);">Total / SGPA</td>
+    <td class="mono fw-700">${totalCr}</td>
+    <td colspan="3"></td>
+    <td></td>
+    <td class="mono fw-700 text-brand" style="font-size:14px;">${sgpa}</td>
+  </tr>`;
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function nav(pageId) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  // Show target
+  const target = document.getElementById('page-' + pageId);
+  if (target) target.classList.add('active');
+
+  // Update sidebar active
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  const items = document.querySelectorAll('.sb-item');
+  items.forEach(i => {
+    const fn = i.getAttribute('onclick') || '';
+    if (fn.includes("'" + pageId + "'")) i.classList.add('active');
+  });
+
+  // Update breadcrumb
+  const labels = {
+    dashboard:'Dashboard', profile:'My Profile', notes:'Study Materials',
+    assignments:'Assignments', todayAttendance:'Today Attendance', results:'Examination', attendance:'Attendance', fees:'Fee Management',
+    scholarship:'Scholarship', hostel:'Hostel', transport:'Transport',
+    library:'Library', settings:'Settings & Preferences', help:'Help & Support'
+  };
+  document.getElementById('breadcrumb-current').textContent = labels[pageId] || pageId;
+
+  if (pageId === 'todayAttendance') {
+    renderTodayAttendance();
+  }
+
+  // Scroll top
+  document.querySelector('.content').scrollTop = 0;
+}
+
+function switchSem(semKey) {
+  document.querySelectorAll('#page-results .tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderResult(semKey);
+}
+
+function openStab(el, tabId) {
+  document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sn-item').forEach(i => i.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  el.classList.add('active');
+}
+
+// Tab filter buttons (notes page etc.)
+document.querySelectorAll('.tabs .tab-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    this.closest('.tabs').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+function getStoredStudentSession() {
+  const keys = ['studentSession', 'activeStudentProfile'];
+  for (const key of keys) {
+    const raw = localStorage.getItem(key);
+    if (!raw) continue;
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        return parsed;
+      }
+    } catch (error) {
+      console.warn('Invalid stored student profile payload:', error);
+    }
+  }
+  return null;
+}
+
+function normalizeValue(value) {
+  if (value === null || value === undefined) return '';
+  return String(value).trim();
+}
+
+const FACULTY_NOTES_META_KEY = 'pu_faculty_uploaded_notes';
+const FACULTY_ASSIGNMENTS_META_KEY = 'pu_faculty_uploaded_assignments';
+const FACULTY_NOTES_DB = 'pu_notes_store';
+const FACULTY_NOTES_STORE = 'files';
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function readFacultyUploadedNotes() {
+  const raw = localStorage.getItem(FACULTY_NOTES_META_KEY);
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(item => item && typeof item === 'object' && item.id);
+  } catch (error) {
+    console.warn('Invalid faculty notes payload:', error);
+    return [];
+  }
+}
+
+function openNotesDb() {
+  return new Promise((resolve, reject) => {
+    if (!window.indexedDB) {
+      reject(new Error('IndexedDB is not supported.'));
+      return;
+    }
+
+    const request = window.indexedDB.open(FACULTY_NOTES_DB, 1);
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains(FACULTY_NOTES_STORE)) {
+        db.createObjectStore(FACULTY_NOTES_STORE);
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error('Unable to open notes database.'));
+  });
+}
+
+function getNoteBlob(noteId) {
+  return openNotesDb().then((db) => new Promise((resolve, reject) => {
+    const tx = db.transaction(FACULTY_NOTES_STORE, 'readonly');
+    const request = tx.objectStore(FACULTY_NOTES_STORE).get(noteId);
+    request.onsuccess = () => resolve(request.result || null);
+    request.onerror = () => reject(request.error || new Error('Unable to read note file.'));
+    tx.oncomplete = () => db.close();
+    tx.onerror = () => db.close();
+  }));
+}
+
+function formatNoteSize(bytes) {
+  const size = Number(bytes);
+  if (!Number.isFinite(size) || size <= 0) return '0 KB';
+  if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+  return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+function formatNoteDate(value) {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return 'Recently';
+  return parsed.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function noteBadgeClass(subject) {
+  const key = normalizeValue(subject).toLowerCase();
+  if (key.includes('data structure')) return 'badge-brand';
+  if (key.includes('database')) return 'badge-success';
+  if (key.includes('operating')) return 'badge-purple';
+  return 'badge-neutral';
+}
+
+function renderFacultyUploadedNotes() {
+  const rows = document.getElementById('facultyUploadedNotesRows');
+  const empty = document.getElementById('facultyUploadedEmpty');
+  const count = document.getElementById('facultyUploadedCount');
+  if (!rows || !empty || !count) return;
+
+  const notes = readFacultyUploadedNotes()
+    .sort((a, b) => String(b.uploadedAt || '').localeCompare(String(a.uploadedAt || '')));
+
+  count.textContent = `${notes.length} files`;
+  if (!notes.length) {
+    rows.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  rows.innerHTML = notes.map((note) => `
+          <div class="note-row">
+            <div class="note-file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="note-file-type">pdf</span></div>
+            <div class="note-info">
+              <div class="note-title">${escapeHtml(note.title || 'Untitled PDF')}</div>
+              <div class="note-meta"><span>${formatNoteSize(note.fileSize)}</span><span>·</span><span>Uploaded: ${formatNoteDate(note.uploadedAt)}</span><span>·</span><span class="badge ${noteBadgeClass(note.subject)}" style="font-size:10px;">${escapeHtml(note.subject || 'General')}</span></div>
+              <div class="note-meta"><span>${escapeHtml(note.description || '')}</span></div>
+            </div>
+            <div class="note-actions">
+              <button class="btn-icon" title="Preview" onclick="previewUploadedNote('${note.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="btn btn-primary btn-xs" onclick="downloadUploadedNote('${note.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button>
+            </div>
+          </div>`).join('');
+}
+
+function getFacultyNoteById(noteId) {
+  return readFacultyUploadedNotes().find(note => note.id === noteId) || null;
+}
+
+function readFacultyUploadedAssignments() {
+  const raw = localStorage.getItem(FACULTY_ASSIGNMENTS_META_KEY);
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(item => item && typeof item === 'object' && item.id);
+  } catch (error) {
+    console.warn('Invalid faculty assignments payload:', error);
+    return [];
+  }
+}
+
+function getFacultyAssignmentById(assignmentId) {
+  return readFacultyUploadedAssignments().find(item => item.id === assignmentId) || null;
+}
+
+function assignmentBadgeClass(subject) {
+  return noteBadgeClass(subject);
+}
+
+function formatAssignmentDueDate(value) {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return '-';
+  return parsed.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function renderFacultyAssignments() {
+  const rows = document.getElementById('facultyAssignmentRows');
+  const empty = document.getElementById('facultyAssignmentEmpty');
+  const count = document.getElementById('facultyAssignmentCount');
+  if (!rows || !empty || !count) return;
+
+  const assignments = readFacultyUploadedAssignments()
+    .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+
+  count.textContent = `${assignments.length} items`;
+  if (!assignments.length) {
+    rows.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  rows.innerHTML = assignments.map((assignment) => `
+          <div class="note-row">
+            <div class="note-file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="note-file-type">pdf</span></div>
+            <div class="note-info">
+              <div class="note-title">${escapeHtml(assignment.title || 'Untitled Assignment')}</div>
+              <div class="note-meta"><span>${formatNoteSize(assignment.fileSize)}</span><span>Â·</span><span>Due: ${formatAssignmentDueDate(assignment.dueDate || assignment.deadline)}</span><span>Â·</span><span class="badge ${assignmentBadgeClass(assignment.subject)}" style="font-size:10px;">${escapeHtml(assignment.subject || 'General')}</span></div>
+              <div class="note-meta"><span>${escapeHtml(assignment.description || '')}</span></div>
+            </div>
+            <div class="note-actions">
+              <button class="btn-icon" title="Preview" onclick="previewFacultyAssignment('${assignment.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="btn btn-primary btn-xs" onclick="downloadFacultyAssignment('${assignment.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button>
+            </div>
+          </div>`).join('');
+}
+
+function triggerBlobDownload(blob, fileName) {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = fileName || 'study-material.pdf';
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function downloadUploadedNote(noteId) {
+  const note = getFacultyNoteById(noteId);
+  if (!note) {
+    alert('Note metadata not found.');
+    return;
+  }
+
+  try {
+    const blob = await getNoteBlob(noteId);
+    if (!blob) {
+      alert('PDF file not found. Ask faculty to upload again.');
+      return;
+    }
+    triggerBlobDownload(blob, note.fileName || `${note.title || 'notes'}.pdf`);
+  } catch (error) {
+    console.error(error);
+    alert('Unable to download this file.');
+  }
+}
+
+async function previewUploadedNote(noteId) {
+  try {
+    const blob = await getNoteBlob(noteId);
+    if (!blob) {
+      alert('PDF file not found. Ask faculty to upload again.');
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank', 'noopener');
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } catch (error) {
+    console.error(error);
+    alert('Unable to preview this file.');
+  }
+}
+
+async function downloadFacultyAssignment(assignmentId) {
+  const assignment = getFacultyAssignmentById(assignmentId);
+  if (!assignment) {
+    alert('Assignment metadata not found.');
+    return;
+  }
+
+  try {
+    const blob = await getNoteBlob(assignmentId);
+    if (!blob) {
+      alert('Assignment file not found. Ask faculty to upload again.');
+      return;
+    }
+    triggerBlobDownload(blob, assignment.fileName || `${assignment.title || 'assignment'}.pdf`);
+  } catch (error) {
+    console.error(error);
+    alert('Unable to download this assignment.');
+  }
+}
+
+async function previewFacultyAssignment(assignmentId) {
+  try {
+    const blob = await getNoteBlob(assignmentId);
+    if (!blob) {
+      alert('Assignment file not found. Ask faculty to upload again.');
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank', 'noopener');
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } catch (error) {
+    console.error(error);
+    alert('Unable to preview this assignment.');
+  }
+}
+
+function studentInitials(firstName, lastName, fullName) {
+  const f = normalizeValue(firstName);
+  const l = normalizeValue(lastName);
+  if (f || l) {
+    return `${f.charAt(0)}${l.charAt(0)}`.toUpperCase() || 'ST';
+  }
+
+  const name = normalizeValue(fullName);
+  if (!name) return 'ST';
+  const parts = name.split(/\s+/).filter(Boolean);
+  return (parts[0].charAt(0) + (parts[1] ? parts[1].charAt(0) : '')).toUpperCase() || 'ST';
+}
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = value;
+}
+
+function setInputValue(id, value) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.value = value;
+}
+
+function hydrateStudentProfile() {
+  const student = getStoredStudentSession();
+  if (!student) return;
+
+  const firstName = normalizeValue(student.firstName);
+  const lastName = normalizeValue(student.lastName);
+  const fullName = `${firstName} ${lastName}`.trim() || 'Student';
+  const gmail = normalizeValue(student.gmail) || '-';
+  const rollNo = normalizeValue(student.rollNo);
+  const idValue = normalizeValue(student.id);
+  const registrationValue = rollNo || idValue || '-';
+  const enrollmentValue = idValue || rollNo || '-';
+  const branchValue = normalizeValue(student.branch) || normalizeValue(student.department) || 'Student';
+  const metaText = `${branchValue} · Poornima University, Jaipur`;
+  const avatar = studentInitials(firstName, lastName, fullName);
+
+  setText('sidebarUserAvatar', avatar);
+  setText('sidebarUserName', fullName);
+  setText('topbarAvatar', avatar);
+  setText('profileCoverAvatar', avatar);
+  setText('profileName', fullName);
+  setText('profileFullName', fullName);
+  setText('profileRollTag', `Roll: ${registrationValue}`);
+  setText('contactUniversityEmail', gmail);
+  setText('contactPersonalEmail', gmail);
+  setText('enrollmentRegistrationNo', registrationValue);
+  setText('enrollmentNo', enrollmentValue);
+
+  const sidebarRole = document.querySelector('.sb-user-role');
+  if (sidebarRole) {
+    sidebarRole.textContent = `${branchValue} · Roll ${registrationValue}`;
+  }
+
+  const profileMeta = document.querySelector('.profile-meta');
+  if (profileMeta) {
+    profileMeta.textContent = metaText;
+  }
+
+  setInputValue('settingsFirstName', firstName || 'Student');
+  setInputValue('settingsLastName', lastName);
+  setInputValue('settingsStudentId', registrationValue);
+  setInputValue('settingsUniversityEmail', gmail === '-' ? '' : gmail);
+  setInputValue('settingsPersonalEmail', gmail === '-' ? '' : gmail);
+}
+
+function preferredApiBases() {
+  const rawBase = normalizeValue(localStorage.getItem('API_BASE')).replace(/\/+$/, '');
+  const currentOrigin = normalizeValue(window.location.origin || '').replace(/\/+$/, '');
+  return [...new Set([rawBase, currentOrigin, 'http://localhost:8081', 'http://127.0.0.1:8081'].filter(Boolean))];
+}
+
+function sameValue(a, b) {
+  return normalizeValue(a).toLowerCase() === normalizeValue(b).toLowerCase();
+}
+
+function findMatchingStudent(students, sessionStudent) {
+  const sessionId = Number(sessionStudent.id);
+  const sessionRoll = normalizeValue(sessionStudent.rollNo);
+  const sessionGmail = normalizeValue(sessionStudent.gmail);
+  const list = Array.isArray(students) ? students : [];
+
+  if (Number.isFinite(sessionId)) {
+    const byId = list.find((student) => {
+      if (!student || typeof student !== 'object') return false;
+      return Number(student.id) === sessionId;
+    });
+    if (byId) return byId;
+  }
+
+  if (sessionGmail) {
+    const byGmail = list.find((student) => {
+      if (!student || typeof student !== 'object') return false;
+      return sameValue(student.gmail, sessionGmail);
+    });
+    if (byGmail) return byGmail;
+  }
+
+  if (sessionRoll) {
+    const rollMatches = list.filter((student) => {
+      if (!student || typeof student !== 'object') return false;
+      return sameValue(student.rollNo, sessionRoll);
+    });
+    if (rollMatches.length === 1) {
+      return rollMatches[0];
+    }
+  }
+
+  return null;
+}
+
+async function fetchDetailedStudent(sessionStudent) {
+  let lastError = null;
+
+  for (const apiBase of preferredApiBases()) {
+    try {
+      const res = await fetch(`${apiBase}/api/admin/students`, { cache: 'no-store' });
+      if (!res.ok) {
+        lastError = new Error(`Student list request failed with status ${res.status}`);
+        continue;
+      }
+
+      const payload = await res.json();
+      const list = Array.isArray(payload) ? payload : (payload && Array.isArray(payload.value) ? payload.value : null);
+      if (!Array.isArray(list)) {
+        lastError = new Error('Unexpected student list payload');
+        continue;
+      }
+
+      const matched = findMatchingStudent(list, sessionStudent);
+      if (matched) {
+        localStorage.setItem('API_BASE', apiBase);
+        return matched;
+      }
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  if (lastError) {
+    console.warn('Unable to fetch detailed student profile:', lastError);
+  }
+
+  return null;
+}
+
+function setProfileCellByLabel(label, value) {
+  if (!value) return;
+  const rows = document.querySelectorAll('#page-profile .data-table tbody tr');
+  rows.forEach((row) => {
+    const cells = row.querySelectorAll('td');
+    if (cells.length < 2) return;
+    if (normalizeValue(cells[0].textContent).toLowerCase() === label.toLowerCase()) {
+      cells[1].textContent = value;
+    }
+  });
+}
+
+function formatDateForDisplay(dateValue) {
+  const raw = normalizeValue(dateValue);
+  if (!raw) return '';
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return raw;
+  return parsed.toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+
+function formatDateForInput(dateValue) {
+  const raw = normalizeValue(dateValue);
+  if (!raw) return '';
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return '';
+  const year = parsed.getFullYear();
+  const month = String(parsed.getMonth() + 1).padStart(2, '0');
+  const day = String(parsed.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function applyDetailedStudentFields(student) {
+  const branchValue = normalizeValue(student.branch) || normalizeValue(student.department);
+  if (branchValue) {
+    setText('academicBranch', branchValue);
+  }
+
+  const dateText = formatDateForDisplay(student.dateOfBirth);
+  if (dateText) {
+    setText('profileDateOfBirth', dateText);
+    setInputValue('settingsDateOfBirth', formatDateForInput(student.dateOfBirth));
+  }
+
+  const gender = normalizeValue(student.gender);
+  if (gender) {
+    setText('profileGender', gender);
+  }
+
+  const mobile = normalizeValue(student.contactNumber);
+  if (mobile) {
+    setText('contactMobile', mobile);
+    setInputValue('settingsMobileNumber', mobile);
+  }
+
+  const address = normalizeValue(student.address);
+  if (address) {
+    setProfileCellByLabel('Address', address);
+    setInputValue('settingsResidentialAddress', address);
+  }
+
+  const guardianName = normalizeValue(student.parentName);
+  if (guardianName) {
+    setProfileCellByLabel('Guardian Name', guardianName);
+  }
+}
+
+async function enhanceStudentProfileFromBackend() {
+  const sessionStudent = getStoredStudentSession();
+  if (!sessionStudent) return;
+
+  const detailedStudent = await fetchDetailedStudent(sessionStudent);
+  if (!detailedStudent) return;
+
+  const merged = { ...sessionStudent, ...detailedStudent };
+  localStorage.setItem('studentSession', JSON.stringify(merged));
+  localStorage.setItem('activeStudentProfile', JSON.stringify(merged));
+  hydrateStudentProfile();
+  applyDetailedStudentFields(merged);
+}
+
+// Init
+hydrateStudentProfile();
+enhanceStudentProfileFromBackend();
+renderFacultyUploadedNotes();
+renderFacultyAssignments();
+renderTodayAttendance();
+window.addEventListener('storage', (event) => {
+  if (event.key === FACULTY_NOTES_META_KEY) {
+    renderFacultyUploadedNotes();
+  } else if (event.key === FACULTY_ASSIGNMENTS_META_KEY) {
+    renderFacultyAssignments();
+  } else if (event.key === CLASS_ALLOTMENTS_STORAGE_KEY || event.key === FACULTY_ATTENDANCE_STORAGE_KEY) {
+    renderTodayAttendance();
+  }
+});
+renderResult('sem2');
+</script>
+</body>
+</html>
+

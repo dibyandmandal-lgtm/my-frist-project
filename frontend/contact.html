@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Faculty Directory | EduNotes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --accent: #f4c95d;
+            --bg-light: #f8f9fa;
+            --text-dark: #202124;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            position: fixed;
+            top: 0; width: 100%; height: 85px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 5%;
+            background: #fff;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo { height: 50px; }
+
+        .header-title h1 {
+            font-size: 22px;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* ===== SEARCH SECTION ===== */
+        .search-section {
+            margin-top: 110px;
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            border-bottom: 1px solid #eee;
+        }
+
+        .search-box {
+            max-width: 600px;
+            margin: 15px auto;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px 50px;
+            border-radius: 30px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 8px rgba(26, 115, 232, 0.2); }
+        .search-box i { position: absolute; left: 20px; top: 18px; color: #777; }
+
+        /* ===== GRID LAYOUT ===== */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 0 20px;
+        }
+
+        /* ===== FACULTY CARD ===== */
+        .faculty-card {
+            background: #fff;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            border: 1px solid #eee;
+        }
+
+        .faculty-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+        }
+
+        .profile-img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #e8f0fe;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            color: var(--primary);
+            border: 3px solid var(--bg-light);
+        }
+
+        .faculty-card h3 { font-size: 19px; margin-bottom: 5px; color: #111; }
+        .dept-tag {
+            font-size: 12px;
+            background: #e8f0fe;
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .info-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #555;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .info-link:hover { color: var(--primary); }
+        .info-link i { color: var(--primary); width: 18px; }
+
+        .action-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-call { background: var(--primary); color: white; }
+        .btn-mail { background: #f1f3f4; color: #3c4043; }
+        .btn-call:hover { background: #1557b0; }
+
+        @media(max-width: 600px) {
+            .header-title h1 { font-size: 16px; }
+            .header { padding: 0 15px; }
+            .logo { height: 35px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <img src="https://poornima.edu.in/sub/etisd/img/logo/logo2.png" class="logo" alt="Logo">
+    <div class="header-title">
+        <h1>Faculty Directory</h1>
+    </div>
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSP1gWVjDn9Ca2T5BB2tEblNAKcC972B4UfAg&s" class="logo" alt="Logo">
+</header>
+
+<section class="search-section">
+    <h2>Meet Our Expert Educators</h2>
+    <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="facultySearch" onkeyup="searchFaculty()" placeholder="Search by name or department...">
+    </div>
+</section>
+
+<div class="container" id="facultyGrid">
+
+    <div class="faculty-card">
+        <div class="profile-img"><i class="fa-solid fa-user-tie"></i></div>
+        <h3>Miss Megha Nain</h3>
+        <span class="dept-tag">Dept. of Computer Science</span>
+        <a href="tel:9716219307" class="info-link"><i class="fa-solid fa-phone"></i> +91 9716219307</a>
+        <a href="mailto:megha.nain1@poornima.edu.in" class="info-link"><i class="fa-solid fa-envelope"></i> megha.nain1@poornima.edu.in</a>
+        <div class="action-btns">
+            <a href="tel:9716219307" class="btn btn-call">Call Now</a>
+            <a href="mailto:megha.nain1@poornima.edu.in" class="btn btn-mail">Message</a>
+        </div>
+    </div>
+
+    <div class="faculty-card">
+        <div class="profile-img"><i class="fa-solid fa-user-doctor"></i></div>
+        <h3>Dr. Vivek Kumar Jain</h3>
+        <span class="dept-tag">Dept. of Mathematics</span>
+        <a href="tel:9413635180" class="info-link"><i class="fa-solid fa-phone"></i> +91 9413635180</a>
+        <a href="mailto:vivek.kumar@poornima.edu.in" class="info-link"><i class="fa-solid fa-envelope"></i> vivek.kumar@poornima.edu.in</a>
+        <div class="action-btns">
+            <a href="tel:9413635180" class="btn btn-call">Call Now</a>
+            <a href="mailto:vivek.kumar@poornima.edu.in" class="btn btn-mail">Message</a>
+        </div>
+    </div>
+
+    <div class="faculty-card">
+        <div class="profile-img"><i class="fa-solid fa-user-graduate"></i></div>
+        <h3>Dr. Divya Prakash</h3>
+        <span class="dept-tag">Dept. of Applied Science</span>
+        <a href="tel:9319468159" class="info-link"><i class="fa-solid fa-phone"></i> +91 9319468159</a>
+        <a href="mailto:divya.prakash@poornima.edu.in" class="info-link"><i class="fa-solid fa-envelope"></i> divya.prakash@poornima.edu.in</a>
+        <div class="action-btns">
+            <a href="tel:9319468159" class="btn btn-call">Call Now</a>
+            <a href="mailto:divya.prakash@poornima.edu.in" class="btn btn-mail">Message</a>
+        </div>
+    </div>
+
+    <div class="faculty-card">
+        <div class="profile-img"><i class="fa-solid fa-user-tie"></i></div>
+        <h3>Miss Vandana Yadav</h3>
+        <span class="dept-tag">Dept. of Engineering</span>
+        <a href="tel:8968696233" class="info-link"><i class="fa-solid fa-phone"></i> +91 8968696233</a>
+        <a href="mailto:vandana.yadav@poornima.edu.in" class="info-link"><i class="fa-solid fa-envelope"></i> vandana.yadav@poornima.edu.in</a>
+        <div class="action-btns">
+            <a href="tel:8968696233" class="btn btn-call">Call Now</a>
+            <a href="mailto:vandana.yadav@poornima.edu.in" class="btn btn-mail">Message</a>
+        </div>
+    </div>
+
+    <div class="faculty-card">
+        <div class="profile-img"><i class="fa-solid fa-user-doctor"></i></div>
+        <h3>Dr. Hari Om Tiwari</h3>
+        <span class="dept-tag">Research & Development</span>
+        <a href="tel:7355139190" class="info-link"><i class="fa-solid fa-phone"></i> +91 7355139190</a>
+        <a href="mailto:hariom.tiwari@poornima.edu.in" class="info-link"><i class="fa-solid fa-envelope"></i> hariom.tiwari@poornima.edu.in</a>
+        <div class="action-btns">
+            <a href="tel:7355139190" class="btn btn-call">Call Now</a>
+            <a href="mailto:hariom.tiwari@poornima.edu.in" class="btn btn-mail">Message</a>
+        </div>
+    </div>
+
+    <div class="faculty-card">
+        <div class="profile-img"><i class="fa-solid fa-user-doctor"></i></div>
+        <h3>Dr. Yashpal Kaushik</h3>
+        <span class="dept-tag">Dept. of Humanities</span>
+        <a href="tel:9466748006" class="info-link"><i class="fa-solid fa-phone"></i> +91 9466748006</a>
+        <a href="mailto:yashpal.kaushik@poornima.edu.in" class="info-link"><i class="fa-solid fa-envelope"></i> yashpal.kaushik@poornima.edu.in</a>
+        <div class="action-btns">
+            <a href="tel:9466748006" class="btn btn-call">Call Now</a>
+            <a href="mailto:yashpal.kaushik@poornima.edu.in" class="btn btn-mail">Message</a>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function searchFaculty() {
+        let input = document.getElementById('facultySearch').value.toLowerCase();
+        let cards = document.getElementsByClassName('faculty-card');
+        
+        for (let i = 0; i < cards.length; i++) {
+            let name = cards[i].querySelector('h3').innerText.toLowerCase();
+            let dept = cards[i].querySelector('.dept-tag').innerText.toLowerCase();
+            
+            if (name.includes(input) || dept.includes(input)) {
+                cards[i].style.display = "block";
+            } else {
+                cards[i].style.display = "none";
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
